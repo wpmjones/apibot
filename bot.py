@@ -70,7 +70,7 @@ class ApiBot(commands.Bot):
     def send_message(self, message):
         if len(message) > 2000:
             fp = io.BytesIO(message.encode())
-            return await self.  log_channel.send(file=discord.File(fp, filename='log_message.txt'))
+            return await self.log_channel.send(file=discord.File(fp, filename='log_message.txt'))
         else:
             return await self.log_channel.send(message)
 
