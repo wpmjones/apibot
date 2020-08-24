@@ -86,8 +86,7 @@ class ApiBot(commands.Bot):
         ctx = await self.get_context(message, cls=context.Context)
         if ctx.command is None:
             return
-        async with ctx.acquire():
-            await self.invoke(ctx)
+        await self.invoke(ctx)
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.NoPrivateMessage):
