@@ -12,13 +12,13 @@ class General(commands.Cog):
 
     @commands.command(name="rate_limit")
     async def rate_limit(self, ctx):
-        """Responds with the rate limit informations"""
+        """Responds with the rate limit information for the Clash API"""
         await ctx.send("We have found that the approximate rate limit is 30-40 requests per second. Staying "
                        "below this should be safe.")
 
     @commands.command(name="vps")
     async def vps(self, ctx):
-        """Responds with a link to a Dsicord message on inexpensive VPS options"""
+        """Responds with a link to a Discord message on inexpensive VPS options"""
         await ctx.send("https://discordapp.com/channels/566451504332931073/566451504903618561/662484243808780309")
 
     @commands.command(name="links")
