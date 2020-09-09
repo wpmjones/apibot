@@ -58,7 +58,7 @@ class Downtime(commands.Cog):
         Bot("Karen", settings['bots']['karen'], 647839792066723840, 304690705996054528),
         Bot("Maniacs Bot", settings['bots']['maniacs'], 568511927597400074, 325493699478028290),
         Bot("Minion Bot", settings['bots']['minion'], 567551819451072541, 267057699856842753),
-        Bot("Wiz Bot", settings['bots']['wiz'], 568162367385501722, 243934463615041536),
+        # Bot("Wiz Bot", settings['bots']['wiz'], 568162367385501722, 243934463615041536),
         Bot("WarMatch", settings['bots']['wm'], 567551904071155732, 126084695824924673),
         Bot("ClashCord", settings['bots']['clashcord'], 608672949968437258, 239810643581075457),
         Bot("Sidekick", settings['bots']['sk'], 567550343748124682, 134153092378656769),
