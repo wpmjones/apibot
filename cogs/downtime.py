@@ -72,7 +72,6 @@ class Downtime(commands.Cog):
         """Task for monitoring API bots
         Downtime is stored in the bot_downtime table of postgresql
         """
-        self.bot.logger.info("Starting watchman task")
         conn = self.bot.pool
         now = datetime.utcnow()
         guild = self.bot.get_guild(566451504332931073)
@@ -119,7 +118,6 @@ class Downtime(commands.Cog):
                 except discord.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
-        print("Done with loop")
 
     @watchman.before_loop
     async def before_watchman(self):
