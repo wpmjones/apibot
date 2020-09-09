@@ -32,7 +32,7 @@ class Bot:
     async def notify_follow_up(self, bot, downtime):
         """Notify bot owner that the bot is still down"""
         channel = bot.get_channel(self.channel_id)
-        await channel.send(f"<@{self.owner} - {self.name} has been down for {downtime}")
+        await channel.send(f"<@{self.owner}> - {self.name} has been down for {downtime}")
 
     async def notify_up(self, bot, downtime):
         """Notify bot owner that the bot is back up again"""
