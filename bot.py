@@ -5,6 +5,7 @@ import sys
 import traceback
 
 from cogs.utils import context
+from cogs.utils.db import Psql
 from config import settings
 from datetime import datetime
 from discord.ext import commands
@@ -25,6 +26,7 @@ enviro = "LIVE"
 
 initial_extensions = ["cogs.general",
                       "cogs.admin",
+                      "cogs.downtime",
                       ]
 
 if enviro == "LIVE":
@@ -130,8 +132,10 @@ class ApiBot(commands.Bot):
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     try:
+        pool = loop.run_until_complete(Psql.create_pool())
         bot = ApiBot()
         bot.loop = loop
+        bot.pool = pool
         bot.run(token, reconnect=True)
     except:
         traceback.print_exc()
