@@ -10,7 +10,8 @@ class MembersCog(commands.Cog):
 
     @commands.command(name="welcome", hidden=True)
     async def welcome(self, ctx, discord_id):
-        member = self.bot.get_user(discord_id)
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        member = guild.get_member(discord_id)
         channel = self.bot.get_channel(settings['channels']['general'])
         msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
                f"Please tell us what API project(s) you are working on and what your preferred programming "
@@ -19,6 +20,7 @@ class MembersCog(commands.Cog):
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
         msg = f"{member.display_name}#{member.discriminator} just joined the server."
         await mod_log.send(msg)
+        await ctx.send(f"Welcome message sent to {member.name}")
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
