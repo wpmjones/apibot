@@ -8,6 +8,18 @@ class MembersCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name="welcome", hidden=True)
+    async def welcome(self, ctx, discord_id):
+        member = await self.bot.get_user(discord_id)
+        channel = self.bot.get_channel(settings['channels']['general'])
+        msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
+               f"Please tell us what API project(s) you are working on and what your preferred programming "
+               f"language is.")
+        await channel.send(msg)
+        mod_log = self.bot.get_channel(settings['channels']['mod-log'])
+        msg = f"{member.display_name}#{member.discriminator} just joined the server."
+        await mod_log.send(msg)
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """Discord listener which is called when a user joins the Discord server."""
