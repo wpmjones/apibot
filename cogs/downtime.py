@@ -14,7 +14,7 @@ def to_time(seconds):
     elif h > 0:
         return f"{h:.0f}h {m:.0f}m"
     else:
-        return f"{m:.0f}m"
+        return f"{m:.0f}m {s:.0f}s"
 
 
 class Bot:
@@ -105,6 +105,8 @@ class Downtime(commands.Cog):
                 downtime = to_time((now - offline_start).total_seconds())
                 try:
                     await bot.notify_up(self.bot, downtime)
+                    self.bot.logger.info(f"{bot.name} is back online and notification sent. "
+                                         f"Downtime: {downtime}")
                 except discord.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
@@ -115,6 +117,7 @@ class Downtime(commands.Cog):
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
                     await bot.notify_down(self.bot)
+                    self.bot.logger.info(f"{bot.name} is down and notification has been sent.")
                 except discord.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
