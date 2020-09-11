@@ -44,10 +44,14 @@ class MembersCog(commands.Cog):
         # Build random list of messages
         msg_options = [" just left the server.  Buh Bye!",
                        " just left our Discord. I wonder if we will miss them.",
-                       " just left. What's up with that?"]
-        mod_log = self.bot.get_channel(settings['channels']['mod-log'])
+                       " just left. What's up with that?",
+                       " went bye-bye. Who will fill the void?",
+                       " has left us. A short moment of silence.",
+                       " has departed. Hope they learned everything they need!",
+                       ]
+        channel = self.bot.get_channel(settings['channels']['general'])
         msg = member.display_name + random.choice(msg_options)
-        await mod_log.send(msg)
+        await channel.send(msg)
 
 
 def setup(bot):
