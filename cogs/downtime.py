@@ -69,50 +69,48 @@ class Downtime(commands.Cog):
         Bot("ScatterBot", settings['bots']['scatter'], 695448751741075488, 246286410946969610),
     ]
 
-    @tasks.loop(minutes=5.0)
-    async def watchman(self):
+    @commands.Cog.listener()
+    async def on_member_update(self, before, member):
         """Task for monitoring API bots
         Downtime is stored in the bot_downtime table of postgresql
         """
+        if member.guild.id != settings['guild']['junkies']:
+            return
+        if member.id not in [bot.bot_id for bot in self.bots]:
+            return
+        if before.status == member.status:
+            return
+        # Kinda wish there were a better way to pull the bot object out of the list
+        bot = None
+        for _ in self.bots:
+            if _.bot_id == member.id:
+                bot = _
+                break
+        if not bot:  # Shouldn't happen, but if it does...
+            channel = await self.bot.get_channel(settings['channels']['mod-log'])
+            return await channel.send(f"`on_member_update`: No bot found in list - {member.name} ({member.id})")
         conn = self.bot.pool
         now = datetime.utcnow()
-        guild = self.bot.get_guild(566451504332931073)
         offline_sql = "SELECT offline_start FROM bot_downtime WHERE online = False AND bot_id = $1"
-        update_sql = "UPDATE bot_downtime SET last_notification = $1 WHERE bot_id = $2 AND online = False"
         reported_sql = ("UPDATE bot_downtime "
                         "SET online = True, reported = True, offline_end = $1 "
                         "WHERE bot_id = $2 AND reported = False")
         insert_sql = ("INSERT INTO bot_downtime (bot_id, online, offline_start, last_notification) "
                       "VALUES ($1, False, $2, $3)")
-        for bot in self.bots:
-            status = guild.get_member(bot.bot_id).status
-            offline_start = await conn.fetchval(offline_sql, bot.bot_id)
-            if offline_start:
-                # bot was offline last time we checked
+        offline_start = await conn.fetchval(offline_sql, member.id)
+        if offline_start:
+            # simply tells us that the bot is marked offline in the database
+            if member.status == discord.Status.online:
+                # bot is back online
                 downtime = to_time((now - offline_start).total_seconds())
-                if status == discord.Status.online:
-                    # bot is now back online
-                    try:
-                        await bot.notify_up(self.bot, downtime)
-                    except discord.errors.Forbidden:
-                        channel = self.bot.get_channel(settings['channels']['mod-log'])
-                        await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
-                    await conn.execute(reported_sql, now, bot.bot_id)
-                    continue
-                else:
-                    # bot is still offline
-                    sql = "SELECT last_notification FROM bot_downtime WHERE bot_id = $1 AND online = False"
-                    last_notification = await conn.fetchval(sql, bot.bot_id)
-                    if last_notification < now - timedelta(days=1.0):
-                        try:
-                            await bot.notify_follow_up(self.bot, downtime)
-                        except discord.errors.Forbidden:
-                            channel = self.bot.get_channel(settings['channels']['mod-log'])
-                            await channel.send(f"API Bot does not have access to <#{bot.channel_id}> "
-                                               f"({bot.channel_id})")
-                        await conn.execute(update_sql, now, bot.bot_id)
-                    continue
-            elif status != discord.Status.online:
+                try:
+                    await bot.notify_up(self.bot, downtime)
+                except discord.errors.Forbidden:
+                    channel = self.bot.get_channel(settings['channels']['mod-log'])
+                    await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
+                await conn.execute(reported_sql, now, bot.bot_id)
+        else:
+            if member.status != discord.Status.online:
                 # bot is offline for the first time
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
@@ -121,9 +119,35 @@ class Downtime(commands.Cog):
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
 
+    @tasks.loop(hours=24.0)
+    async def watchman(self):
+        """Task for monitoring API bots
+        Downtime is stored in the bot_downtime table of postgresql
+        Bot owner is notified once every 24 hours until the bot comes back online
+        """
+        conn = self.bot.pool
+        now = datetime.utcnow()
+        update_sql = "UPDATE bot_downtime SET last_notification = $1 WHERE bot_id = $2 AND online = False"
+        sql = "SELECT offline_start, last_notification FROM bot_downtime WHERE bot_id = $1 AND online = False"
+        for bot in self.bots:
+            fetch = await conn.fetchrow(sql, bot.bot_id)
+            if not fetch:
+                continue
+            offline_start = fetch['offline_start']
+            last_notification = fetch['last_notification']
+            if offline_start and last_notification < now - timedelta(hours=23.0):
+                downtime = to_time((now - offline_start).total_seconds())
+                try:
+                    await bot.notify_follow_up(self.bot, downtime)
+                except discord.errors.Forbidden:
+                    channel = self.bot.get_channel(settings['channels']['mod-log'])
+                    await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
+                await conn.execute(update_sql, now, bot.bot_id)
+
     @watchman.before_loop
     async def before_watchman(self):
         await self.bot.wait_until_ready()
+
 
 
 def setup(bot):
