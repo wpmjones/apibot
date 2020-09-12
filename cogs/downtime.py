@@ -67,7 +67,7 @@ class Downtime(commands.Cog):
         Bot("Ivory", settings['bots']['ivory'], 636222832430284821, 294035020236980224),
         Bot("Ruby", settings['bots']['ruby'], 636222832430284821, 294035020236980224),
         Bot("Alph4", settings['bots']['alph4'], 715903895741661194, 434693228189712385),
-        Bot("ScatterBot", settings['bots']['scatter'], 695448751741075488, 246286410946969610),
+        # Bot("ScatterBot", settings['bots']['scatter'], 695448751741075488, 246286410946969610),
     ]
 
     @commands.Cog.listener()
