@@ -1,4 +1,5 @@
 import discord
+import asyncio
 
 from datetime import datetime, timedelta
 from discord.ext import commands, tasks
@@ -79,6 +80,13 @@ class Downtime(commands.Cog):
         if member.id not in [bot.bot_id for bot in self.bots]:
             return
         if before.status == member.status:
+            return
+        # pause 60 seconds to make sure it's a real outage
+        await asyncio.sleep(60)
+        guild = self.bot.get_guild(member.guild)
+        check = guild.get_member(member.id)
+        if check.status == discord.Status.online:
+            # bot is back online, no need to report anything
             return
         # Kinda wish there were a better way to pull the bot object out of the list
         bot = None
