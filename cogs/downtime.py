@@ -83,8 +83,7 @@ class Downtime(commands.Cog):
             return
         # pause 60 seconds to make sure it's a real outage
         await asyncio.sleep(60)
-        guild = self.bot.get_guild(member.guild)
-        check = guild.get_member(member.id)
+        check = member.guild.get_member(member.id)
         if check.status == discord.Status.online:
             # bot is back online, no need to report anything
             return
