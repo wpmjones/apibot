@@ -81,13 +81,6 @@ class Downtime(commands.Cog):
             return
         if before.status == member.status:
             return
-        if member.status != discord.Status.online:
-            # pause 60 seconds to make sure it's a real outage
-            await asyncio.sleep(60)
-            check = member.guild.get_member(member.id)
-            if check.status == discord.Status.online:
-                # bot is back online, no need to report anything
-                return
         # Kinda wish there were a better way to pull the bot object out of the list
         bot = None
         for _ in self.bots:
@@ -122,6 +115,12 @@ class Downtime(commands.Cog):
         else:
             if member.status != discord.Status.online:
                 # bot is offline for the first time
+                # pause 60 seconds to make sure it's a real outage
+                await asyncio.sleep(60)
+                check = member.guild.get_member(member.id)
+                if check.status == discord.Status.online:
+                    # bot is back online, no need to report anything
+                    return
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
                     await bot.notify_down(self.bot)
