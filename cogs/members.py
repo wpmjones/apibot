@@ -29,11 +29,16 @@ class MembersCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """Discord listener which is called when a user joins the Discord server."""
-        channel = self.bot.get_channel(settings['channels']['general'])
-        msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
-               f"Please tell us what API project(s) you are working on and what your preferred programming "
-               f"language is.")
-        await channel.send(msg)
+        if not member.bot:
+            channel = self.bot.get_channel(settings['channels']['general'])
+            msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
+                   f"Please tell us what API project(s) you are working on and what your preferred programming "
+                   f"language is.")
+            await channel.send(msg)
+        else:
+            channel = self.bot.get_channel(settings['channels']['admin'])
+            await channel.send(f"{member.mention} has just been invited to the server. "
+                               f"Perhaps it is time to set up a demo channel?  Try `/setup {member.mention} @owner`")
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
         msg = f"{member.display_name}#{member.discriminator} just joined the server."
         await mod_log.send(msg)
