@@ -26,7 +26,6 @@ enviro = "LIVE"
 
 initial_extensions = ["cogs.general",
                       "cogs.admin",
-                      "cogs.downtime",
                       ]
 
 if enviro == "LIVE":
@@ -35,6 +34,7 @@ if enviro == "LIVE":
     log_level = "INFO"
     # append to initial_extensions if additional cogs are desired
     initial_extensions.append("cogs.members")
+    initial_extensions.append("cogs.downtime")
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
