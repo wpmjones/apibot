@@ -229,13 +229,10 @@ class Downtime(commands.Cog):
             if member.status != discord.Status.online:
                 # bot is offline for the first time
                 # pause 60 seconds to make sure it's a real outage
-                self.bot.logger.info(f"{bot.name} is offline. Waiting 60 seconds.")
                 await asyncio.sleep(60)
-                self.bot.logger.info("Awake now, let's see if he's still offline.")
                 check = member.guild.get_member(member.id)
                 if check.status == discord.Status.online:
                     # bot is back online, no need to report anything
-                    self.bot.logger.info(f"{check.name} is back online. No reporting.")
                     return
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
