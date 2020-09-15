@@ -27,7 +27,7 @@ class General(commands.Cog):
     @commands.command(name="links")
     async def links(self, ctx):
         """Responds with a link to a Discord message on the Discord Link API (by ReverendMike)"""
-        await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/685533375280578610")
+        await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
 
     @commands.command(name="setup", hidden=True)
     @commands.has_role(settings['roles']['admin'])
