@@ -178,6 +178,7 @@ class Downtime(commands.Cog):
             new_monitor = "ON"
         else:
             new_monitor = "OFF"
+            # TODO Update bot_downtime to deal with "open" outages (delete outage or mark it online?)
         await ctx.send(f"Monitoring for {bot.display_name} is now set to {new_monitor}.")
 
     @commands.Cog.listener()
@@ -200,7 +201,6 @@ class Downtime(commands.Cog):
         if not row:
             return
         bot = Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'], row['monitor'])
-        self.bot.logger.info(f"Bot found in db: {bot.name}.  Monitoring: {bot.monitor}")
         # Are we currently monitoring this bot?
         if not bot.monitor:
             return
