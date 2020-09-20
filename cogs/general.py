@@ -76,14 +76,19 @@ class General(commands.Cog):
                                              embed_links=True,
                                              attach_files=True,
                                              external_emojis=True,
-                                             add_reactions=True)
+                                             add_reactions=True),
         }
+        position = category.channels[0].position + sorted(
+            category.channels + [channel_name], key=lambda c: str(c)
+        ).index(channel_name)
+
         channel = await ctx.guild.create_text_channel(
             channel_name,
             overwrites=overwrites,
             category=category,
+            position=position,
             topic=topic,
-            reason=f"Created by the setup command of Hog Rider ({ctx.author})"
+            reason=f"Created by the setup command of Hog Rider ({ctx.author})",
         )
         # ping owner
         await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
@@ -93,7 +98,7 @@ class General(commands.Cog):
         # add the "Bots" role
         await bot.add_roles(
             ctx.guild.get_role(BOTS_ROLE_ID),
-            reason=f"Added by setup command of Hog Rider ({ctx.author})"
+            reason=f"Added by setup command of Hog Rider ({ctx.author})",
         )
 
         # sort the Bot-Demo channels alphabetically
