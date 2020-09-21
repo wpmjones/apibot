@@ -4,10 +4,10 @@ from config import settings
 from discord.ext import commands
 
 
-JUNKIES_GUILD_ID = 566451504332931073
-BOT_DEMO_CATEGORY_ID = 567551986229182474
-BOTS_ROLE_ID = 567559094152724491
-USERS_ROLE_ID = 566455547394785331
+JUNKIES_GUILD_ID = settings['guild']['junkies']
+BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
+BOTS_ROLE_ID = settings['role']['bots']
+BOT_MAKER_ROLE_ID = settings['role']['bot_maker']
 
 
 class General(commands.Cog):
@@ -68,7 +68,7 @@ class General(commands.Cog):
         overwrites = {
             ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
             ctx.guild.get_role(BOTS_ROLE_ID): discord.PermissionOverwrite(read_messages=False),
-            ctx.guild.get_role(USERS_ROLE_ID): discord.PermissionOverwrite(read_messages=True),
+            ctx.guild.get_role(BOT_MAKER_ROLE_ID): discord.PermissionOverwrite(read_messages=True),
             bot: discord.PermissionOverwrite(read_messages=True,
                                              send_messages=True,
                                              read_message_history=True,
