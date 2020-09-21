@@ -1,7 +1,8 @@
 import discord
 
-from config import settings
 from discord.ext import commands
+
+from config import settings
 
 
 JUNKIES_GUILD_ID = settings['guild']['junkies']
