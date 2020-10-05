@@ -121,6 +121,7 @@ class Admin(commands.Cog):
         """Loads a module."""
         try:
             self.bot.load_extension(module)
+            self.bot.logger.debug(f"{module} loaded successfully")
         except commands.ExtensionError as e:
             await ctx.send(f"{e.__class__.__name__}: {e}")
         else:
