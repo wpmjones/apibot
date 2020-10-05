@@ -1,14 +1,13 @@
 import discord
 
-from discord.ext import commands
-
 from config import settings
+from discord.ext import commands
 
 
 JUNKIES_GUILD_ID = settings['guild']['junkies']
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
-BOTS_ROLE_ID = settings['role']['bots']
-BOT_MAKER_ROLE_ID = settings['role']['bot_maker']
+BOTS_ROLE_ID = settings['roles']['bots']
+BOT_MAKER_ROLE_ID = settings['roles']['bot_maker']
 
 
 class General(commands.Cog):
@@ -67,9 +66,6 @@ class General(commands.Cog):
         channel_name = f"{bot.name}-demo"
         topic = f"Maintained by {owner.display_name}"
         overwrites = {
-            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            ctx.guild.get_role(BOTS_ROLE_ID): discord.PermissionOverwrite(read_messages=False),
-            ctx.guild.get_role(BOT_MAKER_ROLE_ID): discord.PermissionOverwrite(read_messages=True),
             bot: discord.PermissionOverwrite(read_messages=True,
                                              send_messages=True,
                                              read_message_history=True,
@@ -83,29 +79,27 @@ class General(commands.Cog):
             category.channels + [channel_name], key=lambda c: str(c)
         ).index(channel_name)
 
-        channel = await ctx.guild.create_text_channel(
-            channel_name,
-            overwrites=overwrites,
-            category=category,
-            position=position,
-            topic=topic,
-            reason=f"Created by the setup command of Hog Rider ({ctx.author})",
-        )
+        channel = await ctx.guild.create_text_channel(channel_name,
+                                                      overwrites=overwrites,
+                                                      category=category,
+                                                      position=position,
+                                                      topic=topic,
+                                                      reason=f"Created by the setup command of Hog Rider ({ctx.author})",
+                                                      )
         # ping owner
         await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
                            f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
                            f"allow this channel to become a testing platform.  Thanks!")
 
         # add the "Bots" role
-        await bot.add_roles(
-            ctx.guild.get_role(BOTS_ROLE_ID),
-            reason=f"Added by setup command of Hog Rider ({ctx.author})",
-        )
+        await bot.add_roles(ctx.guild.get_role(BOTS_ROLE_ID),
+                            reason=f"Added by setup command of Hog Rider ({ctx.author})",
+                            )
 
         # sort the Bot-Demo channels alphabetically
-        for index, channel in enumerate(
-            sorted(category.channels, key=lambda c: str(c)), start=category.channels[0].position
-        ):
+        for index, channel in enumerate(sorted(category.channels,
+                                               key=lambda c: str(c)),
+                                        start=category.channels[0].position):
             if channel.position != index:
                 await channel.edit(position=index)
 
