@@ -29,7 +29,7 @@ class ForumPoster(commands.Cog):
     def channel(self):
         return self.bot.get_channel(FORUM_POSTS_CHANNEL_ID)
 
-    @tasks.loop(minutes=15.0)
+    @tasks.loop(minutes=5.0)
     async def forum_post_loop(self):
         try:
             await self.bot.wait_until_ready()
