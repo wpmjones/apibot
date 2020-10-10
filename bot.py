@@ -1,4 +1,5 @@
 import asyncio
+import coc
 import discord
 import io
 import sys
@@ -22,30 +23,41 @@ from loguru import logger
 # LIVE - required for live use on server
 # test - used for testing
 # feel free to add your own as needed
+
 enviro = "LIVE"
 
 initial_extensions = ["cogs.general",
                       "cogs.admin",
-                      "cogs.downtime",
                       ]
 
 if enviro == "LIVE":
     token = settings['discord']['token']
     prefix = "/"
     log_level = "INFO"
+    coc_names = "galaxy"
     # append to initial_extensions if additional cogs are desired
     initial_extensions.append("cogs.members")
+    initial_extensions.append("cogs.downtime")
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
     log_level = "DEBUG"
+    coc_names = "dev"
 else:
     token = settings['discord']['test_token']
     prefix = ">"
     log_level = "DEBUG"
+    coc_names = "dev"
 
 description = ("Welcome to the COC API Junkies bot. This is a custom bot created by and for the users of the "
                "COC API Junkies Discord server. If you have questions, please reach out to @Admins on this server.")
+
+coc_client = coc.login(settings['supercell']['user'],
+                       settings['supercell']['pass'],
+                       client=coc.EventsClient,
+                       key_names=coc_names,
+                       key_count=2,
+                       correct_tags=True)
 
 
 class ApiBot(commands.Bot):
@@ -53,6 +65,7 @@ class ApiBot(commands.Bot):
         super().__init__(command_prefix=prefix,
                          description=description,
                          case_insensitive=True)
+        self.coc = coc_client
         self.color = discord.Color.greyple()
         self.logger = logger
         self.loop.create_task(self.after_ready())

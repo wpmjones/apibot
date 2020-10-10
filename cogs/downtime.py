@@ -1,3 +1,4 @@
+import coc
 import discord
 import asyncio
 
@@ -48,8 +49,10 @@ class Downtime(commands.Cog):
         self.bot = bot
         self.bots = []
         self.watchman.start()
+        self.bot.coc.add_events(self.maintenance_start)
 
     def cog_unload(self):
+        self.bot.coc.remove_events(self.maintenance_start)
         self.watchman.cancel()
 
     async def init_bots(self):
@@ -178,6 +181,7 @@ class Downtime(commands.Cog):
             new_monitor = "ON"
         else:
             new_monitor = "OFF"
+            # TODO Update bot_downtime to deal with "open" outages (delete outage or mark it online?)
         await ctx.send(f"Monitoring for {bot.display_name} is now set to {new_monitor}.")
 
     @commands.Cog.listener()
@@ -200,7 +204,6 @@ class Downtime(commands.Cog):
         if not row:
             return
         bot = Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'], row['monitor'])
-        self.bot.logger.info(f"Bot found in db: {bot.name}.  Monitoring: {bot.monitor}")
         # Are we currently monitoring this bot?
         if not bot.monitor:
             return
@@ -229,13 +232,10 @@ class Downtime(commands.Cog):
             if member.status != discord.Status.online:
                 # bot is offline for the first time
                 # pause 60 seconds to make sure it's a real outage
-                self.bot.logger.info(f"{bot.name} is offline. Waiting 60 seconds.")
-                await asyncio.sleep(60)
-                self.bot.logger.info("Awake now, let's see if he's still offline.")
+                await asyncio.sleep(65)
                 check = member.guild.get_member(member.id)
                 if check.status == discord.Status.online:
                     # bot is back online, no need to report anything
-                    self.bot.logger.info(f"{check.name} is back online. No reporting.")
                     return
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
@@ -277,6 +277,10 @@ class Downtime(commands.Cog):
     async def before_watchman(self):
         await self.bot.wait_until_ready()
 
+    @coc.ClientEvents.maintenance_start()
+    async def maintenance_start(self):
+        channel = self.bot.get_channel(settings['channels']['general'])
+        await channel.send("The Clash API has entered maintenance mode.")
 
 
 def setup(bot):
