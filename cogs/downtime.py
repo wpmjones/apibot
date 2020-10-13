@@ -49,10 +49,10 @@ class Downtime(commands.Cog):
         self.bot = bot
         self.bots = []
         self.watchman.start()
-        self.bot.coc.add_events(self.maintenance_start)
+        # self.bot.coc.add_events(self.maintenance_start)
 
     def cog_unload(self):
-        self.bot.coc.remove_events(self.maintenance_start)
+        # self.bot.coc.remove_events(self.maintenance_start)
         self.watchman.cancel()
 
     async def init_bots(self):
@@ -281,6 +281,11 @@ class Downtime(commands.Cog):
     async def maintenance_start(self):
         channel = self.bot.get_channel(settings['channels']['general'])
         await channel.send("The Clash API has entered maintenance mode.")
+
+    @coc.ClientEvents.maintenance_completion()
+    async def maintenance_end(self, time_started):
+        channel = self.bot.get_channel(settings['channels']['general'])
+        await channel.send("Maintenance has ended. Get back to work!")
 
 
 def setup(bot):
