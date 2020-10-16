@@ -1,13 +1,11 @@
-import re
-
 import aiohttp
 import discord
+import re
 
+from bs4 import BeautifulSoup
+from config import settings
 from discord.ext import commands, tasks
 from discord.utils import find
-from bs4 import BeautifulSoup
-
-from config import settings
 
 API_SUBFORUM_URL = "https://forum.supercell.com/forumdisplay.php/123-Clash-of-Clans-API"
 FORUM_BASE_URL = "https://forum.supercell.com/"
