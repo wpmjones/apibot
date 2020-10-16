@@ -6,7 +6,6 @@ import discord
 from discord.ext import commands, tasks
 from discord.utils import find
 from bs4 import BeautifulSoup
-from loguru import logger
 
 from config import settings
 
@@ -33,7 +32,7 @@ class ForumPoster(commands.Cog):
     async def forum_post_loop(self):
         try:
             await self.bot.wait_until_ready()
-            logger.debug("running forum-post loop")
+            self.bot.logger.debug("running forum-post loop")
 
             async with self.session.get(API_SUBFORUM_URL) as resp:
                 html = await resp.text()
@@ -41,17 +40,17 @@ class ForumPoster(commands.Cog):
             soup = BeautifulSoup(html, "html.parser")
             recent_posts = soup.find(id="threads")
             if not recent_posts:
-                logger.warning("couldn't find any posts for the subreddit")
+                self.bot.logger.warning("couldn't find any posts for the subreddit")
                 return
 
             post = recent_posts.find("li", class_="threadbit")
             post_id = post["id"]
             if self.last_post_id is None:
                 self.last_post_id = post_id
-                logger.debug(f"running forum-post for the first time, setting last_post_id to {post_id}")
+                self.bot.logger.debug(f"running forum-post for the first time, setting last_post_id to {post_id}")
                 return
             elif self.last_post_id == post_id:
-                logger.debug("forum-post didn't find a new post, returning.")
+                self.bot.logger.debug("forum-post didn't find a new post, returning.")
                 return
 
             # we have ourselves either a new post or a new comment
@@ -90,13 +89,13 @@ class ForumPoster(commands.Cog):
             embed.set_footer(
                 text=", ".join(re.sub(r'\s+', '', t) for t in stats.stripped_strings if "Rating" not in t)
             )
-            logger.info(f"sending a new post/comment to discord, with info {embed.to_dict()}")
+            self.bot.logger.info(f"sending a new post/comment to discord, with info {embed.to_dict()}")
             await self.channel.send(embed=embed)
 
-            logger.debug(f"setting last_post_id to {post_id}")
+            self.bot.logger.debug(f"setting last_post_id to {post_id}")
             self.last_post_id = post_id
         except:
-            logger.exception("forum-post loop encountered an exception")
+            self.bot.logger.exception("forum-post loop encountered an exception")
 
 
 def setup(bot):
