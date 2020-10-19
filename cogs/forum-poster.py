@@ -58,7 +58,8 @@ class ForumPoster(commands.Cog):
             stats = post.find("ul", class_="threadstats td alt")
 
             async with self.session.get(FORUM_BASE_URL + title.a['href']) as resp:
-                html = await resp.text(encoding="utf-8")
+                print(resp.charset)
+                html = await resp.text()  # removed (encoding="utf-8")
 
             post_soup = BeautifulSoup(html, "html.parser")
 
