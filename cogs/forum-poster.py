@@ -26,6 +26,12 @@ class ForumPoster(commands.Cog):
     def channel(self):
         return self.bot.get_channel(FORUM_POSTS_CHANNEL_ID)
 
+    @commands.command(name="repost", hidden=True)
+    async def repost_thread(self):
+        """When this cog starts, it marks the most recent thread as last_post_id. Sometimes, we will want it
+        to post the most recent thread (e.g. there were errors preventing it from posting)."""
+        self.last_post_id = "something else"
+
     @tasks.loop(minutes=5.0)
     async def forum_post_loop(self):
         try:
