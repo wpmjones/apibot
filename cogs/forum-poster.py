@@ -71,28 +71,32 @@ class ForumPoster(commands.Cog):
             post_soup = BeautifulSoup(html, "html.parser")
 
             if number_of_comments == "0":
+                prefix = f"**Comment Author: **[{author.text}]({FORUM_BASE_URL + author['href']})\n\n"
                 content = post_soup.find("div", class_="content").get_text(strip=True)
-                # for now, limit size of content if over 2000 characters
-                if len(content) > 2000:
-                    content = content[:2000] + "..."
+                # limit size of content if over 2048 (with prefix)
+                if len(prefix) + len(content) > 2048:
+                    content = content[:2045 - len(prefix)] + "..."
 
                 embed = discord.Embed(
                     colour=discord.Colour.green(),
                     title=title.get_text(strip=True),
                     url=FORUM_BASE_URL + title.a['href'],
-                    description=f"**Comment Author: **[{author.text}]"
-                                f"({FORUM_BASE_URL + author['href']})\n\n{content}",
+                    description=prefix + content,
                 )
 
             else:
                 comment = post_soup.find_all("div", class_="postdetails")[-1]
                 comment_meta, _, author, *_ = comment.parent.find_all("a")
+                prefix = f"**Author: **[{author.text}]({FORUM_BASE_URL + author['href']})\n\n"
+                # limit size of content if over 2048 (with prefix)
+                content = comment.blockquote.get_text(strip=True)
+                if len(prefix) + len(content) > 2048:
+                    content = content[:2045 - len(prefix)] + "..."
                 embed = discord.Embed(
                     colour=discord.Colour.blue(),
                     title=f"**Post Title: **{title.get_text(strip=True)}",
                     url=FORUM_BASE_URL + comment_meta['href'],
-                    description=f"**Author: **[{author.text}]"
-                                f"({FORUM_BASE_URL + author['href']})\n\n{comment.blockquote.get_text(strip=True)}",
+                    description=prefix + content
                 )
 
             embed.set_footer(
