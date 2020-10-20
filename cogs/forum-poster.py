@@ -65,6 +65,9 @@ class ForumPoster(commands.Cog):
 
             if number_of_comments == "0":
                 content = post_soup.find("div", class_="content").get_text(strip=True)
+                # for now, limit size of content if over 2000 characters
+                if len(content) > 2000:
+                    content = content[:2000] + "..."
 
                 embed = discord.Embed(
                     colour=discord.Colour.green(),
