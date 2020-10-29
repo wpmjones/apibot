@@ -62,6 +62,7 @@ coc_client = coc.login(settings['supercell']['user'],
 
 intents = discord.Intents.default()
 intents.members = True
+intents.presences = True
 
 
 class ApiBot(commands.Bot):
