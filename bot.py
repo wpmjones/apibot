@@ -60,12 +60,17 @@ coc_client = coc.login(settings['supercell']['user'],
                        key_count=2,
                        correct_tags=True)
 
+intents = discord.Intents.default()
+intents.members = True
+
 
 class ApiBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=prefix,
                          description=description,
-                         case_insensitive=True)
+                         case_insensitive=True,
+                         intents=intents,
+                         )
         self.coc = coc_client
         self.color = discord.Color.greyple()
         self.logger = logger
