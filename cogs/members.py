@@ -29,6 +29,9 @@ class MembersCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """Discord listener which is called when a user joins the Discord server."""
+        if member.guild.id != 566451504332931073:
+            # only act if they are joining API server
+            return
         if not member.bot:
             channel = self.bot.get_channel(settings['channels']['general'])
             msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
@@ -46,6 +49,9 @@ class MembersCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         """Discord listener which is called when a user leaves the Discord server."""
+        if member.guild.id != 566451504332931073:
+            # only act if they are joining API server
+            return
         # Build random list of messages
         msg_options = [" just left the server.  Buh Bye!",
                        " just left our Discord. I wonder if we will miss them.",
