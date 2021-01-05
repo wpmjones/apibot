@@ -63,6 +63,7 @@ class General(commands.Cog):
                                   f"again with `/setup @bot @owner`.")
 
         category = self.bot.get_channel(BOT_DEMO_CATEGORY_ID)
+        self.bot.logger.info(category.name)
         channel_name = f"{bot.name}-demo"
         topic = f"Maintained by {owner.display_name}"
         overwrites = {
