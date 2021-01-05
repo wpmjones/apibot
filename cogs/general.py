@@ -8,6 +8,8 @@ JUNKIES_GUILD_ID = settings['guild']['junkies']
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 BOTS_ROLE_ID = settings['roles']['bots']
 BOT_MAKER_ROLE_ID = settings['roles']['bot_maker']
+ADMIN_ROLE_ID = settings['roles']['admin']
+GUEST_ROLE_ID = settings['roles']['vip_guest']
 
 
 class General(commands.Cog):
@@ -63,7 +65,10 @@ class General(commands.Cog):
                                   f"again with `/setup @bot @owner`.")
 
         category = self.bot.get_channel(BOT_DEMO_CATEGORY_ID)
-        self.bot.logger.info(category.name)
+        guild = self.bot.get_guild(JUNKIES_GUILD_ID)
+        guest_role = guild.get_role(GUEST_ROLE_ID)
+        bot_maker_role = guild.get_role(BOT_MAKER_ROLE_ID)
+        admin_role = guild.get_role(ADMIN_ROLE_ID)
         channel_name = f"{bot.name}-demo"
         topic = f"Maintained by {owner.display_name}"
         overwrites = {
@@ -75,6 +80,31 @@ class General(commands.Cog):
                                              attach_files=True,
                                              external_emojis=True,
                                              add_reactions=True),
+            admin_role: discord.PermissionOverwrite(read_messages=True,
+                                                    send_messages=True,
+                                                    read_message_history=True,
+                                                    manage_messages=True,
+                                                    embed_links=True,
+                                                    attach_files=True,
+                                                    external_emojis=True,
+                                                    add_reactions=True),
+            bot_maker_role: discord.PermissionOverwrite(read_messages=True,
+                                                        send_messages=True,
+                                                        read_message_history=True,
+                                                        manage_messages=False,
+                                                        embed_links=True,
+                                                        attach_files=True,
+                                                        external_emojis=True,
+                                                        add_reactions=True),
+            guest_role: discord.PermissionOverwrite(read_messages=True,
+                                                    send_messages=True,
+                                                    read_message_history=True,
+                                                    manage_messages=False,
+                                                    embed_links=True,
+                                                    attach_files=True,
+                                                    external_emojis=False,
+                                                    add_reactions=True),
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
         }
         position = category.channels[0].position + sorted(
             category.channels + [channel_name], key=lambda c: str(c)
@@ -103,6 +133,9 @@ class General(commands.Cog):
                                         start=category.channels[0].position):
             if channel.position != index:
                 await channel.edit(position=index)
+
+        # Provide user feedback on success
+        await ctx.message.add_reaction("\u2705")
 
 
 def setup(bot):
