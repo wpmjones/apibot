@@ -149,6 +149,8 @@ class General(commands.Cog):
 
         # Provide user feedback on success
         await ctx.message.add_reaction("\u2705")
+        await ctx.send(f"If {owner.display_name} would like bot monitoring, here's your command:\n"
+                       f"`/bot add {bot.id}`")
 
 
 def setup(bot):
