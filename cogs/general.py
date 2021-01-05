@@ -1,4 +1,5 @@
 import discord
+import traceback
 
 from config import settings
 from discord.ext import commands
@@ -121,9 +122,13 @@ class General(commands.Cog):
                                                       reason=f"Created by the setup command of Hog Rider ({ctx.author})",
                                                       )
         # ping owner
-        await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
-                           f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
-                           f"allow this channel to become a testing platform.  Thanks!")
+        try:
+            await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
+                               f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
+                               f"allow this channel to become a testing platform.  Thanks!")
+        except:
+            self.bot.logger.exception("Failed")
+            traceback.print_exc()
 
         # add the "Bots" role
         await bot.add_roles(ctx.guild.get_role(BOTS_ROLE_ID),
