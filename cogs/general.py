@@ -1,5 +1,4 @@
 import discord
-import traceback
 
 from config import settings
 from discord.ext import commands
@@ -7,6 +6,7 @@ from discord.ext import commands
 
 JUNKIES_GUILD_ID = settings['guild']['junkies']
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
+HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
 BOTS_ROLE_ID = settings['roles']['bots']
 BOT_MAKER_ROLE_ID = settings['roles']['bot_maker']
 ADMIN_ROLE_ID = settings['roles']['admin']
@@ -69,6 +69,7 @@ class General(commands.Cog):
         guild = self.bot.get_guild(JUNKIES_GUILD_ID)
         guest_role = guild.get_role(GUEST_ROLE_ID)
         bot_maker_role = guild.get_role(BOT_MAKER_ROLE_ID)
+        hog_rider_role = guild.get_role(HOG_RIDER_ROLE_ID)
         admin_role = guild.get_role(ADMIN_ROLE_ID)
         channel_name = f"{bot.name}-demo"
         topic = f"Maintained by {owner.display_name}"
@@ -92,6 +93,14 @@ class General(commands.Cog):
                                                     manage_channels=True,
                                                     manage_permissions=True,
                                                     manage_webhooks=True),
+            hog_rider_role: discord.PermissionOverwrite(read_messages=True,
+                                                        send_messages=True,
+                                                        read_message_history=True,
+                                                        manage_messages=True,
+                                                        embed_links=True,
+                                                        attach_files=True,
+                                                        external_emojis=True,
+                                                        add_reactions=True),
             bot_maker_role: discord.PermissionOverwrite(read_messages=True,
                                                         send_messages=True,
                                                         read_message_history=True,
@@ -122,13 +131,9 @@ class General(commands.Cog):
                                                       reason=f"Created by the setup command of Hog Rider ({ctx.author})",
                                                       )
         # ping owner
-        try:
-            await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
-                               f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
-                               f"allow this channel to become a testing platform.  Thanks!")
-        except:
-            self.bot.logger.exception("Failed")
-            traceback.print_exc()
+        await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
+                           f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
+                           f"allow this channel to become a testing platform.  Thanks!")
 
         # add the "Bots" role
         await bot.add_roles(ctx.guild.get_role(BOTS_ROLE_ID),
