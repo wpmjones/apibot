@@ -71,7 +71,7 @@ class ForumPoster(commands.Cog):
             post_soup = BeautifulSoup(html, "html.parser")
 
             if number_of_comments == "0":
-                prefix = f"**Comment Author: **[{author.text}]({FORUM_BASE_URL + author['href']})\n\n"
+                prefix = f"**Author: **[{author.text}]({FORUM_BASE_URL + author['href']})\n\n"
                 content = post_soup.find("div", class_="content").get_text(strip=True)
                 # limit size of content if over 2048 (with prefix)
                 if len(prefix) + len(content) > 2048:
@@ -87,14 +87,15 @@ class ForumPoster(commands.Cog):
             else:
                 comment = post_soup.find_all("div", class_="postdetails")[-1]
                 comment_meta, _, author, *_ = comment.parent.find_all("a")
-                prefix = f"**Author: **[{author.text}]({FORUM_BASE_URL + author['href']})\n\n"
+                prefix = f"**Author: **[{author.text}]({FORUM_BASE_URL + author['href']})\n" \
+                         f"**Original Post Title: {title.get_text(strip=True)}\n\n"
                 # limit size of content if over 2048 (with prefix)
                 content = comment.blockquote.get_text(strip=True)
                 if len(prefix) + len(content) > 2048:
                     content = content[:2045 - len(prefix)] + "..."
                 embed = discord.Embed(
-                    colour=discord.Colour.blue(),
-                    title=f"**Post Title: **{title.get_text(strip=True)}",
+                    colour=0xA9EAC5,
+                    title=f"New Comment",
                     url=FORUM_BASE_URL + comment_meta['href'],
                     description=prefix + content
                 )
