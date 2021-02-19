@@ -39,7 +39,7 @@ class General(commands.Cog):
         await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
 
     @commands.command(name="setup", hidden=True)
-    @commands.has_role(settings['roles']['admin'])
+    @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
         """Admin use only: For adding bot demo channels
         Creates channel (based on bot name)

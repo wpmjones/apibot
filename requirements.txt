@@ -1,6 +1,6 @@
 asyncio>=3.4.3
 coc.py>=1.0.0
-discord.py
+discord.py>=1.6.0
 loguru>=0.5.1
 PyYAML>=5.3.1
 beautifulsoup4
