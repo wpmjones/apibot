@@ -119,17 +119,21 @@ class General(commands.Cog):
                                                     add_reactions=True),
             guild.default_role: discord.PermissionOverwrite(read_messages=False),
         }
-        position = category.channels[0].position + sorted(
-            category.channels + [channel_name], key=lambda c: str(c)
-        ).index(channel_name)
+        try:
+            position = category.channels[0].position + sorted(
+                category.channels + [channel_name], key=lambda c: str(c)
+            ).index(channel_name)
 
-        channel = await ctx.guild.create_text_channel(channel_name,
-                                                      overwrites=overwrites,
-                                                      category=category,
-                                                      position=position,
-                                                      topic=topic,
-                                                      reason=f"Created by the setup command of Hog Rider ({ctx.author})",
-                                                      )
+            channel = await ctx.guild.create_text_channel(channel_name,
+                                                          overwrites=overwrites,
+                                                          category=category,
+                                                          position=position,
+                                                          topic=topic,
+                                                          reason=f"Created by the setup command of Hog Rider ({ctx.author})",
+                                                          )
+        except:
+            self.bot.logger.exception("Failed creating channel")
+
         # ping owner
         await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
                            f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
