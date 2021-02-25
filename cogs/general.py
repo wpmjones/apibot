@@ -37,6 +37,71 @@ class General(commands.Cog):
     async def links(self, ctx):
         """Responds with a link to a Discord message on the Discord Link API (by ReverendMike)"""
         await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
+        
+    @commands.command(name="role_stats")
+    async def role_stats(self, ctx):
+        """Responds with a formatted code block containing the number of members with each role excluding those in
+        the exclude list"""
+        # Local constants
+        bot_maker_role = 'Bot Maker'
+        no_roles = 'No Roles'
+        exclude = [
+            '@everyone',
+            'Admin',
+            'VIP Guest',
+            'screenshare',
+        ]
+
+        spacing = 0
+        roles = []
+        role_stats = {no_roles: 100}
+        for member in ctx.guild.members:
+            member: Member
+
+            # If user only has @everyone role, consider them as having no roles
+            if len(member.roles) == 1:
+                role_stats[no_roles] += 1
+                continue
+
+            # Iterate over all roles a member has in the guild and increment the counter
+            for role in member.roles:
+                # Ignore excluded roles
+                if role.name in exclude:
+                    continue
+
+                if role_stats.get(role.name) is None:
+                    # Calculate the spacing for printing
+                    if len(role.name) > spacing:
+                        spacing = len(role.name)
+
+                    role_stats[role.name] = 1
+                    roles.append(role.name)
+                else:
+                    role_stats[role.name] += 1
+
+        # Pop Bot Maker role from list
+        if bot_maker_role in roles:
+            roles.pop(roles.index(bot_maker_role))
+
+        # Sort and prep for iteration
+        roles.sort(key=lambda x: role_stats[x], reverse=True)
+        spacing += 2
+        panel = ''
+
+        # Add header to the panel "Bot Maker" and "No Roles"
+        if role_stats.get(bot_maker_role):
+            panel += f'{bot_maker_role+":":<{spacing}} {role_stats.get(bot_maker_role)}\n'
+        panel += f'{no_roles+":":<{spacing}} {role_stats.get(no_roles)}\n'
+        panel += f'{"-" * (spacing + 4)}\n'
+
+        # Build the rest of the panel
+        for role in roles:
+            count = role_stats.get(role)
+            role += ':'
+            panel += f'{role:<{spacing}} {count}\n'
+
+        await ctx.send(f'```{panel}```')
+
 
     @commands.command(name="setup", hidden=True)
     @commands.has_role("Admin")
