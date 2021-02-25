@@ -1,4 +1,5 @@
 import discord
+from discord import Member
 
 from config import settings
 from discord.ext import commands
