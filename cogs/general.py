@@ -43,13 +43,17 @@ class General(commands.Cog):
         """Responds with a formatted code block containing the number of members with each role excluding those in
         the exclude list"""
         # Local constants
-        bot_maker_role = 'Bot Maker'
-        no_roles = 'No Roles'
-        exclude = [
-            '@everyone',
-            'Admin',
-            'VIP Guest',
-            'screenshare',
+        bot_maker_role = "Bot Maker"
+        no_roles = "No Roles"
+        include = [
+            bot_maker_role,
+            "Python",
+            "JS",
+            "Bots",
+            "C#",
+            "PHP",
+            "C++",
+            "Java",
         ]
 
         spacing = 0
@@ -66,7 +70,7 @@ class General(commands.Cog):
             # Iterate over all roles a member has in the guild and increment the counter
             for role in member.roles:
                 # Ignore excluded roles
-                if role.name in exclude:
+                if role.name not in include:
                     continue
 
                 if role_stats.get(role.name) is None:
@@ -86,29 +90,28 @@ class General(commands.Cog):
         # Sort and prep for iteration
         roles.sort(key=lambda x: role_stats[x], reverse=True)
         spacing += 2
-        panel = ''
+        panel = ""
 
         # Add header to the panel "Bot Maker" and "No Roles"
         if role_stats.get(bot_maker_role):
-            panel += f'{bot_maker_role+":":<{spacing}} {role_stats.get(bot_maker_role)}\n'
-        panel += f'{no_roles+":":<{spacing}} {role_stats.get(no_roles)}\n'
-        panel += f'{"-" * (spacing + 4)}\n'
+            panel += f"{bot_maker_role+':':<{spacing}} {role_stats.get(bot_maker_role)}\n"
+        panel += f"{no_roles+':':<{spacing}} {role_stats.get(no_roles)}\n"
+        panel += f"{'-' * (spacing + 4)}\n"
 
         # Build the rest of the panel
         for role in roles:
             count = role_stats.get(role)
-            role += ':'
-            panel += f'{role:<{spacing}} {count}\n'
+            role += ":"
+            panel += f"{role:<{spacing}} {count}\n"
 
-        await ctx.send(f'```{panel}```')
-
+        await ctx.send(f"```{panel}```")
 
     @commands.command(name="setup", hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
         """Admin use only: For adding bot demo channels
         Creates channel (based on bot name)
-        Alphabatizes channel within the Bot-Demos category
+        Alphabetizes channel within the Bot-Demos category
         Sets proper permissions
         Sets the channel topic to 'Maintained by [owner]'
         Pings owner so they see the channel and can demonstrate features
