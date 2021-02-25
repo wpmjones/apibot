@@ -58,7 +58,7 @@ class General(commands.Cog):
 
         spacing = 0
         roles = []
-        role_stats = {no_roles: 100}
+        role_stats = {no_roles: 0}
         for member in ctx.guild.members:
             member: discord.Member
 
