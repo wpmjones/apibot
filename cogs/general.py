@@ -224,6 +224,13 @@ class General(commands.Cog):
         await ctx.send(f"If {owner.display_name} would like bot monitoring, here's your command:\n"
                        f"`/bot add {bot.id}`")
 
+    @commands.command(name="clear", hidden=True)
+    @commands.is_owner()
+    async def clear(self, ctx, num_msgs):
+        async for message in ctx.channel.history(limit=num_msgs):
+            await message.delete()
+        await ctx.send(f"{num_msgs} message(s) deleted", delete_after=10)
+
 
 def setup(bot):
     bot.add_cog(General(bot))
