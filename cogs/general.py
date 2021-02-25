@@ -1,5 +1,4 @@
 import discord
-from discord import Member
 
 from config import settings
 from discord.ext import commands
@@ -57,7 +56,7 @@ class General(commands.Cog):
         roles = []
         role_stats = {no_roles: 100}
         for member in ctx.guild.members:
-            member: Member
+            member: discord.Member
 
             # If user only has @everyone role, consider them as having no roles
             if len(member.roles) == 1:
