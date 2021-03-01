@@ -106,7 +106,7 @@ class General(commands.Cog):
 
         await ctx.send(f"```{panel}```")
 
-    @commands.command(name="setup", hidden=True)
+    @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
         """Admin use only: For adding bot demo channels
