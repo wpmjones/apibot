@@ -106,16 +106,6 @@ class General(commands.Cog):
 
         await ctx.send(f"```{panel}```")
 
-    @commands.command(name="xtest", hidden=True)
-    @commands.is_owner()
-    async def xtest(self, ctx):
-        channel_name = "botec2-demo"
-        category = self.bot.get_channel(BOT_DEMO_CATEGORY_ID)
-        for channel in category.channels:
-            if channel_name == channel.name:
-                return await ctx.send("Found match")
-        await ctx.send("Did not find match.")
-
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
@@ -151,6 +141,13 @@ class General(commands.Cog):
         admin_role = guild.get_role(ADMIN_ROLE_ID)
         channel_name = f"{bot.name}-demo"
         topic = f"Maintained by {owner.display_name}"
+
+        # check for existing bot demo channel before proceeding
+        for channel in category.channels:
+            if channel_name == channel.name:
+                return await ctx.send("It appears that there is already a demo channel for this bot.")
+
+        # No match found, just keep swimming
         overwrites = {
             bot: discord.PermissionOverwrite(read_messages=True,
                                              send_messages=True,
