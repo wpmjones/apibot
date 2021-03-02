@@ -106,6 +106,16 @@ class General(commands.Cog):
 
         await ctx.send(f"```{panel}```")
 
+    @commands.command(name="xtest", hidden=True)
+    @commands.is_owner()
+    async def xtest(self, ctx):
+        channel_name = "botec2-demo"
+        category = self.bot.get_channel(BOT_DEMO_CATEGORY_ID)
+        for channel in category.channels:
+            if channel_name == channel.name:
+                return await ctx.send("Found match")
+        await ctx.send("Did not find match.")
+
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
