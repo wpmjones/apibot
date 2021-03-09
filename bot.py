@@ -2,6 +2,7 @@ import asyncio
 import coc
 import discord
 import io
+import nest_asyncio
 import sys
 import traceback
 
@@ -26,13 +27,15 @@ from loguru import logger
 
 enviro = "LIVE"
 
-initial_extensions = ["cogs.general",
-                      "cogs.admin",
+initial_extensions = [
+                        "cogs.general",
+                        "cogs.admin",
                       ]
 
 if enviro == "LIVE":
     token = settings['discord']['token']
-    prefix = "/"
+    # TODO change this back to /
+    prefix = "d."
     log_level = "INFO"
     coc_names = "galaxy"
     # append to initial_extensions if additional cogs are desired
@@ -152,6 +155,8 @@ class ApiBot(commands.Bot):
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     try:
+        # Fix async to be able to add coros while it is running
+        nest_asyncio.apply()
         pool = loop.run_until_complete(Psql.create_pool())
         bot = ApiBot()
         bot.loop = loop
