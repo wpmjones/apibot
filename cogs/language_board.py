@@ -1,9 +1,8 @@
-from typing import Optional
+from typing import Optional, Union
 
 import discord
-from discord import RawReactionActionEvent, Emoji, Role
+from discord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
 
-from config import settings
 from discord.ext import commands
 
 LANGUAGE_TABLE = """
@@ -11,19 +10,24 @@ CREATE TABLE IF NOT EXISTS language_board_table (
     role_id BIGINT PRIMARY KEY,
     role_name TEXT,
     emoji_id BIGINT,
-    emoji_repr TEXT
+    emoji_repr TEXT     -- Discord print format
 );
 """
+PANEL_DIRECTIONS = 'Clicking the emojis below will either assign you or remove a role for the language clicked.' \
+                   '\n\nFor your first language role, click on the language that you are currently using to interact ' \
+                   'with Clash of Clans API.\n\n' \
+                   'For your additional roles, only click on the languages where you are proficient enough to ' \
+                   'guide others when they need help in the #Help channels.'
+
 
 class LanguageBoard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.stats_board_id = 0
-        self.emoji_board_id = 0
+        self.gap = '<:gap:823216162568405012>'
+        self.stats_board_id = 0     # Store the board ID in memory
         self.bot.loop.run_until_complete(self._initialize_db())
-        # self._initialize_db()
 
-    async def _initialize_db(self):
+    async def _initialize_db(self) -> None:
         """Could be done better. Placing this code here to not mess with the rest
         of the code base"""
         self.bot.logger.debug("Initializing LanguageBoard table")
@@ -33,13 +37,19 @@ class LanguageBoard(commands.Cog):
         except Exception:
             self.bot.logger.exception("Could not initialize LanguageBoard")
 
-    async def _get_role_obj(self, ctx: commands.Context, role_id: int) -> Optional[Role]:
+    async def _get_role_obj(self, ctx: Union[commands.Context, int], role_id: int) -> Optional[Role]:
         """Get role object, otherwise log and return None"""
-        try:
-            return ctx.guild.get_role(role_id)
-        except Exception:
-            self.bot.logger.exception(f"Could not retrieve role {role_id}")
-            return None
+        if isinstance(ctx, int):
+            guild = self.bot.get_guild(ctx)
+            role = guild.get_role(role_id)
+            return role
+        else:
+            try:
+                return ctx.guild.get_role(role_id)
+            except Exception:
+                self.bot.logger.exception(f"Could not retrieve role {role_id}")
+                print("Could not get role ", role_id)
+                return None
 
     async def _get_emoji_obj(self, ctx: commands.Context, emoji_id: int) -> Optional[Emoji]:
         """Get emoji object, otherwise log and return None. Docs recommend iteration instead
@@ -68,9 +78,10 @@ class LanguageBoard(commands.Cog):
 
     @staticmethod
     def _get_emoji_repr(emoji: Emoji) -> str:
+        """Cast emoji object to a discord acceptable print format"""
         return f'<:{emoji.name}:{emoji.id}>'
 
-    async def _get_role_stats(self, ctx: commands.Context) -> dict:
+    async def _get_role_stats(self, guild: Guild) -> dict:
         """Counts how many users are in each role and returns a dictionary
 
         Parameters
@@ -89,6 +100,7 @@ class LanguageBoard(commands.Cog):
                     "$sample_role": {
                             "count": int,
                             "emoji_repr: $emoji"
+                            }
                 }
         """
         # Local constants
@@ -105,7 +117,7 @@ class LanguageBoard(commands.Cog):
             "records": records,
             "spacing": 0,
         }
-        for member in ctx.guild.members:
+        for member in guild.members:
             member: discord.Member
 
             # If user only has @everyone role, consider them as having no roles
@@ -147,8 +159,7 @@ class LanguageBoard(commands.Cog):
 
         return role_stats
 
-    @staticmethod
-    def _get_roles_panel(role_stats: dict, with_emojis=True) -> str:
+    def _get_roles_panel(self, role_stats: dict, with_emojis=True) -> Union[str, Embed]:
         """Create the panel that is used to display the roles stats
 
         Parameter
@@ -161,6 +172,7 @@ class LanguageBoard(commands.Cog):
         str
             String ready to be printed
         """
+        # local constants
         bot_maker_role = "Bot Maker"
         no_roles = "No Roles"
         spacing = role_stats["spacing"]
@@ -168,20 +180,28 @@ class LanguageBoard(commands.Cog):
         panel = ""
 
         # Add header to the panel "Bot Maker" and "No Roles"
-        if role_stats.get(bot_maker_role):
-            panel += f"{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}\n"
-        panel += f"{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}\n"
-        # panel += f"{'-' * (spacing + 4)}\n"
-        # panel = f'```{panel}```\n'
 
         # Build the rest of the panel
         if with_emojis:
-            panel = f'```{panel}```\n'
+            if role_stats.get(bot_maker_role):
+                panel += f"{self.gap} `{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}`\n"
+            panel += f"{self.gap} `{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}`\n\n"
+
             for role in role_stats["roles"]:
                 count = role_stats.get(role)['count']
+                role_name = f'{role}:'
                 emoji = role_stats.get(role)['emoji']
-                panel += f'{emoji}⠀{count} \n'
+                panel += f"{emoji} `{role_name:<{spacing}} {count}`\n"
+
+            return Embed(
+                description=panel,
+                color=0x000080
+            )
+
         else:
+            if role_stats.get(bot_maker_role):
+                panel += f"{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}\n"
+            panel += f"{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}\n"
             panel += f"{'-' * (spacing + 4)}\n"
             spacing = role_stats['spacing']
             for role in role_stats["roles"]:
@@ -189,14 +209,89 @@ class LanguageBoard(commands.Cog):
                 role_name = f'{role}:'
                 panel += f"{role_name:<{spacing}} {count}"
             panel = f'```{panel}```'
+            return panel
 
-        return panel
+    async def _get_message(self, message_id: int, channel_id: int, guild_id: int) -> Optional[Message]:
+        """Get a message object"""
+        guild, channel, message = None, None, None
+        try:
+            guild = self.bot.get_guild(guild_id)
+            channel = guild.get_channel(channel_id)
+            message: Message
+            message = await channel.fetch_message(message_id)
+        except Exception:
+            msg = f'Could not find the message object\n' \
+                  f'Guild ID: {guild_id}\n' \
+                  f'Guild obj: {guild}\n' \
+                  f'Channel ID: {channel_id}\n' \
+                  f'Channel obj: {channel}\n' \
+                  f'Message ID: {message_id}\n' \
+                  f'Message obj: {message}\n\n'
+
+            self.bot.logger.error(f"User input {msg} could not be casted to integer", exc_info=True)
+            return None
+        return message
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: RawReactionActionEvent):
+
         # Ignore the bot
         if payload.member.bot:
             return
+
+        # Ignore if the reaction has nothing to do with the static board
+        if payload.message_id != self.stats_board_id:
+            return
+
+        # Reset the panel reaction
+        message = await self._get_message(payload.message_id, payload.channel_id, payload.guild_id)
+        if message is None:
+            return
+        await message.remove_reaction(payload.emoji, payload.member)
+
+        # confirm that the reaction is a registered reaction
+        async with self.bot.pool.acquire() as con:
+            reaction = await con.fetch("SELECT * FROM language_board_table WHERE emoji_id = $1", payload.emoji.id)
+            if len(reaction) == 1:
+                reaction = reaction[0]
+            else:
+                self.bot.logger.error(f"Returned multiple database records with emoji id of {payload.emoji.id}")
+        if not reaction:
+            return
+
+        member: Member = payload.member
+        member_roles = member.roles
+        remove_role = False
+
+        # Check if this operation is a add or remove
+        for role in member_roles:
+            if role.id == reaction["role_id"]:
+                remove_role = True
+
+        # Remove role if user alredy  has the role
+        if remove_role:
+            new_roles = []
+            for role in member_roles:
+                if role.id != reaction["role_id"]:
+                    new_roles.append(role)
+            try:
+                await member.edit(roles=new_roles)
+            except discord.Forbidden:
+                self.bot.logger.error(f'Could not add {reaction["role_name"]} to {member.display_name}', exc_info=True)
+
+        # Otherwise add the role
+        else:
+            role = await self._get_role_obj(payload.guild_id, reaction["role_id"])
+            try:
+                await member.add_roles(role)
+            except discord.Forbidden:
+                self.bot.logger.error(f'Could not add {reaction["role_name"]} to {member.display_name}', exc_info=True)
+
+        # Update the panel
+        guild = self.bot.get_guild(payload.guild_id)
+        role_stats = await self._get_role_stats(guild)
+        new_panel = self._get_roles_panel(role_stats, with_emojis=True)
+        await message.edit(embed=new_panel)
 
     @commands.command(
         name='language_board',
@@ -205,9 +300,29 @@ class LanguageBoard(commands.Cog):
                     'bot, you will have to re-create the panels.'
     )
     async def language_board(self, ctx):
-        role_stats = await self._get_role_stats(ctx)
-        panel = self._get_roles_panel(role_stats, with_emojis=False)
+        # Get the raw role stats
+        role_stats = await self._get_role_stats(ctx.guild)
+        # Create a emoji based panel
+        panel = self._get_roles_panel(role_stats, with_emojis=True)
+        # Fetch all the emojis from the database
+        async with self.bot.pool.acquire() as conn:
+            emojis = await conn.fetch("SELECT emoji_repr FROM language_board_table;")
 
+        # Create a board and capture it
+        await ctx.send(embed=Embed(
+            title="Role Assignment Board",
+            description=PANEL_DIRECTIONS,
+            color=0x000080
+        ))
+
+        board = await ctx.send(embed=panel)
+
+        # Add the emojis to the panel
+        for emoji in emojis:
+            await board.add_reaction(emoji['emoji_repr'])
+
+        # Save panel id to memory
+        self.stats_board_id = board.id
 
     @commands.group(
         aliases=['config'],
@@ -277,7 +392,6 @@ class LanguageBoard(commands.Cog):
         if not record:
             await ctx.send(f"Could not find role name {role_name}. Please use `list_roles` to get a listing.")
 
-
     @configure.command(
         name='list_roles',
         brief='',
@@ -302,7 +416,7 @@ class LanguageBoard(commands.Cog):
     async def role_stats(self, ctx):
         """Responds with a formatted code block containing the number of members with each role excluding those in
         the exclude list"""
-        role_stats = await self._get_role_stats(ctx)
+        role_stats = await self._get_role_stats(ctx.guild)
         panel = self._get_roles_panel(role_stats, with_emojis=False)
 
         await ctx.send(panel)
