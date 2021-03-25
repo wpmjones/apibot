@@ -39,6 +39,7 @@ if enviro == "LIVE":
     initial_extensions.append("cogs.members")
     initial_extensions.append("cogs.downtime")
     initial_extensions.append("cogs.forum-poster")
+    initial_extensions.append("cogs.response")
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
