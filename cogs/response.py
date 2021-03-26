@@ -89,10 +89,10 @@ class Response(commands.Cog):
             col3 = df['war_response']
             max_value_list = [col1.max(), col2.max(), col3.max()]
             max_value = max(max_value_list)
-            if max_value > 1000:
-                y_axis_max = math.ceil(max_value)
+            if max_value > 250:
+                y_axis_max = math.ceil(max_value/100) * 100
             else:
-                y_axis_max = 1000
+                y_axis_max = 250
             fig, ax = plt.subplots(figsize=(18, 9))
             ax.set_ylim([0, y_axis_max])
             ax.plot(df['check_time'], df['clan_response'])
