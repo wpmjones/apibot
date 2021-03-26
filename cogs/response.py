@@ -13,11 +13,12 @@ from config import settings
 
 class Response(commands.Cog):
     """Cog to check coc.py response time and report if things are slow"""
+
     def __init__(self, bot):
         self.bot = bot
         self.clan_tag = "CVCJR89"
         self.player_tag = "PJU928JR"
-        self.war_tag = "UGJPVJR"   # Not an actual war tag, just a clan we will use to search for wars
+        self.war_tag = "UGJPVJR"  # Not an actual war tag, just a clan we will use to search for wars
         self.response_check.start()
 
     def cog_unload(self):
@@ -42,15 +43,15 @@ class Response(commands.Cog):
         # clan endpoint
         start = time.perf_counter()
         requests.get(clan_url, headers=headers)
-        clan_elapsed_time = (time.perf_counter() - start) * 100
+        clan_elapsed_time = (time.perf_counter() - start) * 1000
         # player endpoint
         start = time.perf_counter()
         requests.get(player_url, headers=headers)
-        player_elapsed_time = (time.perf_counter() - start) * 100
+        player_elapsed_time = (time.perf_counter() - start) * 1000
         # current war endpoint
         start = time.perf_counter()
         requests.get(war_url, headers=headers)
-        war_elapsed_time = (time.perf_counter() - start) * 100
+        war_elapsed_time = (time.perf_counter() - start) * 1000
         return clan_elapsed_time, player_elapsed_time, war_elapsed_time
 
     @commands.command(name="response")
@@ -88,10 +89,10 @@ class Response(commands.Cog):
             col3 = df['war_response']
             max_value_list = [col1.max(), col2.max(), col3.max()]
             max_value = max(max_value_list)
-            if max_value > 100:
+            if max_value > 1000:
                 y_axis_max = math.ceil(max_value)
             else:
-                y_axis_max = 100
+                y_axis_max = 1000
             fig, ax = plt.subplots(figsize=(18, 9))
             ax.set_ylim([0, y_axis_max])
             ax.plot(df['check_time'], df['clan_response'])
@@ -109,18 +110,23 @@ class Response(commands.Cog):
             draw = ImageDraw.Draw(img)
             plot_img = Image.open("plot.png")
             img.paste(plot_img, (60, 175))
-            status_color = (15, 100, 15)   # Green
+            status_color = (15, 100, 15)  # Green
             status_text = "All is well"
-            if clan > 100 or player > 100 or war > 100:
+            if clan > 1000 or player > 1000 or war > 1000:
                 status_color = (215, 180, 0)
                 status_text = "Minor Slowdown"
-            if clan > 200 or player > 200 or war > 200:
+            if clan > 2000 or player > 2000 or war > 2000:
                 status_color = (100, 15, 15)
                 status_text = "There is a problem!"
             draw.rectangle([50, 50, 1870, 150], fill=status_color)
             align("center", status_text, large_font, (240, 240, 240), (960, 95))
             align("left", f"Clan Endpoint: {round_half_up(clan, decimals=2)}ms", small_font, (15, 15, 15), (60, 175))
-            align("center", f"Player Endpoint: {round_half_up(player, decimals=2)}ms", small_font, (15, 15, 15), (960, 175))
+            align("center",
+                  f"Player Endpoint: {round_half_up(player, decimals=2)}ms",
+                  small_font,
+                  (15, 15, 15),
+                  (960, 175)
+                  )
             align("right", f"War Endpoint: {round_half_up(war, decimals=2)}ms", small_font, (15, 15, 15), (1860, 175))
             img.save("status.png")
             await ctx.send(file=discord.File('status.png'))

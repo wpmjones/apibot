@@ -24,7 +24,7 @@ from loguru import logger
 # test - used for testing
 # feel free to add your own as needed
 
-enviro = "LIVE"
+enviro = "test"
 
 initial_extensions = ["cogs.general",
                       "cogs.admin",
