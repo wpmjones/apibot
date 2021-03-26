@@ -30,10 +30,6 @@ class Response(commands.Cog):
         return pd.DataFrame(fetch, columns=columns)
 
     async def get_response_times(self):
-        # self.bot.coc.http._cache_remove(f"/clans/{self.clan_tag.replace('#', '%23')}")
-        # start = time.perf_counter()
-        # await self.bot.coc.get_clan(self.clan_tag)
-        # cocpy_elapsed_time = time.perf_counter() - start
         api_url = "https://api.clashofclans.com/v1/"
         clan_url = api_url + "clans/%23" + self.clan_tag
         player_url = api_url + "players/%23" + self.player_tag
@@ -56,7 +52,7 @@ class Response(commands.Cog):
 
     @commands.command(name="response")
     async def response_info(self, ctx):
-        """Report information on api response times"""
+        """Report information on api response times (last 24 hours)"""
 
         def align(alignment, text, font, color, position):
             if not isinstance(text, str):
@@ -87,8 +83,9 @@ class Response(commands.Cog):
             col1 = df['clan_response']
             col2 = df['player_response']
             col3 = df['war_response']
-            max_value_list = [col1.max(), col2.max(), col3.max()]
-            max_value = max(max_value_list)
+            # calculate average of all three columns
+            avg_response = (df.sum()[0] + df.sum()[1] + df.sum()[2]) / (len(df) * 3)
+            max_value = avg_response * 2
             if max_value > 250:
                 y_axis_max = math.ceil(max_value/100) * 100
             else:
