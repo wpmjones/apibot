@@ -12,7 +12,7 @@ from config import settings
 
 
 class Response(commands.Cog):
-    """Cog to check coc.py response time and report if things are slow"""
+    """Cog to check response times for clan, player, and war endpoints and report if things are slow"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -158,11 +158,11 @@ class Response(commands.Cog):
 
     @tasks.loop(minutes=15.0)
     async def response_check(self):
-        """Task for monitoring coc.py and coc API response times"""
+        """Task for monitoring coc API response times"""
         clan_list = []
         player_list = []
         war_list = []
-        for i in range(4):
+        for i in range(5):
             c, p, w = await self.get_response_times()
             clan_list.append(c)
             player_list.append(p)
