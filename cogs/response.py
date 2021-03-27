@@ -19,11 +19,10 @@ class Response(commands.Cog):
         self.clan_tag = "CVCJR89"
         self.player_tag = "PJU928JR"
         self.war_tag = "UGJPVJR"  # Not an actual war tag, just a clan we will use to search for wars
-        # self.response_check.start()
+        self.response_check.start()
 
     def cog_unload(self):
-        pass
-        # self.response_check.cancel()
+        self.response_check.cancel()
 
     async def fetch_as_dataframe(self, sql):
         fetch = await self.bot.pool.fetch(sql)
@@ -112,7 +111,8 @@ class Response(commands.Cog):
                 ax.text(df['check_time'][max_clan_index],                 # the max of y axis add a label for
                         y_axis_max - 25,                                  # the category (outlier)
                         f"{round_half_up(max_clan, decimals=2)}ms",
-                        horizontalalignment="center")
+                        horizontalalignment="center",
+                        fontsize="x-large")
             if max_player > y_axis_max:
                 ax.text(df['check_time'][max_player_index],
                         y_axis_max - 25,
