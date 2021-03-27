@@ -1,9 +1,9 @@
 from typing import Optional, Union
+from pathlib import Path
 
 import discord
-from discord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
-
 from discord.ext import commands
+from discord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
 
 LANGUAGE_TABLE = """
 CREATE TABLE IF NOT EXISTS language_board_table (
@@ -13,11 +13,8 @@ CREATE TABLE IF NOT EXISTS language_board_table (
     emoji_repr TEXT     -- Discord print format
 );
 """
-PANEL_DIRECTIONS = 'Clicking the emojis below will either assign you or remove a role for the language clicked.' \
-                   '\n\nFor your first language role, click on the language that you are currently using to interact ' \
-                   'with Clash of Clans API.\n\n' \
-                   'For your additional roles, only click on the languages where you are proficient enough to ' \
-                   'guide others when they need help in the #Help channels.'
+PANEL_DIRECTIONS = 'Choose your language to receive your language role'
+IMAGE_PATH = Path('language_board_image.png')
 
 
 class LanguageBoard(commands.Cog):
@@ -300,22 +297,15 @@ class LanguageBoard(commands.Cog):
                     'bot, you will have to re-create the panels.'
     )
     async def language_board(self, ctx):
-        # Get the raw role stats
-        role_stats = await self._get_role_stats(ctx.guild)
-        # Create a emoji based panel
-        panel = self._get_roles_panel(role_stats, with_emojis=True)
         # Fetch all the emojis from the database
         async with self.bot.pool.acquire() as conn:
             emojis = await conn.fetch("SELECT emoji_repr FROM language_board_table;")
 
-        # Create a board and capture it
-        await ctx.send(embed=Embed(
-            title="Role Assignment Board",
-            description=PANEL_DIRECTIONS,
-            color=0x000080
-        ))
+        # Save the board image to memory
+        with IMAGE_PATH.open('rb') as f_handle:
+            board_image = discord.File(f_handle)
 
-        board = await ctx.send(embed=panel)
+        board = await ctx.send(file=board_image)
 
         # Add the emojis to the panel
         for emoji in emojis:
