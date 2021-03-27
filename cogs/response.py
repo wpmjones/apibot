@@ -19,10 +19,11 @@ class Response(commands.Cog):
         self.clan_tag = "CVCJR89"
         self.player_tag = "PJU928JR"
         self.war_tag = "UGJPVJR"  # Not an actual war tag, just a clan we will use to search for wars
-        self.response_check.start()
+        # self.response_check.start()
 
     def cog_unload(self):
-        self.response_check.cancel()
+        pass
+        # self.response_check.cancel()
 
     async def fetch_as_dataframe(self, sql):
         fetch = await self.bot.pool.fetch(sql)
@@ -83,6 +84,18 @@ class Response(commands.Cog):
             col1 = df['clan_response']
             col2 = df['player_response']
             col3 = df['war_response']
+            # deal with outliers (greater than 250)
+            max_clan_index = max_player_index = max_war_index = 0
+            max_clan = max_player = max_war = 250
+            if col1.max() > 250:
+                max_clan_index = col1.idxmax()   # Get index of max value
+                max_clan = col1.max()            # store max value
+            if col2.max() > 250:
+                max_player_index = df.idxmax()[1]
+                max_player = col2.max()
+            if col3.max() > 250:
+                max_war_index = df.idxmax()[2]
+                max_war = col3.max()
             # calculate average of all three columns
             avg_response = (df.sum()[0] + df.sum()[1] + df.sum()[2]) / (len(df) * 3)
             max_value = avg_response * 2
@@ -95,6 +108,21 @@ class Response(commands.Cog):
             ax.plot(df['check_time'], df['clan_response'])
             ax.plot(df['check_time'], df['player_response'])
             ax.plot(df['check_time'], df['war_response'])
+            if max_clan > y_axis_max:                                     # if max value is higher than
+                ax.text(df['check_time'][max_clan_index],                 # the max of y axis add a label for
+                        y_axis_max - 25,                                  # the category (outlier)
+                        f"{round_half_up(max_clan, decimals=2)}ms",
+                        horizontalalignment="center")
+            if max_player > y_axis_max:
+                ax.text(df['check_time'][max_player_index],
+                        y_axis_max - 25,
+                        f"{round_half_up(max_player, decimals=2)}ms",
+                        horizontalalignment="center")
+            if max_war > y_axis_max:
+                ax.text(df['check_time'][max_war_index],
+                        y_axis_max - 25,
+                        f"{round_half_up(max_war, decimals=2)}ms",
+                        horizontalalignment="center")
             ax.set(xlabel="Last 24 hours", ylabel="Response Time (ms)")
             ax.legend(["Clan Endpoint", "Player Endpoint", "War Endpoint"])
             ax.grid()
