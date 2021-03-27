@@ -117,12 +117,14 @@ class Response(commands.Cog):
                 ax.text(df['check_time'][max_player_index],
                         y_axis_max - 25,
                         f"{round_half_up(max_player, decimals=2)}ms",
-                        horizontalalignment="center")
+                        horizontalalignment="center",
+                        fontsize="x-large")
             if max_war > y_axis_max:
                 ax.text(df['check_time'][max_war_index],
                         y_axis_max - 25,
                         f"{round_half_up(max_war, decimals=2)}ms",
-                        horizontalalignment="center")
+                        horizontalalignment="center",
+                        fontsize="x-large")
             ax.set(xlabel="Last 24 hours", ylabel="Response Time (ms)")
             ax.legend(["Clan Endpoint", "Player Endpoint", "War Endpoint"])
             ax.grid()
@@ -150,8 +152,7 @@ class Response(commands.Cog):
                   f"Player Endpoint: {round_half_up(player, decimals=2)}ms",
                   small_font,
                   (15, 15, 15),
-                  (960, 175)
-                  )
+                  (960, 175))
             align("right", f"War Endpoint: {round_half_up(war, decimals=2)}ms", small_font, (15, 15, 15), (1860, 175))
             img.save("status.png")
             await ctx.send(file=discord.File('status.png'))
