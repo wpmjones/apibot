@@ -159,7 +159,17 @@ class Response(commands.Cog):
     @tasks.loop(minutes=15.0)
     async def response_check(self):
         """Task for monitoring coc.py and coc API response times"""
-        clan, player, war = await self.get_response_times()
+        clan_list = []
+        player_list = []
+        war_list = []
+        for i in range(4):
+            c, p, w = await self.get_response_times()
+            clan_list.append(c)
+            player_list.append(p)
+            war_list.append(w)
+        clan = sum(clan_list) / len(clan_list)
+        player = sum(player_list) / len(player_list)
+        war = sum(war_list) / len(war_list)
         sql = ("INSERT INTO bot_responses (check_time, clan_response, player_response, war_response) "
                "VALUES ($1, $2, $3, $4)")
         await self.bot.pool.execute(sql, datetime.utcnow(), clan, player, war)
