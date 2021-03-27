@@ -112,19 +112,22 @@ class Response(commands.Cog):
                         y_axis_max - 12,                                  # the category (outlier)
                         f"{round_half_up(max_clan, decimals=2)}ms",
                         horizontalalignment="center",
-                        fontsize="x-large")
+                        fontsize="x-large",
+                        color="b")
             if max_player > y_axis_max:
                 ax.text(df['check_time'][max_player_index],
                         y_axis_max - 25,
                         f"{round_half_up(max_player, decimals=2)}ms",
                         horizontalalignment="center",
-                        fontsize="x-large")
+                        fontsize="x-large",
+                        color="tab:orange")
             if max_war > y_axis_max:
                 ax.text(df['check_time'][max_war_index],
                         y_axis_max - 37,
                         f"{round_half_up(max_war, decimals=2)}ms",
                         horizontalalignment="center",
-                        fontsize="x-large")
+                        fontsize="x-large",
+                        color="g")
             ax.set(xlabel="Last 24 hours", ylabel="Response Time (ms)")
             ax.legend(["Clan Endpoint", "Player Endpoint", "War Endpoint"])
             ax.grid()
