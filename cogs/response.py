@@ -90,10 +90,10 @@ class Response(commands.Cog):
                 max_clan_index = col1.idxmax()   # Get index of max value
                 max_clan = col1.max()            # store max value
             if col2.max() > 250:
-                max_player_index = df.idxmax()[1]
+                max_player_index = col2.idxmax()
                 max_player = col2.max()
             if col3.max() > 250:
-                max_war_index = df.idxmax()[2]
+                max_war_index = col3.idxmax()
                 max_war = col3.max()
             # calculate average of all three columns
             avg_response = (df.sum()[0] + df.sum()[1] + df.sum()[2]) / (len(df) * 3)
