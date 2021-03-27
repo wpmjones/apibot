@@ -109,7 +109,7 @@ class Response(commands.Cog):
             ax.plot(df['check_time'], df['war_response'])
             if max_clan > y_axis_max:                                     # if max value is higher than
                 ax.text(df['check_time'][max_clan_index],                 # the max of y axis add a label for
-                        y_axis_max - 25,                                  # the category (outlier)
+                        y_axis_max - 12,                                  # the category (outlier)
                         f"{round_half_up(max_clan, decimals=2)}ms",
                         horizontalalignment="center",
                         fontsize="x-large")
@@ -121,7 +121,7 @@ class Response(commands.Cog):
                         fontsize="x-large")
             if max_war > y_axis_max:
                 ax.text(df['check_time'][max_war_index],
-                        y_axis_max - 25,
+                        y_axis_max - 37,
                         f"{round_half_up(max_war, decimals=2)}ms",
                         horizontalalignment="center",
                         fontsize="x-large")
