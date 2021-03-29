@@ -6,17 +6,18 @@ from discord.ext import commands
 from discord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
 
 LANGUAGE_TABLE = """
-CREATE TABLE IF NOT EXISTS bot_language_board(
+    CREATE TABLE IF NOT EXISTS bot_language_board(
     role_id BIGINT PRIMARY KEY,
     role_name TEXT,
     emoji_id BIGINT,
     emoji_repr TEXT     -- Discord print format
-);
+)
 """
 
-MIKE_SMELLS = """CREATE TABLE IF NOT EXISTS bot_smelly_mike (
+MIKE_SMELLS = """
+    CREATE TABLE IF NOT EXISTS bot_smelly_mike (
     board_id BIGINT PRIMARY KEY DEFAULT 0
-);
+)
 """
 
 
@@ -116,7 +117,7 @@ class LanguageBoard(commands.Cog):
         bot_maker_role = "Bot Maker"
         no_roles = "No Roles"
         async with self.bot.pool.acquire() as conn:
-            records = await conn.fetch("SELECT * FROM language_board_table;")
+            records = await conn.fetch("SELECT * FROM language_board_table")
             include = [record['role_name'] for record in records]
 
         # Object that is returned
@@ -277,7 +278,7 @@ class LanguageBoard(commands.Cog):
             if role.id == reaction['role_id']:
                 remove_role = True
 
-        # Remove role if user alredy  has the role
+        # Remove role if user already  has the role
         if remove_role:
             new_roles = []
             for role in member_roles:
@@ -307,7 +308,7 @@ class LanguageBoard(commands.Cog):
     async def language_board(self, ctx):
         # Fetch all the emojis from the database
         async with self.bot.pool.acquire() as conn:
-            emojis = await conn.fetch("SELECT emoji_repr FROM language_board_table;")
+            emojis = await conn.fetch("SELECT emoji_repr FROM language_board_table")
 
         # Save the board image to memory
         with IMAGE_PATH.open("rb") as f_handle:
@@ -322,7 +323,7 @@ class LanguageBoard(commands.Cog):
         # Save panel id to memory
         self.stats_board_id = board.id
         async with self.bot.pool.acquire() as con:
-            con.execute("UPDATE smelly_mike SET board_id = $1;", self.stats_board_id)
+            con.execute("UPDATE smelly_mike SET board_id = $1", self.stats_board_id)
 
     @commands.group(
         aliases=["config"],
@@ -364,7 +365,8 @@ class LanguageBoard(commands.Cog):
                 "SELECT * FROM language_board_table WHERE role_id = $1", role_obj.id)
 
             if row:
-                return await ctx.send(f"Role is already registered. Please list roles and/or remove if you want to change.")
+                return await ctx.send(f"Role is already registered. Please list roles and/or "
+                                      f"remove if you want to change.")
             sql = "INSERT INTO language_board_table (role_id, role_name, emoji_id, emoji_repr) VALUES ($1, $2, $3, $4)"
             await conn.execute(sql, role_obj.id, role_obj.name, emoji_obj.id, self._get_emoji_repr(emoji_obj))
             await ctx.send("Role added")

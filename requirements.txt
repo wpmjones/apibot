@@ -14,4 +14,3 @@ nest-asyncio==1.5.1
 PyYAML==5.4.1
 soupsieve==2.2
 typing-extensions==3.7.4.3
-yarl==1.6.3
