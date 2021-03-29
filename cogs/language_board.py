@@ -298,12 +298,6 @@ class LanguageBoard(commands.Cog):
             except discord.Forbidden:
                 self.bot.logger.error(f'Could not add {reaction["role_name"]} to {member.display_name}', exc_info=True)
 
-        # Update the panel
-        # guild = self.bot.get_guild(payload.guild_id)
-        # role_stats = await self._get_role_stats(guild)
-        # new_panel = self._get_roles_panel(role_stats, with_emojis=True)
-        # await message.edit(embed=new_panel)
-
     @commands.command(
         name='language_board',
         description='Create a reaction based panel that gives users roles when they click '
