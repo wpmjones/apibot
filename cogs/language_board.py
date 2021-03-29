@@ -44,6 +44,8 @@ class LanguageBoard(commands.Cog):
                 await conn.execute(LANGUAGE_TABLE)
                 await conn.execute(MIKE_SMELLS)
                 self.stats_board_id = await conn.fetchval("SELECT board_id FROM bot_smelly_mike")
+                if not self.stats_board_id:
+                    await conn.execute("INSERT INTO bot_smelly_mike (board_id) VALUES (0)")
         except Exception:
             self.bot.logger.exception("Could not initialize LanguageBoard")
 
@@ -215,7 +217,7 @@ class LanguageBoard(commands.Cog):
             for role in role_stats['roles']:
                 count = role_stats.get(role)['count']
                 role_name = f"{role}:"
-                panel += f"{role_name:<{spacing}} {count}"
+                panel += f"{role_name:<{spacing}} {count}\n"
             panel = f"```{panel}```"
             return panel
 
