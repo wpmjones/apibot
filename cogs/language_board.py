@@ -196,11 +196,10 @@ class LanguageBoard(commands.Cog):
         if with_emojis:
             if role_stats.get(bot_maker_role):
                 panel += f"{self.gap} `{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}`\n"
+                role_stats['roles'].pop(role_stats['roles'].index(bot_maker_role))
             panel += f"{self.gap} `{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}`\n\n"
 
             for role in role_stats['roles']:
-                if role == "Bot Maker":
-                    continue
                 count = role_stats.get(role)['count']
                 role_name = f"{role}:"
                 emoji = role_stats.get(role)['emoji']
