@@ -30,6 +30,7 @@ enviro = "LIVE"
 initial_extensions = [
                         "cogs.general",
                         "cogs.admin",
+                        "cogs.language_board"
                       ]
 
 if enviro == "LIVE":

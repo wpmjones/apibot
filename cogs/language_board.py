@@ -13,6 +13,13 @@ CREATE TABLE IF NOT EXISTS language_board_table (
     emoji_repr TEXT     -- Discord print format
 );
 """
+
+MIKE_SMELLS = """CREATE TABLE IF NOT EXISTS smelly_mike (
+    board_id BIGINT PRIMARY KEY DEFAULT 0
+);
+"""
+
+
 PANEL_DIRECTIONS = 'Choose your language to receive your language role'
 IMAGE_PATH = Path('language_board_image.png')
 
@@ -21,8 +28,12 @@ class LanguageBoard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.gap = '<:gap:823216162568405012>'
-        self.stats_board_id = 0     # Store the board ID in memory
+
+        # store the board ID in memory. Must load from the table if it exists first
+        self.stats_board_id = 0
+
         self.bot.loop.run_until_complete(self._initialize_db())
+
 
     async def _initialize_db(self) -> None:
         """Could be done better. Placing this code here to not mess with the rest
@@ -31,6 +42,9 @@ class LanguageBoard(commands.Cog):
         try:
             async with self.bot.pool.acquire() as con:
                 await con.execute(LANGUAGE_TABLE)
+                await con.execute(MIKE_SMELLS)
+                board_id = await con.fetchrow("SELECT board_id FROM smelly_mike;")
+                self.stats_board_id = board_id["board_id"]
         except Exception:
             self.bot.logger.exception("Could not initialize LanguageBoard")
 
@@ -285,10 +299,10 @@ class LanguageBoard(commands.Cog):
                 self.bot.logger.error(f'Could not add {reaction["role_name"]} to {member.display_name}', exc_info=True)
 
         # Update the panel
-        guild = self.bot.get_guild(payload.guild_id)
-        role_stats = await self._get_role_stats(guild)
-        new_panel = self._get_roles_panel(role_stats, with_emojis=True)
-        await message.edit(embed=new_panel)
+        # guild = self.bot.get_guild(payload.guild_id)
+        # role_stats = await self._get_role_stats(guild)
+        # new_panel = self._get_roles_panel(role_stats, with_emojis=True)
+        # await message.edit(embed=new_panel)
 
     @commands.command(
         name='language_board',
@@ -313,6 +327,9 @@ class LanguageBoard(commands.Cog):
 
         # Save panel id to memory
         self.stats_board_id = board.id
+        async with self.bot.pool.acquire() as con:
+            con.execute("UPDATE smelly_mike SET board_id = $1;", self.stats_board_id)
+
 
     @commands.group(
         aliases=['config'],
