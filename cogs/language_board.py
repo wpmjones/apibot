@@ -162,8 +162,8 @@ class LanguageBoard(commands.Cog):
                     role_stats[role.name]['count'] += 1
 
         # Pop Bot Maker role from list
-        if bot_maker_role in role_stats['roles']:
-            role_stats['roles'].pop(role_stats['roles'].index(bot_maker_role))
+        # if bot_maker_role in role_stats['roles']:
+        #     role_stats['roles'].pop(role_stats['roles'].index(bot_maker_role))
 
         # Sort and prep for iteration
         role_stats['roles'].sort(key=lambda x: role_stats[x]['count'], reverse=True)
