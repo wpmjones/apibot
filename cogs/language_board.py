@@ -118,9 +118,10 @@ class LanguageBoard(commands.Cog):
         # Local constants
         bot_maker_role = "Bot Maker"
         no_roles = "No Roles"
-        async with self.bot.pool.acquire() as conn:
-            records = await conn.fetch("SELECT * FROM bot_language_board")
-            include = [record['role_name'] for record in records]
+        sql = "SELECT role_name FROM bot_language_board"
+        records = await self.bot.pool.fetch(sql)
+        include = [record['role_name'] for record in records]
+        include.append(bot_maker_role)
 
         # Object that is returned
         role_stats = {
@@ -263,7 +264,8 @@ class LanguageBoard(commands.Cog):
 
         # confirm that the reaction is a registered reaction
         async with self.bot.pool.acquire() as conn:
-            reaction = await conn.fetch("SELECT * FROM bot_language_board WHERE emoji_id = $1", payload.emoji.id)
+            reaction = await conn.fetch("SELECT role_id, role_name FROM bot_language_board WHERE emoji_id = $1",
+                                        payload.emoji.id)
             if len(reaction) == 1:
                 reaction = reaction[0]
             else:
@@ -364,8 +366,7 @@ class LanguageBoard(commands.Cog):
 
         async with self.bot.pool.acquire() as conn:
             row = await conn.fetchrow(
-                "SELECT * FROM bot_language_board WHERE role_id = $1", role_obj.id)
-
+                "SELECT role_id FROM bot_language_board WHERE role_id = $1", role_obj.id)
             if row:
                 return await ctx.send(f"Role is already registered. Please list roles and/or "
                                       f"remove if you want to change.")
@@ -382,13 +383,10 @@ class LanguageBoard(commands.Cog):
     )
     async def configure_remove_role(self, ctx, *, role_name=None):
         async with self.bot.pool.acquire() as conn:
-            record = await conn.fetchrow("SELECT * FROM bot_language_board WHERE role_name = $1", role_name)
-
+            record = await conn.fetchrow("SELECT role_id FROM bot_language_board WHERE role_name = $1", role_name)
             if record:
                 await conn.execute("DELETE FROM bot_language_board WHERE role_id = $1", record['role_id'])
-                await ctx.send("Role removed")
-                return
-
+                return await ctx.send("Role removed")
         if not record:
             await ctx.send(f"Could not find role name {role_name}. Please use `list_roles` to get a listing.")
 
@@ -400,12 +398,10 @@ class LanguageBoard(commands.Cog):
     )
     async def configure_list_roles(self, ctx):
         async with self.bot.pool.acquire() as conn:
-            rows = await conn.fetch("SELECT * FROM bot_language_board;")
-
+            rows = await conn.fetch("SELECT role_name, emoji_repr FROM bot_language_board;")
         panel = f"{'Role':<30} {'Emoji'}\n"
         for row in rows:
             panel += f"`{row['role_name']:<15}` {row['emoji_repr']}\n"
-
         await ctx.send(panel)
 
     @commands.command(
