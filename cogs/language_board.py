@@ -32,7 +32,7 @@ class LanguageBoard(commands.Cog):
 
         # store the board ID in memory. Must load from the table if it exists first
         self.stats_board_id = 0
-
+        self.bot.wait_until_ready()
         self.bot.loop.run_until_complete(self._initialize_db())
 
     async def _initialize_db(self) -> None:
