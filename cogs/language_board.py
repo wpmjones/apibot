@@ -118,7 +118,7 @@ class LanguageBoard(commands.Cog):
         # Local constants
         bot_maker_role = "Bot Maker"
         no_roles = "No Roles"
-        sql = "SELECT role_name FROM bot_language_board"
+        sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
         records = await self.bot.pool.fetch(sql)
         include = [record['role_name'] for record in records]
         include.append(bot_maker_role)
