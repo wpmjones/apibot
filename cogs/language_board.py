@@ -117,7 +117,7 @@ class LanguageBoard(commands.Cog):
         bot_maker_role = "Bot Maker"
         no_roles = "No Roles"
         async with self.bot.pool.acquire() as conn:
-            records = await conn.fetch("SELECT * FROM language_board_table")
+            records = await conn.fetch("SELECT * FROM bot_language_board")
             include = [record['role_name'] for record in records]
 
         # Object that is returned
@@ -261,7 +261,7 @@ class LanguageBoard(commands.Cog):
 
         # confirm that the reaction is a registered reaction
         async with self.bot.pool.acquire() as con:
-            reaction = await con.fetch("SELECT * FROM language_board_table WHERE emoji_id = $1", payload.emoji.id)
+            reaction = await con.fetch("SELECT * FROM bot_language_board WHERE emoji_id = $1", payload.emoji.id)
             if len(reaction) == 1:
                 reaction = reaction[0]
             else:
@@ -308,7 +308,7 @@ class LanguageBoard(commands.Cog):
     async def language_board(self, ctx):
         # Fetch all the emojis from the database
         async with self.bot.pool.acquire() as conn:
-            emojis = await conn.fetch("SELECT emoji_repr FROM language_board_table")
+            emojis = await conn.fetch("SELECT emoji_repr FROM bot_language_board")
 
         # Save the board image to memory
         with IMAGE_PATH.open("rb") as f_handle:
@@ -323,7 +323,7 @@ class LanguageBoard(commands.Cog):
         # Save panel id to memory
         self.stats_board_id = board.id
         async with self.bot.pool.acquire() as con:
-            con.execute("UPDATE smelly_mike SET board_id = $1", self.stats_board_id)
+            con.execute("UPDATE bot_smelly_mike SET board_id = $1", self.stats_board_id)
 
     @commands.group(
         aliases=["config"],
@@ -362,12 +362,12 @@ class LanguageBoard(commands.Cog):
 
         async with self.bot.pool.acquire() as conn:
             row = await conn.fetchrow(
-                "SELECT * FROM language_board_table WHERE role_id = $1", role_obj.id)
+                "SELECT * FROM bot_language_board WHERE role_id = $1", role_obj.id)
 
             if row:
                 return await ctx.send(f"Role is already registered. Please list roles and/or "
                                       f"remove if you want to change.")
-            sql = "INSERT INTO language_board_table (role_id, role_name, emoji_id, emoji_repr) VALUES ($1, $2, $3, $4)"
+            sql = "INSERT INTO bot_language_board (role_id, role_name, emoji_id, emoji_repr) VALUES ($1, $2, $3, $4)"
             await conn.execute(sql, role_obj.id, role_obj.name, emoji_obj.id, self._get_emoji_repr(emoji_obj))
             await ctx.send("Role added")
 
@@ -382,10 +382,10 @@ class LanguageBoard(commands.Cog):
     )
     async def configure_remove_role(self, ctx, *, role_name=None):
         async with self.bot.pool.acquire() as conn:
-            record = await conn.fetchrow("SELECT * FROM language_board_table WHERE role_name = $1", role_name)
+            record = await conn.fetchrow("SELECT * FROM bot_language_board WHERE role_name = $1", role_name)
 
             if record:
-                await conn.execute("DELETE FROM language_board_table WHERE role_id = $1", record['role_id'])
+                await conn.execute("DELETE FROM bot_language_board WHERE role_id = $1", record['role_id'])
                 await ctx.send("Role removed")
                 return
 
@@ -400,7 +400,7 @@ class LanguageBoard(commands.Cog):
     )
     async def configure_list_roles(self, ctx):
         async with self.bot.pool.acquire() as conn:
-            rows = await conn.fetch("SELECT * FROM language_board_table;")
+            rows = await conn.fetch("SELECT * FROM bot_language_board;")
 
         panel = f"{'Role':<30} {'Emoji'}\n"
         for row in rows:
