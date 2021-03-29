@@ -3,9 +3,6 @@ import discord
 from config import settings
 from discord.ext import commands
 
-from cogs.utils.db import _get_role_stats
-
-
 JUNKIES_GUILD_ID = settings['guild']['junkies']
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
