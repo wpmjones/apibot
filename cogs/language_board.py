@@ -260,8 +260,8 @@ class LanguageBoard(commands.Cog):
         await message.remove_reaction(payload.emoji, payload.member)
 
         # confirm that the reaction is a registered reaction
-        async with self.bot.pool.acquire() as con:
-            reaction = await con.fetch("SELECT * FROM bot_language_board WHERE emoji_id = $1", payload.emoji.id)
+        async with self.bot.pool.acquire() as conn:
+            reaction = await conn.fetch("SELECT * FROM bot_language_board WHERE emoji_id = $1", payload.emoji.id)
             if len(reaction) == 1:
                 reaction = reaction[0]
             else:
@@ -322,8 +322,8 @@ class LanguageBoard(commands.Cog):
 
         # Save panel id to memory
         self.stats_board_id = board.id
-        async with self.bot.pool.acquire() as con:
-            con.execute("UPDATE bot_smelly_mike SET board_id = $1", self.stats_board_id)
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute("UPDATE bot_smelly_mike SET board_id = $1", self.stats_board_id)
 
     @commands.group(
         aliases=["config"],
