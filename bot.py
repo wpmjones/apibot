@@ -42,6 +42,7 @@ if enviro == "LIVE":
     initial_extensions.append("cogs.members")
     initial_extensions.append("cogs.downtime")
     initial_extensions.append("cogs.forum-poster")
+    initial_extensions.append("cogs.response")
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
@@ -51,7 +52,7 @@ else:
     token = settings['discord']['test_token']
     prefix = ">"
     log_level = "DEBUG"
-    coc_names = "dev"
+    coc_names = "delete_me"
 
 description = ("Welcome to the COC API Junkies bot. This is a custom bot created by and for the users of the "
                "COC API Junkies Discord server. If you have questions, please reach out to @Admins on this server.")

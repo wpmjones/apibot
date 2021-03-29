@@ -49,10 +49,10 @@ class Downtime(commands.Cog):
         self.bot = bot
         self.bots = []
         self.watchman.start()
-        # self.bot.coc.add_events(self.maintenance_start)
+        self.bot.coc.add_events(self.maintenance_start, self.maintenance_end)
 
     def cog_unload(self):
-        # self.bot.coc.remove_events(self.maintenance_start)
+        self.bot.coc.remove_events(self.maintenance_start, self.maintenance_end)
         self.watchman.cancel()
 
     async def init_bots(self):
