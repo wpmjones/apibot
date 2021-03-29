@@ -5,21 +5,6 @@ import discord
 from discord.ext import commands
 from discord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
 
-LANGUAGE_TABLE = """
-    CREATE TABLE IF NOT EXISTS bot_language_board(
-    role_id BIGINT PRIMARY KEY,
-    role_name TEXT,
-    emoji_id BIGINT,
-    emoji_repr TEXT     -- Discord print format
-)
-"""
-
-MIKE_SMELLS = """
-    CREATE TABLE IF NOT EXISTS bot_smelly_mike (
-    board_id BIGINT PRIMARY KEY DEFAULT 0
-)
-"""
-
 
 PANEL_DIRECTIONS = "Choose your language to receive your language role"
 IMAGE_PATH = Path("language_board_image.png")
@@ -29,25 +14,6 @@ class LanguageBoard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.gap = "<:gap:823216162568405012>"
-
-        # store the board ID in memory. Must load from the table if it exists first
-        self.stats_board_id = 0
-        self.bot.wait_until_ready()
-        self.bot.loop.run_until_complete(self._initialize_db())
-
-    async def _initialize_db(self) -> None:
-        """Could be done better. Placing this code here to not mess with the rest
-        of the code base"""
-        self.bot.logger.debug("Initializing LanguageBoard table")
-        try:
-            async with self.bot.pool.acquire() as conn:
-                await conn.execute(LANGUAGE_TABLE)
-                await conn.execute(MIKE_SMELLS)
-                self.stats_board_id = await conn.fetchval("SELECT board_id FROM bot_smelly_mike")
-                if not self.stats_board_id:
-                    await conn.execute("INSERT INTO bot_smelly_mike (board_id) VALUES (0)")
-        except Exception:
-            self.bot.logger.exception("Could not initialize LanguageBoard")
 
     async def _get_role_obj(self, ctx: Union[commands.Context, int], role_id: int) -> Optional[Role]:
         """Get role object, otherwise log and return None"""
@@ -256,7 +222,7 @@ class LanguageBoard(commands.Cog):
             return
 
         # Ignore if the reaction has nothing to do with the static board
-        if payload.message_id != self.stats_board_id:
+        if payload.message_id != self.bot.stats_board_id:
             return
 
         # Reset the panel reaction
@@ -328,9 +294,9 @@ class LanguageBoard(commands.Cog):
             await board.add_reaction(emoji['emoji_repr'])
 
         # Save panel id to memory
-        self.stats_board_id = board.id
+        self.bot.stats_board_id = board.id
         self.bot.logger.info(f"Created board with ID: {board.id}")
-        await self.bot.pool.execute("UPDATE bot_smelly_mike SET board_id = $1", self.stats_board_id)
+        await self.bot.pool.execute("UPDATE bot_smelly_mike SET board_id = $1", self.bot.stats_board_id)
 
     @commands.group(
         aliases=["config"],
