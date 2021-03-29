@@ -322,6 +322,7 @@ class LanguageBoard(commands.Cog):
 
         # Save panel id to memory
         self.stats_board_id = board.id
+        self.bot.logger.info(f"Created board with ID: {board.id}")
         async with self.bot.pool.acquire() as conn:
             await conn.execute("UPDATE bot_smelly_mike SET board_id = $1", self.stats_board_id)
 
