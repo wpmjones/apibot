@@ -374,10 +374,8 @@ class LanguageBoard(commands.Cog):
     @configure.command(
         name="remove_role",
         brief="",
-        help=(
-                "Remove a registered role. This is the only way to \"Edit\" a registration record. User \"list_roles\" "
-                "to get a listing.",
-            ),
+        help=("Remove a registered role. This is the only way to \"Edit\" a registration record. User \"list_roles\" "
+              "to get a listing."),
         usage="(role_name)"
     )
     async def configure_remove_role(self, ctx, *, role_name=None):
