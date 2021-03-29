@@ -213,6 +213,7 @@ class LanguageBoard(commands.Cog):
         else:
             if role_stats.get(bot_maker_role):
                 panel += f"{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}\n"
+                role_stats['roles'].pop(role_stats['roles'].index(bot_maker_role))
             panel += f"{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}\n"
             panel += f"{'-' * (spacing + 4)}\n"
             spacing = role_stats['spacing']
