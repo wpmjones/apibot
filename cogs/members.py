@@ -18,7 +18,8 @@ class MembersCog(commands.Cog):
             return await ctx.send("Member does not exist.")
         channel = self.bot.get_channel(settings['channels']['general'])
         msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
-               f"Please tell us what API project(s) you are working on and what your preferred programming "
+               f"If you've already started, please tell us what API project(s) you are working on. "
+               f"If not, let us know what you have in mind. And let us know what your preferred programming "
                f"language is.")
         await channel.send(msg)
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
