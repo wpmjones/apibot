@@ -35,10 +35,10 @@ class MembersCog(commands.Cog):
             return
         if not member.bot:
             channel = self.bot.get_channel(settings['channels']['general'])
-            msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you! "
-                   f"Please tell us what API project(s) you are working on and what your preferred programming "
-                   f"language is.  You can also check out <#641454924172886027> to assign yourself some language "
-                   f"roles and see some of the tutorials on how to get started with the COC API.")
+            msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you!\n"
+                   f"First, please let us know what your preferred programming language is. "
+                   f"Next, if you've already started working with the API, please tell us a little about your project. "
+                   f"If you haven't started a project yet, let us know what you're interested in making.")
             await channel.send(msg)
         else:
             channel = self.bot.get_channel(settings['channels']['admin'])
