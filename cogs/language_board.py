@@ -152,7 +152,7 @@ class LanguageBoard(commands.Cog):
             String ready to be printed
         """
         # local constants
-        developer_role = "Bot Maker"
+        developer_role = "Developer"
         no_roles = "No Roles"
         spacing = role_stats['spacing']
 
@@ -164,7 +164,7 @@ class LanguageBoard(commands.Cog):
                 panel += f"{self.gap} `{developer_role + ':':<{spacing}} {role_stats.get(developer_role)['count']}`\n"
             panel += f"{self.gap} `{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}`\n\n"
             for role in role_stats['roles']:
-                if role == "Bot Maker":
+                if role == developer_role:
                     continue
                 count = role_stats.get(role)['count']
                 role_name = f"{role}:"
@@ -183,7 +183,7 @@ class LanguageBoard(commands.Cog):
             panel += f"{'-' * (spacing + 4)}\n"
             spacing = role_stats['spacing']
             for role in role_stats['roles']:
-                if role == "Bot Maker":
+                if role == developer_role:
                     continue
                 count = role_stats.get(role)['count']
                 role_name = f"{role}:"
