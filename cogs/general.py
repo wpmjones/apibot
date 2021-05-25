@@ -7,7 +7,7 @@ JUNKIES_GUILD_ID = settings['guild']['junkies']
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
 BOTS_ROLE_ID = settings['roles']['bots']
-BOT_MAKER_ROLE_ID = settings['roles']['bot_maker']
+DEVELOPER_ROLE_ID = settings['roles']['developer']
 ADMIN_ROLE_ID = settings['roles']['admin']
 GUEST_ROLE_ID = settings['roles']['vip_guest']
 
@@ -36,7 +36,7 @@ class General(commands.Cog):
     async def links(self, ctx):
         """Responds with a link to a Discord message on the Discord Link API (by ReverendMike)"""
         await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
-        
+
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
@@ -67,7 +67,7 @@ class General(commands.Cog):
         category = self.bot.get_channel(BOT_DEMO_CATEGORY_ID)
         guild = self.bot.get_guild(JUNKIES_GUILD_ID)
         guest_role = guild.get_role(GUEST_ROLE_ID)
-        bot_maker_role = guild.get_role(BOT_MAKER_ROLE_ID)
+        developer_role = guild.get_role(DEVELOPER_ROLE_ID)
         hog_rider_role = guild.get_role(HOG_RIDER_ROLE_ID)
         admin_role = guild.get_role(ADMIN_ROLE_ID)
         channel_name = f"{bot.name}-demo"
@@ -107,7 +107,7 @@ class General(commands.Cog):
                                                         attach_files=True,
                                                         external_emojis=True,
                                                         add_reactions=True),
-            bot_maker_role: discord.PermissionOverwrite(read_messages=True,
+            developer_role: discord.PermissionOverwrite(read_messages=True,
                                                         send_messages=True,
                                                         read_message_history=True,
                                                         manage_messages=False,

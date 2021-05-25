@@ -82,12 +82,12 @@ class LanguageBoard(commands.Cog):
                 }
         """
         # Local constants
-        bot_maker_role = "Bot Maker"
+        developer_role = "Developer"
         no_roles = "No Roles"
         sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
         records = await self.bot.pool.fetch(sql)
         include = [record['role_name'] for record in records]
-        include.append(bot_maker_role)
+        include.append(developer_role)
 
         # Object that is returned
         role_stats = {
@@ -128,9 +128,9 @@ class LanguageBoard(commands.Cog):
                 else:
                     role_stats[role.name]['count'] += 1
 
-        # Pop Bot Maker role from list
-        # if bot_maker_role in role_stats['roles']:
-        #     role_stats['roles'].pop(role_stats['roles'].index(bot_maker_role))
+        # Pop Developer role from list
+        # if developer_role in role_stats['roles']:
+        #     role_stats['roles'].pop(role_stats['roles'].index(developer_role))
 
         # Sort and prep for iteration
         role_stats['roles'].sort(key=lambda x: role_stats[x]['count'], reverse=True)
@@ -152,7 +152,7 @@ class LanguageBoard(commands.Cog):
             String ready to be printed
         """
         # local constants
-        bot_maker_role = "Bot Maker"
+        developer_role = "Bot Maker"
         no_roles = "No Roles"
         spacing = role_stats['spacing']
 
@@ -160,8 +160,8 @@ class LanguageBoard(commands.Cog):
 
         # Build the rest of the panel
         if with_emojis:
-            if role_stats.get(bot_maker_role):
-                panel += f"{self.gap} `{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}`\n"
+            if role_stats.get(developer_role):
+                panel += f"{self.gap} `{developer_role + ':':<{spacing}} {role_stats.get(developer_role)['count']}`\n"
             panel += f"{self.gap} `{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}`\n\n"
             for role in role_stats['roles']:
                 if role == "Bot Maker":
@@ -177,8 +177,8 @@ class LanguageBoard(commands.Cog):
             )
 
         else:
-            if role_stats.get(bot_maker_role):
-                panel += f"{bot_maker_role + ':':<{spacing}} {role_stats.get(bot_maker_role)['count']}\n"
+            if role_stats.get(developer_role):
+                panel += f"{developer_role + ':':<{spacing}} {role_stats.get(developer_role)['count']}\n"
             panel += f"{no_roles + ':':<{spacing}} {role_stats.get(no_roles)}\n"
             panel += f"{'-' * (spacing + 4)}\n"
             spacing = role_stats['spacing']
