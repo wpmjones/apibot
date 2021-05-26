@@ -1,6 +1,13 @@
 # CoC API Junkies' Code of Conduct
 # Table of Contents
 1. [Junkies' Admin pledge to you](#1)
+2. [Junkies' Community Standards](#2)
+3. [Server Technical Policy](#3)
+    1. [Data Mining](#3.1)
+    2. [Asset Extraction](#3.2)
+    3. [API Usage](#3.3) 
+    4. [Third Party Tools](#3.4)
+    5. [FAQ](#3.5)
 
 ## Junkies' Admin pledge to you <a name="1"></a>
 
@@ -10,7 +17,7 @@ harassment-free experience for everyone, regardless of race, color, national ori
 religion, age, sex (gender), gender identity and expression, sexual orientation, 
 physical or mental disability, level or type of experience, and reprisal.
 
-## Junkies' Community Standards
+## Junkies' Community Standards <a name="2"></a>
 
 In this community we strive to foster a safe and friendly community for all. To do so,
 we must encourage behaviours that contribute to esprit de corps. Examples of such behaviours:
@@ -35,7 +42,7 @@ We value more than just expertise in this server, we value collaboration and sup
 technical skill. The goal of code of conduct is to create the left and right limits for you to be 
 your best self while in this community.
 
-## Server Technical Policy
+## Server Technical Policy <a name="3"></a>
 
 The purpose of this policy is to clarify the stance of the COC API Junkies admins’ regarding 
 data mining, asset extraction, API usage and third party tools. This is from the 
@@ -44,7 +51,7 @@ other party. This policy may be updated in the future.
 
 ---
 
-### Data Mining
+### Data Mining <a name="3.1"></a>
 
 We regard “Data Mining” to mean the extraction of game values (such as entity costs, 
 upgrade times, attributes etc) from client or API data to enable development of more 
@@ -54,7 +61,7 @@ advanced features for your tools.
 
 ---
 
-### Asset Extraction
+### Asset Extraction <a name="3.2"></a>
 
 We regard “Asset Extraction” to mean retrieving images/models from game files for 
 usage in your tools.  Existing asset libraries should be used as a primary source, 
@@ -66,7 +73,7 @@ Guide](https://coc.guide/).
 
 ---
 
-### API Usage
+### API Usage <a name="3.3"></a>
 
 We regard “API Usage” to mean querying API endpoints that have been made available to 
 you by the creator of them.  Examples of this include the Clash of Clans API and the 
@@ -81,7 +88,7 @@ undocumented endpoints you have discovered should be avoided (check with admins 
 
 ---
 
-### Third Party Tools
+### Third Party Tools <a name="3.4"></a>
 
 We regard “Third Party Tools” to refer to tools that interact directly with the game 
 client, game servers or Discord servers that violate Supercell or Discord ToS.  Examples 
@@ -95,7 +102,7 @@ feel free to pick apart/amend</ins>
 
 ---
 
-### FAQ
+### FAQ <a name="3.5"></a>
 
 Examples I kept in mind when putting this together:
 
