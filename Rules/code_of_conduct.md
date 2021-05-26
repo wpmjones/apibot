@@ -1,5 +1,9 @@
 # CoC API Junkies' Code of Conduct
-## Junkies' Admin pledge to you 
+# Table of Contents
+1. [Junkies' Admin pledge to you](#1)
+
+## Junkies' Admin pledge to you <a name="1"></a>
+
 In the interest of fostering an open and welcoming environment, we as
 leaders pledge to making participation in our community a 
 harassment-free experience for everyone, regardless of race, color, national origin,
@@ -7,6 +11,7 @@ religion, age, sex (gender), gender identity and expression, sexual orientation,
 physical or mental disability, level or type of experience, and reprisal.
 
 ## Junkies' Community Standards
+
 In this community we strive to foster a safe and friendly community for all. To do so,
 we must encourage behaviours that contribute to esprit de corps. Examples of such behaviours:
 - Being kind and courteous to others
