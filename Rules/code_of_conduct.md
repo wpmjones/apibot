@@ -22,13 +22,13 @@ physical or mental disability, level or type of experience, and reprisal.
 In this community we strive to foster a safe and friendly community for all. To do so,
 we must encourage behaviours that contribute to esprit de corps. Examples of such behaviours:
 - Being kind and courteous to others
-- Keeping language at a PG
+- Keeping language at a PG level
 - Utilizing a single spoken language of English. Please use DMs for other languages so that
 no one is left out.
-- Requesting permission from original others before replicating their work. Sharing is 
+- Requesting permission from original developer before replicating their work. Sharing is 
 encouraged, but we must be ethical about where ideas come from
 -  Gracefully accepting constructive criticism
-- Patiently asking for help without pinging users. When users have time, they will help at their 
+- Patiently asking for help without pinging users. When members have time, they will help at their 
 leisure 
   
 Examples of unacceptable behaviour:
@@ -39,7 +39,7 @@ Examples of unacceptable behaviour:
 - Harassment of any kind
 
 We value more than just expertise in this server, we value collaboration and supporting others above
-technical skill. The goal of code of conduct is to create the left and right limits for you to be 
+technical skill. The goal of Junkies' code of conduct is to define the left and right limits for you to be 
 your best self while in this community.
 
 ## Server Technical Policy <a name="3"></a>
