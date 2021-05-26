@@ -28,20 +28,20 @@ Examples of unacceptable behaviour:
 We value more than just expertise in this server, we value collaboration and supporting others above
 technical skill. The goal of code of conduct is to create the left and right limits for you to be 
 your best self while in this community.
-
+---
 ## Server Technical Policy
 The purpose of this policy is to clarify the stance of the COC API Junkies admins’ regarding 
 data mining, asset extraction, API usage and third party tools. This is from the 
 perspective of the admins’ of this discord server and not Supercell, Discord or any 
 other party. This policy may be updated in the future.
-
+---
 ### Data Mining
 We regard “Data Mining” to mean the extraction of game values (such as entity costs, 
 upgrade times, attributes etc) from client or API data to enable development of more 
 advanced features for your tools.
 
-<u>Discussion/sharing of this data is permitted.</u>
-
+<ins>Discussion/sharing of this data is permitted.</ins>
+---
 ### Asset Extraction
 We regard “Asset Extraction” to mean retrieving images/models from game files for 
 usage in your tools.  Existing asset libraries should be used as a primary source, 
@@ -49,8 +49,8 @@ such as the [Clash of Clans Fankit](http://supr.cl/ClashFanKit).  Additional sou
 assets/information are the [Clash of Clans Wiki](https://clashofclans.fandom.com/) and [COC 
 Guide](https://coc.guide/).
 
-<u>Discussion/sharing of this data is permitted if it is for the betterment of community tool development.</u>
-
+<ins>Discussion/sharing of this data is permitted if it is for the betterment of community tool development.</ins>
+---
 ### API Usage
 We regard “API Usage” to mean querying API endpoints that have been made available to 
 you by the creator of them.  Examples of this include the Clash of Clans API and the 
@@ -60,9 +60,9 @@ Discord API.  Documentation for public endpoints for the Clash of Clans API can 
 If you have access to private or enhanced endpoints, it is up to you to decide if you are 
 able to discuss them as part of your agreement with the provider (NDAs etc).
 
-<u>Discussion of API usage for public endpoints is permitted. Discussion of 
-undocumented endpoints you have discovered should be avoided (check with admins if unsure).</u>
-
+<ins>Discussion of API usage for public endpoints is permitted. Discussion of 
+undocumented endpoints you have discovered should be avoided (check with admins if unsure).</ins>
+---
 ### Third Party Tools
 We regard “Third Party Tools” to refer to tools that interact directly with the game 
 client, game servers or Discord servers that violate Supercell or Discord ToS.  Examples 
@@ -73,7 +73,7 @@ etc that retrieve/use data through the methods provided officially by Supercell 
 
 <ins>Discussion or use of third party tools that violate Supercell/Discord ToS is not permitted here.
 feel free to pick apart/amend</ins>
-
+---
 ### FAQ
 Examples I kept in mind when putting this together:
 
