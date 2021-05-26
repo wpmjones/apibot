@@ -71,24 +71,24 @@ of these include farm bots, private servers & unofficial clients.
 This does not apply to community tools such as Discord bots, websites, applications 
 etc that retrieve/use data through the methods provided officially by Supercell or Discord.
 
-<u>Discussion or use of third party tools that violate Supercell/Discord ToS is not permitted here.
-feel free to pick apart/amend</u>
+<ins>Discussion or use of third party tools that violate Supercell/Discord ToS is not permitted here.
+feel free to pick apart/amend</ins>
 
 ### FAQ
 Examples I kept in mind when putting this together:
 
-"Does anyone have costs/upgrade times for X?" - OK
+> "Does anyone have costs/upgrade times for X?" - OK
 
-"Does anyone have an image of TH14 for my discord bot?" - OK
+> "Does anyone have an image of TH14 for my discord bot?" - OK
 
-"Does anyone have an image of the builder for my new game, Smash of Mans" - No
+> "Does anyone have an image of the builder for my new game, Smash of Mans" - No
 
-"Where can I find current war data?" - OK
+> "Where can I find current war data?" - OK
 
-"I have access to fast war data and the verify token endpoint (before it was public)" - OK
+> "I have access to fast war data and the verify token endpoint (before it was public)" - OK
 
-"I have found this undocumented API endpoint for authenticating Supercell ID credentials" - No 
+> "I have found this undocumented API endpoint for authenticating Supercell ID credentials" - No 
 
-"I want to make a discord bot for tracking farmed resources" - OK
+> "I want to make a discord bot for tracking farmed resources" - OK
 
-"I want to make a farm bot" - No
+> "I want to make a farm bot" - No
