@@ -15,7 +15,7 @@ In the interest of fostering an open and welcoming environment, we as
 leaders pledge to make participation in our community a 
 harassment-free experience for everyone, regardless of race, color, national origin,
 religion, age, sex (gender), gender identity and expression, sexual orientation, 
-physical or mental disability, level or type of experience, and reprisal.
+physical or mental disability, level or type of experience.
 
 ## Junkies' Community Standards <a name="2"></a>
 
