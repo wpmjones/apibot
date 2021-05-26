@@ -97,8 +97,7 @@ of these include farm bots, private servers & unofficial clients.
 This does not apply to community tools such as Discord bots, websites, applications 
 etc that retrieve/use data through the methods provided officially by Supercell or Discord.
 
-<ins>Discussion or use of third party tools that violate Supercell/Discord ToS is not permitted here.
-feel free to pick apart/amend</ins>
+<ins>Discussion or use of third party tools that violate Supercell/Discord ToS is not permitted here.</ins>
 
 ---
 
