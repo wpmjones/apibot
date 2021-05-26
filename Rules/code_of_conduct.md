@@ -18,6 +18,7 @@ encouraged, but we must be ethical about where ideas come from
 -  Gracefully accepting constructive criticism
 - Patiently asking for help without pinging users. When users have time, they will help at their 
 leisure 
+  
 Examples of unacceptable behaviour:
 - The use of sexualized language 
 - The use of inappropriate images to include users profile
@@ -28,7 +29,7 @@ Examples of unacceptable behaviour:
 We value more than just expertise in this server, we value collaboration and supporting others above
 technical skill. The goal of code of conduct is to create the left and right limits for you to be 
 your best self while in this community.
----
+
 ## Server Technical Policy
 The purpose of this policy is to clarify the stance of the COC API Junkies admins’ regarding 
 data mining, asset extraction, API usage and third party tools. This is from the 
