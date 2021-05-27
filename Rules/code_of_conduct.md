@@ -1,4 +1,7 @@
 # CoC API Junkies' Code of Conduct
+
+This server is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it
+
 # Table of Contents
 1. [Junkies' Admin pledge to you](#1)
 2. [Junkies' Community Standards](#2)
@@ -28,6 +31,8 @@ no one is left out.
 - Requesting permission from original developer before replicating their work. Sharing is 
 encouraged, but we must be ethical about where ideas come from
 -  Gracefully accepting constructive criticism
+- Questions should only be asked in the appropriate channels based on context
+- Questions will not be asnwered in DMs. DM conversations only benefit one person. 
 - Patiently asking for help without pinging users. When members have time, they will help at their 
 leisure 
   
