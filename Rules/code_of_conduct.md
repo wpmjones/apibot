@@ -32,7 +32,7 @@ no one is left out.
 encouraged, but we must be ethical about where ideas come from
 -  Gracefully accepting constructive criticism
 - Questions should only be asked in the appropriate channels based on context
-- Questions will not be asnwered in DMs. DM conversations only benefit one person. 
+- Questions will not be answered in DMs. DM conversations only benefit one person. 
 - Patiently asking for help without pinging users. When members have time, they will help at their 
 leisure 
   
