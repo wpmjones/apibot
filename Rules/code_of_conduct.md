@@ -1,6 +1,6 @@
 # CoC API Junkies' Code of Conduct
 
-This server is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it
+This server is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it.
 
 # Table of Contents
 1. [Junkies' Admin pledge to you](#1)
