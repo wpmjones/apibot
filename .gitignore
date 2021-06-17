@@ -134,3 +134,4 @@ dmypy.json
 *.yaml
 *.otf
 *.png
+.DS_Store
