@@ -38,9 +38,9 @@ class General(commands.Cog):
         await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
 
     @commands.command(name="rules")
-    async def links(self, ctx):
-        """Respond with a link to the rules markdown file. Please update with the new address"""
-        await ctx.send("https://github.com/majordoobie/apibot/blob/master/Rules/code_of_conduct.md")
+    async def rules(self, ctx):
+        """Respond with a link to the rules markdown file."""
+        await ctx.send("https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md")
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
