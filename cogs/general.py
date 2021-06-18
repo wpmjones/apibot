@@ -40,7 +40,7 @@ class General(commands.Cog):
     @commands.command(name="rules")
     async def links(self, ctx):
         """Respond with a link to the rules markdown file. Please update with the new address"""
-        await ctx.send("https://github.com/majordoobie/apibot/blob/master/Rules/code_of_conduct.md")
+        await ctx.send("<https://github.com/majordoobie/apibot/blob/master/Rules/code_of_conduct.md>")
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
