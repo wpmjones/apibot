@@ -40,7 +40,7 @@ class General(commands.Cog):
     @commands.command(name="rules")
     async def rules(self, ctx):
         """Respond with a link to the rules markdown file."""
-        await ctx.send("https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md")
+        await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md>")
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
