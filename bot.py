@@ -30,7 +30,6 @@ enviro = "LIVE"
 initial_extensions = [
                         "cogs.general",
                         "cogs.admin",
-                        "cogs.language_board"
                       ]
 
 if enviro == "LIVE":
@@ -41,8 +40,8 @@ if enviro == "LIVE":
     # append to initial_extensions if additional cogs are desired
     initial_extensions.append("cogs.members")
     initial_extensions.append("cogs.downtime")
-    initial_extensions.append("cogs.forum-poster")
     initial_extensions.append("cogs.response")
+    initial_extensions.append("cogs.language_board")
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
