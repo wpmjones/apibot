@@ -2,6 +2,7 @@ import coc
 import discord
 import asyncio
 
+from cogs.utils.send_email import SendMail
 from datetime import datetime, timedelta
 from discord.ext import commands, tasks
 from config import settings
@@ -20,28 +21,38 @@ def to_time(seconds):
 
 
 class Bot:
-    def __init__(self, name, bot_id, channel_id, owner, monitor):
+    def __init__(self, name, bot_id, channel_id, owner, monitor, email=None):
         self.name = name
         self.bot_id = bot_id
         self.channel_id = channel_id
         self.owner = owner
         self.monitor = monitor
+        self.email = email
 
     async def notify_down(self, bot):
         """Notify bot owner that the bot is down"""
         channel = bot.get_channel(self.channel_id)
-        await channel.send(f"<@{self.owner}> - It would appear that {self.name} is down.")
+        msg = await channel.send(f"<@{self.owner}> - It would appear that {self.name} is down.")
+        if self.email:
+            send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
+            send_email.send_mail_down()
 
     async def notify_follow_up(self, bot, downtime):
         """Notify bot owner that the bot is still down"""
         channel = bot.get_channel(self.channel_id)
-        await channel.send(f"<@{self.owner}> - {self.name} has been down for {downtime}")
+        msg = await channel.send(f"<@{self.owner}> - {self.name} has been down for {downtime}")
+        if self.email:
+            send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
+            send_email.send_mail_followup(downtime)
 
     async def notify_up(self, bot, downtime):
         """Notify bot owner that the bot is back up again"""
         channel = bot.get_channel(self.channel_id)
-        await channel.send(f"<@{self.owner}> - {self.name} is back up.\n"
-                           f"Downtime: {downtime}")
+        msg = await channel.send(f"<@{self.owner}> - {self.name} is back up.\n"
+                                 f"Downtime: {downtime}")
+        if self.email:
+            send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
+            send_email.send_mail_up(downtime)
 
 
 class Downtime(commands.Cog):
@@ -58,10 +69,11 @@ class Downtime(commands.Cog):
     async def init_bots(self):
         """Initialize self.bots with info from database"""
         self.bots = []  # clear list of any previous entries
-        sql = "SELECT bot_id, name, owner_id, channel_id, monitor FROM bot_owners ORDER BY name"
+        sql = "SELECT bot_id, name, owner_id, channel_id, monitor, email FROM bot_owners ORDER BY name"
         fetch = await self.bot.pool.fetch(sql)
         for row in fetch:
-            self.bots.append(Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'], row['monitor']))
+            self.bots.append(Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'],
+                                 row['monitor'], row['email']))
 
     @commands.group(name="bot", invoke_without_command=True)
     async def my_bot(self, ctx):
@@ -72,6 +84,19 @@ class Downtime(commands.Cog):
                     "To toggle monitoring, use `/bot monitor [bot_id]`\n"
                     "To delete a bot, use `/bot remove [bot_id]` - FUTURE ADDITION")
         await ctx.send(response)
+
+    @my_bot.command(name="test", hidden=True)
+    async def my_bot_test(self, ctx, member: discord.Member = None):
+        if not member:
+            return await ctx.send("Gimme a bot man")
+        self.bot.logger.debug("Starting...")
+        sql = "SELECT bot_id, name, owner_id, channel_id, monitor, email FROM bot_owners WHERE bot_id = $1"
+        row = await self.bot.pool.fetchrow(sql, member.id)
+        if not row:
+            return
+        bot = Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'], row['monitor'], row['email'])
+        self.bot.logger.debug("About to send notification")
+        await bot.notify_down(self.bot)
 
     @my_bot.command(name="add")
     async def my_bot_add(self, ctx, user: discord.User = None):
@@ -109,8 +134,8 @@ class Downtime(commands.Cog):
         except ValueError:
             return await ctx.send(f"{response.content} is not a valid Discord ID.  Please start over and try again.")
         if not owner:
-            return await ctx.send(f"{response.content} is not a valid Discord member of the COC API Junkies server.  "
-                                  f"Please start over and try again.")
+            return await ctx.send(f"{response.content} is not a valid Discord member of the Clash API Developers"
+                                  f" server.  Please start over and try again.")
         if owner.bot:
             return await ctx.send(f"{owner.name} ({owner.id}) is a bot and cannot be added as a bot owner.")
 
@@ -131,7 +156,7 @@ class Downtime(commands.Cog):
         if not channel:
             return await ctx.send(f"{response.content} is not a valid Discord channel.  Please start over and try again.")
         if channel.guild.id != settings['guild']['junkies']:
-            return await ctx.send(f"{channel.name} ({channel.id}) is not a valid channel on COC API Junkies.  "
+            return await ctx.send(f"{channel.name} ({channel.id}) is not a valid channel on Clash API Developers.  "
                                   f"I am only able to report things on that server.  Please start over and try "
                                   f"again.")
 
@@ -181,7 +206,6 @@ class Downtime(commands.Cog):
             new_monitor = "ON"
         else:
             new_monitor = "OFF"
-            # TODO Update bot_downtime to deal with "open" outages (delete outage or mark it online?)
         await ctx.send(f"Monitoring for {bot.display_name} is now set to {new_monitor}.")
 
     @commands.Cog.listener()
@@ -190,7 +214,7 @@ class Downtime(commands.Cog):
         Downtime is stored in the bot_downtime table of postgresql
         """
         conn = self.bot.pool
-        # Only monitor updates seen in the Junkies server
+        # Only monitor updates seen in our Discord server
         if member.guild.id != settings['guild']['junkies']:
             return
         # Is this user a bot?

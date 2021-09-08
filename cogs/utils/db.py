@@ -1,8 +1,7 @@
 import asyncpg
-from discord.ext.commands import Context
-from discord import Member
 
 from config import settings
+
 
 class Psql:
     def __init__(self, bot):
