@@ -33,6 +33,7 @@ class Bot:
         """Notify bot owner that the bot is down"""
         channel = bot.get_channel(self.channel_id)
         msg = await channel.send(f"<@{self.owner}> - It would appear that {self.name} is down.")
+        self.bot.logger.info(f"Bot down: {self.name} - Email: {self.email}")
         if self.email:
             send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
             send_email.send_mail_down()
