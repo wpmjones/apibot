@@ -224,11 +224,11 @@ class Downtime(commands.Cog):
         # Is this update a status change?
         if before.status == member.status:
             return
-        sql = "SELECT bot_id, name, owner_id, channel_id, monitor FROM bot_owners WHERE bot_id = $1"
+        sql = "SELECT bot_id, name, owner_id, channel_id, monitor, email FROM bot_owners WHERE bot_id = $1"
         row = await conn.fetchrow(sql, member.id)
         if not row:
             return
-        bot = Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'], row['monitor'])
+        bot = Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'], row['monitor'], row['email'])
         # Are we currently monitoring this bot?
         if not bot.monitor:
             return
