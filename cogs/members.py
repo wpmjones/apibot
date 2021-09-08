@@ -58,7 +58,6 @@ class MembersCog(commands.Cog):
         if old_member.roles == new_member.roles:
             return
         developer_role = new_member.guild.get_role(settings['roles']['developer'])
-        self.bot.logger.debug(developer_role.name)
         if developer_role not in old_member.roles and developer_role in new_member.roles:
             if new_member.bot:
                 channel = self.bot.get_channel(settings['channels']['admin'])
@@ -72,8 +71,6 @@ class MembersCog(commands.Cog):
             member_languages = ""
             for language_role in language_roles:
                 for role in new_member.roles:
-                    self.bot.logger.info(f"Comparing {language_role[0]} and {role.id}")
-                    self.bot.logger.info(f"{type(language_role[0])} vs {type(role.id)}")
                     if language_role[0] == role.id:
                         member_languages += f"{language_role[1]}\n"
             channel = new_member.guild.get_channel(settings['channels']['general'])
