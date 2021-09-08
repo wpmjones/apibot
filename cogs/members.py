@@ -65,22 +65,27 @@ class MembersCog(commands.Cog):
                                    f"{new_member.name} is a bot.")
             # At this point, it should be a member on our server that has just received the developers role
             self.bot.logger.info(f"New member with Developers role: {new_member.display_name}")
-            sql = "SELECT role_id, role_name FROM bot_language_board"
+            sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
             fetch = await self.bot.pool.fetch(sql)
-            language_roles = [[row['role_id'], row['role_name']] for row in fetch]
+            language_roles = [[row['role_id'], row['role_name'], row['emoji_repr']] for row in fetch]
             member_languages = ""
+            member_role_emoji = []
             for language_role in language_roles:
                 for role in new_member.roles:
                     if language_role[0] == role.id:
                         member_languages += f"{language_role[1]}\n"
+                        member_role_emoji.append(language_role[2])
             channel = new_member.guild.get_channel(settings['channels']['general'])
             embed = discord.Embed(color=discord.Color.blue(),
                                   description=f"Please welcome {new_member.display_name} to the Clash API Developers "
                                               f"server.")
-            embed.set_image(url=new_member.avatar_url_as(size=128))
-            if member_languages != "":
+            embed.set_thumbnail(url=new_member.avatar_url_as(size=128))
+            if member_languages:
                 embed.add_field(name="Languages:", value=member_languages)
-            await channel.send(embed=embed)
+            msg = await channel.send(embed=embed)
+            if member_role_emoji:
+                for emoji in member_role_emoji:
+                    await msg.add_reaction(emoji)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
