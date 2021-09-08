@@ -53,8 +53,9 @@ else:
     log_level = "DEBUG"
     coc_names = "delete_me"
 
-description = ("Welcome to the COC API Junkies bot. This is a custom bot created by and for the users of the "
-               "COC API Junkies Discord server. If you have questions, please reach out to @Admins on this server.")
+description = ("Welcome to the Clash API Developers bot. This is a custom bot created by and for the users of the "
+               "Clash API Developers Discord server. If you have questions, please reach out to "
+               "@Admins on this server.")
 
 coc_client = coc.login(settings['supercell']['user'],
                        settings['supercell']['pass'],

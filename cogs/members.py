@@ -17,7 +17,7 @@ class MembersCog(commands.Cog):
         if not member:
             return await ctx.send("Member does not exist.")
         channel = self.bot.get_channel(settings['channels']['welcome'])
-        msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you!\n"
+        msg = (f"Welcome to the Clash API Developers server, {member.mention}! We're glad to have you!\n"
                f"First, please let us know what your preferred programming language is. "
                f"Next, if you've already started working with the API, please tell us a little about your project. "
                f"If you haven't started a project yet, let us know what you're interested in making.")
@@ -35,7 +35,7 @@ class MembersCog(commands.Cog):
             return
         if not member.bot:
             channel = self.bot.get_channel(settings['channels']['welcome'])
-            msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you!\n"
+            msg = (f"Welcome to the Clash API Developers server, {member.mention}! We're glad to have you!\n"
                    f"First, please let us know what your preferred programming language is. "
                    f"Next, if you've already started working with the API, please tell us a little about your project. "
                    f"If you haven't started a project yet, let us know what you're interested in making.")

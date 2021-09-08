@@ -181,6 +181,7 @@ class General(commands.Cog):
     @commands.command(name="clear", hidden=True)
     @commands.is_owner()
     async def clear(self, ctx, msg_count: int = None):
+        """Clears the specified number of messages in the current channel (defaults to all messages)."""
         if msg_count:
             await ctx.channel.purge(limit=msg_count + 1)
         else:

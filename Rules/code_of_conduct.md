@@ -1,10 +1,10 @@
-# CoC API Junkies' Code of Conduct
+# Clash API Developers Code of Conduct
 
 This server is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it.
 
 # Table of Contents
-1. [Junkies' Admin pledge to you](#1)
-2. [Junkies' Community Standards](#2)
+1. [Our Admin pledge to you](#1)
+2. [Our Community Standards](#2)
 3. [Server Technical Policy](#3)
     1. [Data Mining](#3.1)
     2. [Asset Extraction](#3.2)
@@ -12,7 +12,7 @@ This server is not affiliated with, endorsed, sponsored, or specifically approve
     4. [Third Party Tools](#3.4)
     5. [FAQ](#3.5)
 
-## Junkies' Admin pledge to you <a name="1"></a>
+## Our Admin pledge to you <a name="1"></a>
 
 In the interest of fostering an open and welcoming environment, we as
 leaders pledge to make participation in our community a 
@@ -20,7 +20,7 @@ harassment-free experience for everyone, regardless of race, color, national ori
 religion, age, sex (gender), gender identity and expression, sexual orientation, 
 physical or mental disability, level or type of experience.
 
-## Junkies' Community Standards <a name="2"></a>
+## Our Community Standards <a name="2"></a>
 
 In this community we strive to foster a safe and friendly community for all. To do so,
 we must encourage behaviours that contribute to esprit de corps. Examples of such behaviours:
@@ -44,12 +44,12 @@ Examples of unacceptable behaviour:
 - Harassment of any kind
 
 We value more than just expertise in this server, we value collaboration and supporting others above
-technical skill. The goal of Junkies' code of conduct is to define the left and right limits for you to be 
+technical skill. The goal of this code of conduct is to define the left and right limits for you to be 
 your best self while in this community.
 
 ## Server Technical Policy <a name="3"></a>
 
-The purpose of this policy is to clarify the stance of the COC API Junkies admins’ regarding 
+The purpose of this policy is to clarify the stance of the Clash API Developers admins’ regarding 
 data mining, asset extraction, API usage and third party tools. This is from the 
 perspective of the admins’ of this discord server and not Supercell, Discord or any 
 other party. This policy may be updated in the future.
