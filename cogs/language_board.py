@@ -373,11 +373,7 @@ class LanguageBoard(commands.Cog):
             panel += f"`{row['role_name']:<15}` {row['emoji_repr']}\n"
         await ctx.send(panel)
 
-    @commands.command(
-        aliases=["roles"],
-        description="Show role stats",
-        brief=""
-    )
+    @commands.command(aliases=["roles", "stats"], description="Show role stats", brief="")
     async def role_stats(self, ctx):
         """Responds with a formatted code block containing the number of members with each role excluding those in
         the exclude list"""

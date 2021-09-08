@@ -49,10 +49,10 @@ your best self while in this community.
 
 ## Server Technical Policy <a name="3"></a>
 
-The purpose of this policy is to clarify the stance of the Clash API Developers admins’ regarding 
-data mining, asset extraction, API usage and third party tools. This is from the 
-perspective of the admins’ of this discord server and not Supercell, Discord or any 
-other party. This policy may be updated in the future.
+The purpose of this policy is to clarify the stance of the Clash API Developers 
+admins’ regarding data mining, asset extraction, API usage and third party tools. 
+This is from the perspective of the admins’ of this discord server and not 
+Supercell, Discord or any other party. This policy may be updated in the future.
 
 ---
 
