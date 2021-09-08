@@ -16,7 +16,7 @@ class MembersCog(commands.Cog):
         print(member.name)
         if not member:
             return await ctx.send("Member does not exist.")
-        channel = self.bot.get_channel(settings['channels']['general'])
+        channel = self.bot.get_channel(settings['channels']['welcome'])
         msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you!\n"
                f"First, please let us know what your preferred programming language is. "
                f"Next, if you've already started working with the API, please tell us a little about your project. "
@@ -34,7 +34,7 @@ class MembersCog(commands.Cog):
             # only act if they are joining API server
             return
         if not member.bot:
-            channel = self.bot.get_channel(settings['channels']['general'])
+            channel = self.bot.get_channel(settings['channels']['welcome'])
             msg = (f"Welcome to the COC API Junkies server, {member.mention}! We're glad to have you!\n"
                    f"First, please let us know what your preferred programming language is. "
                    f"Next, if you've already started working with the API, please tell us a little about your project. "
@@ -65,6 +65,9 @@ class MembersCog(commands.Cog):
         channel = self.bot.get_channel(settings['channels']['general'])
         msg = member.display_name + random.choice(msg_options)
         await channel.send(msg)
+        mod_log = self.bot.get_channel(settings['channels']['mod-log'])
+        msg = f"{member.display_name}#{member.discriminator} just left the server."
+        await mod_log.send(msg)
 
 
 def setup(bot):
