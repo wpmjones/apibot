@@ -22,6 +22,11 @@ class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name="invite")
+    async def invite(self, ctx):
+        """Responds with the invite link to this server"""
+        await ctx.send("https://discord.gg/clashapi")
+
     @commands.command(name="regex")
     async def regex(self, ctx):
         """Responds with the RegEx for player/clan tags"""
