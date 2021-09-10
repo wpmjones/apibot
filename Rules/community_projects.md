@@ -12,7 +12,7 @@
 ## Clash Recruiter - Immortal <a name="1"></a>
 A Clash of Clans Discord Bot built for advertising clans and alliances, enhances your recruitment method, live showcases your clans in discord, create clan banners for a clan in seconds along with clan and player look up! Evolve your recruitment process!
 
-## [findthisbase.com](https://findthisbase.com) - DaddyJo <a name="2"></a>
+## [findthisbase.com - DaddyJo](https://findthisbase.com) <a name="2"></a>
 FindThisBase.com is a 3-star video search engine for Clash of Clans. Upload a TH13 or TH14 base image and 3-star vids on how to attack the base will be searched. Completely free to use, fast and reliable results, no cooldown.
 
 [Web Link](https://findthisbase.com/)
