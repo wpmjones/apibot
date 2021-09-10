@@ -276,7 +276,7 @@ class General(commands.Cog):
         for match in sections:
             description = match.group("body")
             # underlines, dividers, bullet points
-            description = UNDERLINE_MATCH.sub("__", description).replace("---", "").replace("-", "\u2022")
+            description = UNDERLINE_MATCH.sub("__", description).replace("---", "")  # .replace("-", "\u2022")
             title = match.group("title").replace("#", "").strip()
 
             if "." in match.group("number"):
