@@ -277,7 +277,7 @@ class General(commands.Cog):
         titles = []
         for match in sections:
             description = match.group("body")
-            # underlines, dividers, bullet points
+            # underlines, dividers
             description = UNDERLINE_MATCH.sub("__", description).replace("---", "")
             raw_title = match.group("title")
             if URL_EXTRATOR.match(raw_title):
@@ -286,6 +286,7 @@ class General(commands.Cog):
             else:
                 title = raw_title.replace("#", "").strip()
                 url = ""
+            self.bot.logger.info(f"Title: {title}\nURL: {url}")
 
             if "." in match.group("number"):
                 colour = 0xBDDDF4  # lighter blue for sub-headings/groups
