@@ -25,7 +25,6 @@ League Utils is a powerful and feature rich bot to run CoC tournaments. It offer
 A feature rich upgrade planner that enables you to track and plan out your village upgrades.  Also includes a stats tracker for recording clan, war and CWL overviews/statistics.
 
 [Web Link](https://www.clash.ninja/)
-
 [Discord Link](https://discord.gg/dzHTSUb)
 
 ## ClashBot - Lycoon <a name="5"></a>
@@ -39,5 +38,4 @@ ClashVerse is a discord bot with in-game like image based responses. It allows f
 ScatterBot is a Clash of Clans Discord bot tailored to clan families. It has several features like organizing your clans into groups, auto role assignment via player tag linking, in-game and in-family clan/player leaderboard rankings, detailed clan and player lookup data with support for multiple linked accounts, role and username emoji prefix awards, ban/hopper player lists, and much more!
 
 [Invite Link](https://scatterbot.net/invite)
-
 [Discord Link](https://scatterbot.net/support)
