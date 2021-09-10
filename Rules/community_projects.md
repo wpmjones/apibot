@@ -8,6 +8,7 @@
 5. [ClashBot - Lycoon](#5)
 6. [ClashVerse - Roshan](#6)
 7. [ScatterBot - ReverendMike](#7)
+8. [ClashPerk - Suvajit](#8)
 
 ## Clash Recruiter - Immortal <a name="1"></a>
 A Clash of Clans Discord Bot built for advertising clans and alliances, enhances your recruitment method, live showcases your clans in discord, create clan banners for a clan in seconds along with clan and player look up! Evolve your recruitment process!
@@ -47,3 +48,8 @@ ScatterBot is a Clash of Clans Discord bot tailored to clan families. It has sev
 
 [Invite Link](https://scatterbot.net/invite)
 [Discord Link](https://scatterbot.net/support)
+
+---
+
+## [ClashPerk - Suvajit](https://clashperk.com/) <a name="8"></a>
+A Feature-Rich Clash of Clans Discord bot that enables you to track clans, players, wars, and CWL. It enables you to set up features like automatic role assignment, player and clan linking to user accounts, export historical war stats, seasonal stats, CWL stats, approximate last seen of clan members, clan games scoreboard, many leaderboards among family clans/players and much more.
