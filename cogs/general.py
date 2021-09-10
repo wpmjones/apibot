@@ -17,8 +17,9 @@ GUEST_ROLE_ID = settings['roles']['vip_guest']
 
 SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a>(?P<body>(.|\n)+?(?=(#{2,3}|\Z)))')
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
-TITLE_EXTRATOR = re.compile(r"\[(.*?)\]")
-URL_EXTRATOR = re.compile(r"\(([^)]+)\)")
+TITLE_EXTRACTOR = re.compile(r"\[(.*?)\]")
+# URL_EXTRATOR = re.compile(r"\(([^)]+)\)")
+URL_EXTRACTOR = re.compile(r"/\(([^)]+)\)/")
 
 
 class General(commands.Cog):
@@ -280,9 +281,9 @@ class General(commands.Cog):
             # underlines, dividers
             description = UNDERLINE_MATCH.sub("__", description).replace("---", "")
             raw_title = match.group("title")
-            if URL_EXTRATOR.match(raw_title):
-                title = TITLE_EXTRATOR.match(raw_title)
-                url = URL_EXTRATOR.match(raw_title)
+            if URL_EXTRACTOR.match(raw_title):
+                title = TITLE_EXTRACTOR.match(raw_title)
+                url = URL_EXTRACTOR.match(raw_title)
             else:
                 title = raw_title.replace("#", "").strip()
                 url = ""

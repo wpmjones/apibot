@@ -42,7 +42,7 @@ ClashVerse is a discord bot with in-game like image based responses. It allows f
 
 ---
 
-## [ScatterBot - ReverendMike <a name="7"></a>](https://scatterbot.net)
+## ScatterBot - ReverendMike <a name="7"></a>
 
 ScatterBot is a Clash of Clans Discord bot tailored to clan families. It has several features like organizing your clans into groups, auto role assignment via player tag linking, in-game and in-family clan/player leaderboard rankings, detailed clan and player lookup data with support for multiple linked accounts, role and username emoji prefix awards, ban/hopper player lists, and much more!
 
