@@ -18,7 +18,6 @@ GUEST_ROLE_ID = settings['roles']['vip_guest']
 SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a>(?P<body>(.|\n)+?(?=(#{2,3}|\Z)))')
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 TITLE_EXTRACTOR = re.compile(r"\[(.*?)\]")
-# URL_EXTRATOR = re.compile(r"\(([^)]+)\)")
 URL_EXTRACTOR = re.compile(r"/\(([^)]+)\)/")
 
 

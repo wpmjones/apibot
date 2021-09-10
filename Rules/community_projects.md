@@ -25,7 +25,7 @@ League Utils is a powerful and feature rich bot to run CoC tournaments. It offer
 
 ---
 
-## [clash.ninja - Ninja <a name="4"></a>](https://www.clash.ninja/)
+## [clash.ninja - Ninja](https://www.clash.ninja/) <a name="4"></a>
 A feature rich upgrade planner that enables you to track and plan out your village upgrades.  Also includes a stats tracker for recording clan, war and CWL overviews/statistics.
 
 [Discord Link](https://discord.gg/dzHTSUb)
