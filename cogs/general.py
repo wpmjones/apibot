@@ -251,6 +251,7 @@ class General(commands.Cog):
             })
 
         await self.send_buttons(channel.id, rows, "\u200b")
+        await ctx.send(f"Rules have been recreated. View here <#{RULES_CHANNEL_ID}>")
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
@@ -314,6 +315,7 @@ class General(commands.Cog):
             })
 
         await self.send_buttons(channel.id, rows, "\u200b")
+        await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
 
     async def send_buttons(self, channel_id, action_rows, content):
         # d.py v1.x doesn't support components, so just construct the payloads manually for now.
