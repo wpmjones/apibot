@@ -274,13 +274,15 @@ class General(commands.Cog):
 
         embeds = []
         titles = []
+        test = False
         for match in sections:
             description = match.group("body")
             # underlines, dividers
             description = UNDERLINE_MATCH.sub("__", description).replace("---", "")
             raw_title = match.group("title")
             self.bot.logger.info(raw_title)
-            if re.match(URL_EXTRACTOR, raw_title):
+            if re.search(URL_EXTRACTOR, raw_title):
+                test = True
                 match = URL_EXTRACTOR.match(raw_title)
                 title = match.group("title")
                 url = match.group("url")
@@ -297,6 +299,9 @@ class General(commands.Cog):
 
             embeds.append(discord.Embed(title=title, url=url, description=description.strip(), colour=colour))
             titles.append(title)
+        if not test:
+            self.bot.logger.info("Failure")
+            return
 
         messages = [await channel.send(embed=embed) for embed in embeds]
 
