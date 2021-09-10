@@ -281,13 +281,15 @@ class General(commands.Cog):
             # underlines, dividers
             description = UNDERLINE_MATCH.sub("__", description).replace("---", "")
             raw_title = match.group("title")
+            self.bot.logger.info(raw_title)
             if URL_EXTRACTOR.match(raw_title):
-                title = TITLE_EXTRACTOR.match(raw_title)
-                url = URL_EXTRACTOR.match(raw_title)
+                title = TITLE_EXTRACTOR.match(raw_title).group(0)
+                url = URL_EXTRACTOR.match(raw_title).group(0)
+                self.bot.logger.info(f"TRUE\nTitle: {title}\nURL: {url}")
             else:
                 title = raw_title.replace("#", "").strip()
                 url = ""
-            self.bot.logger.info(f"Title: {title}\nURL: {url}")
+                self.bot.logger.info(f"FALSE\nTitle: {title}\nURL: {url}")
 
             if "." in match.group("number"):
                 colour = 0xBDDDF4  # lighter blue for sub-headings/groups
