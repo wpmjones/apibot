@@ -283,7 +283,7 @@ class General(commands.Cog):
             self.bot.logger.info(raw_title)
             if re.search(URL_EXTRACTOR, raw_title):
                 test = True
-                match = URL_EXTRACTOR.match(raw_title)
+                match = re.match(URL_EXTRACTOR, raw_title)
                 title = match.group("title")
                 url = match.group("url")
                 self.bot.logger.info(f"TRUE\nTitle: {title}\nURL: {url}")
