@@ -292,10 +292,7 @@ class General(commands.Cog):
                 url = ""
                 self.bot.logger.info(f"FALSE\nTitle: {title}\nURL: {url}")
 
-            if "." in match.group("number"):
-                colour = 0xBDDDF4  # lighter blue for sub-headings/groups
-            else:
-                colour = discord.Colour.blue()
+            colour = discord.Colour.blue()
 
             embeds.append(discord.Embed(title=title, url=url, description=description.strip(), colour=colour))
             titles.append(title)
