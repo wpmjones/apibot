@@ -8,6 +8,7 @@ from discord.ext import commands
 JUNKIES_GUILD_ID = settings['guild']['junkies']
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 RULES_CHANNEL_ID = settings['channels']['rules']
+PROJECTS_CHANNEL_ID = settings['channels']['projects']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
 BOTS_ROLE_ID = settings['roles']['bots']
 DEVELOPER_ROLE_ID = settings['roles']['developer']
@@ -202,6 +203,69 @@ class General(commands.Cog):
         await channel.purge()
 
         with open("Rules/code_of_conduct.md", encoding="utf-8") as fp:
+            text = fp.read()
+
+        sections = SECTION_MATCH.finditer(text)
+
+        embeds = []
+        titles = []
+        for match in sections:
+            description = match.group("body")
+            # underlines, dividers, bullet points
+            description = UNDERLINE_MATCH.sub("__", description).replace("---", "").replace("-", "\u2022")
+            title = match.group("title").replace("#", "").strip()
+
+            if "." in match.group("number"):
+                colour = 0xBDDDF4  # lighter blue for sub-headings/groups
+            else:
+                colour = discord.Colour.blue()
+
+            embeds.append(discord.Embed(title=title, description=description.strip(), colour=colour))
+            titles.append(title)
+
+        messages = [await channel.send(embed=embed) for embed in embeds]
+
+        rows = []
+        buttons = []
+
+        # FIXME: Update when d.py goes to v2
+        for i, (message, title) in enumerate(zip(messages, titles)):
+            if i == 3:
+                rows.append({
+                    "type": 1,  # action row
+                    "components": copy.copy(buttons),
+                })
+                buttons.clear()
+
+            buttons.append({
+                "type": 2,  # button type
+                "label": title.replace("#", "").strip(),
+                "style": 5,  # URL
+                "url": message.jump_url,
+            })
+
+        if buttons:
+            rows.append({
+                "type": 1,  # action row
+                "components": buttons,
+            })
+
+        await self.send_buttons(channel.id, rows, "\u200b")
+
+    @commands.command(hidden=True)
+    @commands.has_role("Admin")
+    async def recreate_projects(self, ctx):
+        """Recreate the #community-projects channel.
+
+        This parses the Rules/community_projects.md markdown file, and sends it as a series of embeds.
+        Assumptions are made that each section is separated by <a name="x.x"></a>.
+
+        Finally, buttons are sent with links which correspond to the various messages.
+        """
+        channel = self.bot.get_channel(PROJECTS_CHANNEL_ID)
+        await channel.purge()
+
+        with open("Rules/community_projects.md", encoding="utf-8") as fp:
             text = fp.read()
 
         sections = SECTION_MATCH.finditer(text)
