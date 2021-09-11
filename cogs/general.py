@@ -180,6 +180,57 @@ class General(commands.Cog):
         await ctx.send(f"If {owner.display_name} would like bot monitoring, here's your command:\n"
                        f"`/bot add {bot.id}`")
 
+    @commands.command(name="developer", aiases=["dev", "devrole", "dev_role"], hidden=True)
+    @commands.has_role("Admin")
+    async def dev_role(self, ctx, member: discord.Member = None):
+        """Add appropriate role to new users"""
+        if not member:
+            return await ctx.send("Please provide a valid member of this server.")
+        if member.guild.id != settings['guild']['junkies']:
+            return await ctx.send("This command can only be performed on the Clash API Developers server.")
+        dev_role = member.guild.get_role(settings['roles']['developer'])
+        if dev_role in member.roles:
+            return await ctx.send(f"{member.display_name} already has the Developer role. This command can only "
+                                  f"be used for members without the Developer role.")
+        guest_role = member.guild.get_role(settings['roles']['vip_guest'])
+        if guest_role in member.roles:
+            remove = await ctx.prompt(f"{member.display_name} currently has the Guest role. Would you like to remove "
+                                      f"the Guest role and add the Developer role?")
+            if remove:
+                await member.remove_roles(guest_role, reason="Changing to Developer role")
+            else:
+                return await ctx.send("Action cancelled.")
+        if ctx.channel.id != settings['channels']['welcome']:
+            return await ctx.send(f"I'd feel a whole lot better if you ran this commend in "
+                                  f"<#{settings['channels']['welcome']}>.")
+        # At this point, we should have a valid member without the dev role
+        # Let's see if we want to add any language roles first
+        self.bot.logger.info(f"Starting Dev Role add process for {member.display_name} (Initiated by "
+                             f"{ctx.author.display_name}")
+        prompt = await ctx.prompt("Would you like to add a language role first?")
+        if prompt:
+            sql = "SELECT role_id, role_name FROM bot_language_board ORDER BY role_name"
+            fetch = await self.bot.pool.fetch(sql)
+            role_names = [x['role_name'] for x in fetch]
+            role_ids = [x['role_id'] for x in fetch]
+            content = "Please select the member's primary language role:\n"
+            for i in range(len(fetch)):
+                content += f"{i+1} - {role_names[i]}\n"
+            lang_int = await ctx.prompt(content, additional_options=len(fetch))
+            lang_int -= 1  # decrement by one for list index
+            role = member.guild.get_role(role_ids[lang_int])
+            await member.add_roles(role, reason=f"Role added by {ctx.author.display_name}")
+            # change nickname (32 character limit)
+            await member.edit(nick=f"{member.display_name} | {role_names[lang_int]}")
+            self.bot.logger.info(f"{role_names[lang_int]} added to {member.display_name}")
+        else:
+            self.bot.logger.info(f"No language roles added for {member.display_name}")
+        # Add developer role
+        await member.add_roles(dev_role, reason=f"Role added by {ctx.author.display_name}")
+        prompt = await ctx.send("Would you like to clear the welcome channel?")
+        if prompt:
+            await ctx.channel.purge()
+
     @commands.command(name="clear", hidden=True)
     @commands.is_owner()
     async def clear(self, ctx, msg_count: int = None):
@@ -187,8 +238,9 @@ class General(commands.Cog):
         if msg_count:
             await ctx.channel.purge(limit=msg_count + 1)
         else:
-            async for message in ctx.channel.history():
-                await message.delete()
+            await ctx.channel.purge()
+            # async for message in ctx.channel.history():
+            #     await message.delete()
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
