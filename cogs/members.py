@@ -10,11 +10,8 @@ class MembersCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="welcome", hidden=True)
-    async def welcome(self, ctx, discord_id):
+    async def welcome(self, ctx, member: discord.Member = None):
         guild = self.bot.get_guild(settings['guild']['junkies'])
-        print(guild)
-        member = guild.get_member(discord_id)
-        print(member.name)
         if not member:
             return await ctx.send("Member does not exist.")
         channel = self.bot.get_channel(settings['channels']['welcome'])
