@@ -181,9 +181,10 @@ class General(commands.Cog):
                        f"`/bot add {bot.id}`")
 
     @commands.command(name="developer", aiases=["dev", "devrole", "dev_role"], hidden=True)
-    @commands.has_role("Admin")
+    # @commands.has_role("Admin")
     async def dev_role(self, ctx, member: discord.Member = None):
         """Add appropriate role to new users"""
+        self.bot.logger.info("Starting...")
         if not member:
             return await ctx.send("Please provide a valid member of this server.")
         if member.guild.id != settings['guild']['junkies']:
@@ -227,9 +228,6 @@ class General(commands.Cog):
             self.bot.logger.info(f"No language roles added for {member.display_name}")
         # Add developer role
         await member.add_roles(dev_role, reason=f"Role added by {ctx.author.display_name}")
-        prompt = await ctx.send("Would you like to clear the welcome channel?")
-        if prompt:
-            await ctx.channel.purge()
 
     @commands.command(name="clear", hidden=True)
     @commands.is_owner()
