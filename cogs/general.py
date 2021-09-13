@@ -181,7 +181,7 @@ class General(commands.Cog):
                        f"`/bot add {bot.id}`")
 
     @commands.command(name="developer", aiases=["dev", "devrole", "dev_role"], hidden=True)
-    # @commands.has_role("Admin")
+    @commands.has_role("Admin")
     async def dev_role(self, ctx, member: discord.Member = None):
         """Add appropriate role to new users"""
         if not member:
@@ -206,7 +206,7 @@ class General(commands.Cog):
         # At this point, we should have a valid member without the dev role
         # Let's see if we want to add any language roles first
         self.bot.logger.info(f"Starting Dev Role add process for {member.display_name} (Initiated by "
-                             f"{ctx.author.display_name}")
+                             f"{ctx.author.display_name})")
         prompt = await ctx.prompt("Would you like to add a language role first?")
         if prompt:
             sql = "SELECT role_id, role_name FROM bot_language_board ORDER BY role_name"
@@ -251,7 +251,7 @@ class General(commands.Cog):
             response = await ctx.bot.wait_for("message", check=check_author, timeout=45)
             message_id = response.content
             try:
-                msg = ctx.channel.get_message(message_id)
+                msg = ctx.channel.fetch_message(message_id)
                 content = f"{member.display_name} says:\n>>> {msg.content}"
                 channel = self.bot.get_channel(settings['channels']['general'])
                 await channel.send(content)
