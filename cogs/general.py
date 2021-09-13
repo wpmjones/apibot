@@ -43,7 +43,7 @@ class General(commands.Cog):
     @commands.command(name="vps")
     async def vps(self, ctx):
         """Responds with a link to a GitHub MD on VPS options"""
-        await ctx.send("https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md")
+        await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
     @commands.command(name="links")
     async def links(self, ctx):
