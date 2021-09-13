@@ -184,7 +184,6 @@ class General(commands.Cog):
     # @commands.has_role("Admin")
     async def dev_role(self, ctx, member: discord.Member = None):
         """Add appropriate role to new users"""
-        self.bot.logger.info("Starting...")
         if not member:
             return await ctx.send("Please provide a valid member of this server.")
         if member.guild.id != settings['guild']['junkies']:
@@ -228,6 +227,42 @@ class General(commands.Cog):
             self.bot.logger.info(f"No language roles added for {member.display_name}")
         # Add developer role
         await member.add_roles(dev_role, reason=f"Role added by {ctx.author.display_name}")
+        # Send DM to new member
+        welcome_msg = ("Welcome to the Clash API Developers server.  We hope you find this to be a great place to "
+                       "share and learn more about the Clash of Clans API.  You can check out <#641454924172886027> "
+                       "if you need some basic help.  There are some tutorials there as well as some of the more "
+                       "common libraries that are used with various programming languages. If you use more than one "
+                       "programming language, be sure to check out <#885216742903803925> to assign yourself the role "
+                       "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
+        await member.send(welcome_msg)
+        # Copy a message to General??
+        await ctx.invoke(self.bot.get_command("send_to_general"), member=member)
+
+    @commands.command(name="to_gen", hidden=True)
+    async def send_to_general(self, ctx, member: discord.Member = None):
+        """Copy message from #Welcome to #General"""
+
+        def check_author(m):
+            return m.author == ctx.author
+
+        prompt = await ctx.prompt("Would you like to copy a message to #general?")
+        if prompt:
+            await ctx.send("Please enter the Message ID of the message to copy.")
+            response = await ctx.bot.wait_for("message", check=check_author, timeout=45)
+            message_id = response.content
+            try:
+                msg = ctx.channel.get_message(message_id)
+                content = f"{member.display_name} says:\n>>> {msg.content}"
+                channel = self.bot.get_channel(settings['channels']['general'])
+                await channel.send(content)
+            except (discord.NotFound, discord.HTTPException) as e:
+                self.bot.logger.exception(f"Failure trying to send message to #General\n{e}")
+                return await ctx.send(f"Copying of the message failed.  Please confirm you copied the correct "
+                                      f"message ID and try `//to_gen`.\n"
+                                      f"Status: {e.status}\n"
+                                      f"Error: {e.text}\n\n"
+                                      f"This message will self-destruct in 120 seconds.",
+                                      delete_after=120.0)
 
     @commands.command(name="clear", hidden=True)
     @commands.is_owner()
