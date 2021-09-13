@@ -183,7 +183,14 @@ class General(commands.Cog):
     @commands.command(name="developer", aiases=["dev", "devrole", "dev_role"], hidden=True)
     @commands.has_role("Admin")
     async def dev_role(self, ctx, member: discord.Member = None):
-        """Add appropriate role to new users"""
+        """Add appropriate role to new users.  It will:
+
+        Prompt you a primary language role (optional)
+        Add the Developer role
+        Announce the new member in #general
+        Send a welcome message to new member (via DM)
+        Offer to allow you to copy a message from #welcome to #general to help introduce the new member (it will
+        ask you to provide the Discord message ID of the message to copy"""
         if not member:
             return await ctx.send("Please provide a valid member of this server.")
         if member.guild.id != settings['guild']['junkies']:
@@ -240,13 +247,13 @@ class General(commands.Cog):
 
     @commands.command(name="to_gen", hidden=True)
     async def send_to_general(self, ctx, member: discord.Member = None):
-        """Copy message from #Welcome to #General"""
+        """Copy message from #Welcome to #General
+
+        After entering the command, it will prompt you to provide the Discord message ID of the message in question.
+        It will repost the specified message in #general."""
 
         def check_author(m):
             return m.author == ctx.author
-
-        if not member:
-            member = ctx.author
         prompt = await ctx.prompt("Would you like to copy a message to #general?")
         if prompt:
             await ctx.send("Please enter the Message ID of the message to copy.")
@@ -254,7 +261,7 @@ class General(commands.Cog):
             message_id = response.content
             try:
                 msg = await ctx.channel.fetch_message(message_id)
-                content = f"{member.display_name} says:\n>>> {msg.content}"
+                content = f"{msg.author.display_name} says:\n>>> {msg.content}"
                 channel = self.bot.get_channel(settings['channels']['general'])
                 await channel.send(content)
             except (discord.NotFound, discord.HTTPException) as e:
