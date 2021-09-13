@@ -253,7 +253,7 @@ class General(commands.Cog):
             response = await ctx.bot.wait_for("message", check=check_author, timeout=45)
             message_id = response.content
             try:
-                msg = ctx.channel.fetch_message(message_id)
+                msg = await ctx.channel.fetch_message(message_id)
                 content = f"{member.display_name} says:\n>>> {msg.content}"
                 channel = self.bot.get_channel(settings['channels']['general'])
                 await channel.send(content)
