@@ -245,6 +245,8 @@ class General(commands.Cog):
         def check_author(m):
             return m.author == ctx.author
 
+        if not member:
+            member = ctx.author
         prompt = await ctx.prompt("Would you like to copy a message to #general?")
         if prompt:
             await ctx.send("Please enter the Message ID of the message to copy.")
