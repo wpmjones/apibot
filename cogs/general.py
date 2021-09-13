@@ -42,8 +42,8 @@ class General(commands.Cog):
 
     @commands.command(name="vps")
     async def vps(self, ctx):
-        """Responds with a link to a Discord message on inexpensive VPS options"""
-        await ctx.send("https://discordapp.com/channels/566451504332931073/566451504903618561/662484243808780309")
+        """Responds with a link to a GitHub MD on VPS options"""
+        await ctx.send("https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md")
 
     @commands.command(name="links")
     async def links(self, ctx):
