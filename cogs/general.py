@@ -185,12 +185,12 @@ class General(commands.Cog):
     async def dev_role(self, ctx, member: discord.Member = None):
         """Add appropriate role to new users.  It will:
 
-        Prompt you a primary language role (optional)
+        Prompt you to add primary language role (optional)
         Add the Developer role
         Announce the new member in #general
         Send a welcome message to new member (via DM)
         Offer to allow you to copy a message from #welcome to #general to help introduce the new member (it will
-        ask you to provide the Discord message ID of the message to copy"""
+        ask you to provide the Discord message ID of the message to copy)"""
         if not member:
             return await ctx.send("Please provide a valid member of this server.")
         if member.guild.id != settings['guild']['junkies']:
