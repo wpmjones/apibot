@@ -95,13 +95,14 @@ class Response(commands.Cog):
             if col3.max() > 250:
                 max_war_index = col3.idxmax()
                 max_war = col3.max()
-            # calculate average of all three columns
-            avg_response = (df.sum()[0] + df.sum()[1] + df.sum()[2]) / (len(df) * 3)
-            max_value = avg_response * 2
-            if max_value > 250:
-                y_axis_max = math.ceil(max_value/100) * 100
-            else:
-                y_axis_max = 250
+            # calculate average of all three columns - DISABLED DUE TO HIGH RESPONSE TIMES
+            # avg_response = (df.sum()[0] + df.sum()[1] + df.sum()[2]) / (len(df) * 3)
+            # max_value = avg_response * 2
+            # if max_value > 250:
+            #     y_axis_max = math.ceil(max_value/100) * 100
+            # else:
+            #     y_axis_max = 250
+            y_axis_max = 1500  # Temporary static max
             fig, ax = plt.subplots(figsize=(18, 9))
             ax.set_ylim([0, y_axis_max])
             ax.plot(df['check_time'], df['clan_response'])
@@ -163,6 +164,9 @@ class Response(commands.Cog):
     @tasks.loop(minutes=15.0)
     async def response_check(self):
         """Task for monitoring coc API response times"""
+        # Don't execute if not on production server
+        if settings['enviro'] != "LIVE":
+            return
         clan_list = []
         player_list = []
         war_list = []
