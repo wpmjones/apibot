@@ -191,7 +191,7 @@ class Response(commands.Cog):
         response_time = await conn.fetchrow(sql)
         self.bot.logger.info(f"Avg. response time: {response_time['resp']}")
         channel = self.bot.get_channel(settings['channels']['api_response'])
-        await channel.edit(name=f"API: {player}ms/{response_time['resp']:.2f}ms")
+        await channel.edit(name=f"API: {player:.2f}ms/{response_time['resp']:.2f}ms")
 
 
 def setup(bot):
