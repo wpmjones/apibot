@@ -189,11 +189,11 @@ class Response(commands.Cog):
                "ORDER BY check_time DESC) "
                "SELECT AVG(player_response) as resp FROM s LIMIT $1")
         one_response_time = await conn.fetchrow(sql, 4)
-        six_resposne_time = await conn.fetchrow(sql, 24)
+        six_response_time = await conn.fetchrow(sql, 24)
         try:
             channel = self.bot.get_channel(settings['channels']['api_response'])
             await channel.edit(name=f"API: {player:.0f}ms/{one_response_time['resp']:.0f}ms/"
-                                    f"{six_resposne_time:.0f}ms")
+                                    f"{six_response_time['resp']:.0f}ms")
         except:
             self.bot.logger.exception("Channel update failed")
 
