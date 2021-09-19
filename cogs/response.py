@@ -186,8 +186,8 @@ class Response(commands.Cog):
         # Update voice channel name
         sql = ("with s as "
                "(SELECT player_response, clan_response, war_response FROM bot_responses "
-               "ORDER BY check_time DESC) "
-               "SELECT AVG(player_response) as resp FROM s LIMIT $1")
+               "ORDER BY check_time DESC LIMIT $1) "
+               "SELECT AVG(player_response) as resp FROM s")
         one_response_time = await conn.fetchrow(sql, 4)
         six_response_time = await conn.fetchrow(sql, 24)
         try:
