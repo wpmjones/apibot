@@ -51,6 +51,7 @@ class Response(commands.Cog):
         return clan_elapsed_time, player_elapsed_time, war_elapsed_time
 
     @commands.command(name="response")
+    @commands.has_role("Admin")
     async def response_info(self, ctx):
         """Report information on api response times (last 24 hours)"""
 
@@ -167,6 +168,7 @@ class Response(commands.Cog):
         # Don't execute if not on production server
         if settings['enviro'] != "LIVE":
             return
+        conn = self.bot.pool
         clan_list = []
         player_list = []
         war_list = []
@@ -180,7 +182,16 @@ class Response(commands.Cog):
         war = sum(war_list) / len(war_list)
         sql = ("INSERT INTO bot_responses (check_time, clan_response, player_response, war_response) "
                "VALUES ($1, $2, $3, $4)")
-        await self.bot.pool.execute(sql, datetime.utcnow(), clan, player, war)
+        await conn.execute(sql, datetime.utcnow(), clan, player, war)
+        # Update voice channel name
+        sql = ("with s as "
+               "(SELECT player_response, clan_response, war_response FROM bot_responses) "
+               "ORDER BY check_time DESC "
+               "SELECT AVG(player_response) FROM s LIMIT 4")
+        response_time = await conn.fetchrow(sql)
+        self.bot.logger.info(f"Avg. response time: {response_time}")
+        channel = self.bot.get_channel(settings['channels']['api_response'])
+        await channel.edit(name=f"API Response: {response_time:.2f}ms")
 
 
 def setup(bot):
