@@ -185,8 +185,8 @@ class Response(commands.Cog):
         await conn.execute(sql, datetime.utcnow(), clan, player, war)
         # Update voice channel name
         sql = ("with s as "
-               "(SELECT player_response, clan_response, war_response FROM bot_responses) "
-               "ORDER BY check_time DESC "
+               "(SELECT player_response, clan_response, war_response FROM bot_responses "
+               "ORDER BY check_time DESC) "
                "SELECT AVG(player_response) FROM s LIMIT 4")
         response_time = await conn.fetchrow(sql)
         self.bot.logger.info(f"Avg. response time: {response_time}")
