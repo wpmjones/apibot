@@ -243,7 +243,7 @@ class General(commands.Cog):
                        "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
         await member.send(welcome_msg)
         # Copy a message to General??
-        await ctx.invoke(self.bot.get_command("send_to_general"), member=member)
+        await ctx.invoke(self.bot.get_command("to_gen"), member=member)
 
     @commands.command(name="to_gen", hidden=True)
     async def send_to_general(self, ctx, member: discord.Member = None):
@@ -254,6 +254,7 @@ class General(commands.Cog):
 
         def check_author(m):
             return m.author == ctx.author
+
         prompt = await ctx.prompt("Would you like to copy a message to #general?")
         if prompt:
             await ctx.send("Please enter the Message ID of the message to copy.")
