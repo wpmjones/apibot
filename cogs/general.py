@@ -208,8 +208,9 @@ class General(commands.Cog):
             else:
                 return await ctx.send("Action cancelled.")
         if ctx.channel.id != settings['channels']['welcome']:
-            return await ctx.send(f"I'd feel a whole lot better if you ran this commend in "
+            return await ctx.send(f"I'd feel a whole lot better if you ran this command in "
                                   f"<#{settings['channels']['welcome']}>.")
+        self.bot.logger.info("Pre-checks complete. Starting dev add process.")
         # At this point, we should have a valid member without the dev role
         # Let's see if we want to add any language roles first
         self.bot.logger.info(f"Starting Dev Role add process for {member.display_name} (Initiated by "
