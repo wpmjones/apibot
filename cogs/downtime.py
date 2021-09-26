@@ -34,26 +34,26 @@ class Bot:
         channel = bot.get_channel(self.channel_id)
         msg = await channel.send(f"<@{self.owner}> - It would appear that {self.name} is down.")
         bot.logger.info(f"Bot down: {self.name} - Email: {self.email}")
-        if self.email:
-            send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
-            send_email.send_mail_down()
+        # if self.email:
+        #     send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
+        #     send_email.send_mail_down()
 
     async def notify_follow_up(self, bot, downtime):
         """Notify bot owner that the bot is still down"""
         channel = bot.get_channel(self.channel_id)
         msg = await channel.send(f"<@{self.owner}> - {self.name} has been down for {downtime}")
-        if self.email:
-            send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
-            send_email.send_mail_followup(downtime)
+        # if self.email:
+        #     send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
+        #     send_email.send_mail_followup(downtime)
 
     async def notify_up(self, bot, downtime):
         """Notify bot owner that the bot is back up again"""
         channel = bot.get_channel(self.channel_id)
         msg = await channel.send(f"<@{self.owner}> - {self.name} is back up.\n"
                                  f"Downtime: {downtime}")
-        if self.email:
-            send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
-            send_email.send_mail_up(downtime)
+        # if self.email:
+        #     send_email = SendMail(self.email, "Bot Owner", self.name, msg.guild.id, msg.channel.id, msg.id)
+        #     send_email.send_mail_up(downtime)
 
 
 class Downtime(commands.Cog):
