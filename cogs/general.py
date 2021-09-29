@@ -2,6 +2,7 @@ import copy
 import discord
 import re
 
+from cogs.utils import checks
 from config import settings
 from discord.ext import commands
 
@@ -276,15 +277,18 @@ class General(commands.Cog):
                                       delete_after=120.0)
 
     @commands.command(name="clear", hidden=True)
-    @commands.is_owner()
+    @checks.manage_messages()
     async def clear(self, ctx, msg_count: int = None):
         """Clears the specified number of messages in the current channel (defaults to all messages)."""
         if msg_count:
             await ctx.channel.purge(limit=msg_count + 1)
         else:
-            await ctx.channel.purge()
-            # async for message in ctx.channel.history():
-            #     await message.delete()
+            prompt = await ctx.prompt(f"Are you sure you want to remove ALL messages from the "
+                                      f"{ctx.channel.name} channel?")
+            if prompt:
+                await ctx.channel.purge()
+            else:
+                await ctx.message.delete()
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
