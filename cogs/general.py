@@ -191,7 +191,11 @@ class General(commands.Cog):
         Announce the new member in #general
         Send a welcome message to new member (via DM)
         Offer to allow you to copy a message from #welcome to #general to help introduce the new member (it will
-        ask you to provide the Discord message ID of the message to copy)"""
+        ask you to provide the Discord message ID of the message to copy)
+
+        **Permissions:**
+        Admin role required
+        """
         if not member:
             return await ctx.send("Please provide a valid member of this server.")
         if member.guild.id != settings['guild']['junkies']:
@@ -245,14 +249,19 @@ class General(commands.Cog):
                        "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
         await member.send(welcome_msg)
         # Copy a message to General??
-        await ctx.invoke(self.bot.get_command("to_gen"), member=member)
+        await ctx.invoke(self.bot.get_command("to_gen"))
 
     @commands.command(name="to_gen", hidden=True)
-    async def send_to_general(self, ctx, member: discord.Member = None):
+    @checks.manage_messages()
+    async def send_to_general(self, ctx):
         """Copy message from #Welcome to #General
 
         After entering the command, it will prompt you to provide the Discord message ID of the message in question.
-        It will repost the specified message in #general."""
+        It will repost the specified message in #general.
+
+        **Permissions:**
+        Manage Messages
+        """
 
         def check_author(m):
             return m.author == ctx.author
@@ -279,7 +288,15 @@ class General(commands.Cog):
     @commands.command(name="clear", hidden=True)
     @checks.manage_messages()
     async def clear(self, ctx, msg_count: int = None):
-        """Clears the specified number of messages in the current channel (defaults to all messages)."""
+        """Clears the specified number of messages in the current channel (defaults to all messages).
+
+        **Examples:**
+        //clear (will ask for confirmation first)
+        //clear 7 (no confirmation, will delete the clear command and the 7 previous messages)
+
+        **Permissions:**
+        Manage Messages
+        """
         if msg_count:
             await ctx.channel.purge(limit=msg_count + 1)
         else:
