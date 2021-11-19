@@ -175,18 +175,19 @@ class Downtime(commands.Cog):
 
         **Example:**
         //bot list"""
-        await self.init_bots()
-        embed = discord.Embed(title="Bots that are configured for monitoring")
-        for bot in self.bots:
-            owner = self.bot.get_user(bot.owner)
-            channel = self.bot.get_channel(bot.channel_id)
-            embed.add_field(name=f"{bot.name}",
-                            value=f"Bot ID: {bot.bot_id}\n"
-                                  f"Owner: {owner.mention}\n"
-                                  f"Channel: {channel.mention}\n"
-                                  f"Monitoring: {bot.monitor}",
-                            inline=True)
-        await ctx.send(embed=embed)
+        async with ctx.typing():
+            await self.init_bots()
+            embed = discord.Embed(title="Bots that are configured for monitoring")
+            for bot in self.bots:
+                owner = self.bot.get_user(bot.owner)
+                channel = self.bot.get_channel(bot.channel_id)
+                embed.add_field(name=f"{bot.name}",
+                                value=f"Bot ID: {bot.bot_id}\n"
+                                      f"Owner: {owner.mention}\n"
+                                      f"Channel: {channel.mention}\n"
+                                      f"Monitoring: {bot.monitor}",
+                                inline=True)
+            await ctx.send(embed=embed)
 
     @my_bot.command(name="monitor")
     async def my_bot_monitor(self, ctx, bot: discord.Member = None):
