@@ -80,10 +80,10 @@ class Downtime(commands.Cog):
     async def my_bot(self, ctx):
         if ctx.invoked_subcommand is not None:
             return
-        response = ("To list bots, use `/bot list`\n"
-                    "To add a bot, use `/bot add [bot_id]`\n"
-                    "To toggle monitoring, use `/bot monitor [bot_id]`\n"
-                    "To delete a bot, use `/bot remove [bot_id]` - FUTURE ADDITION")
+        response = ("To list bots, use `//bot list`\n"
+                    "To add a bot, use `//bot add [bot_id]`\n"
+                    "To toggle monitoring, use `//bot monitor [bot_id]`\n"
+                    "To delete a bot, use `//bot remove [bot_id]` - FUTURE ADDITION")
         await ctx.send(response)
 
     @my_bot.command(name="test", hidden=True)
@@ -105,8 +105,8 @@ class Downtime(commands.Cog):
         information.
 
         **Examples:**
-        /bot add 123457890
-        /bot add @Minion Bot
+        //bot add 123457890
+        //bot add @Minion Bot
 
         **Other Info:**
         You will be prompted to provide the Discord ID of the bot owner and the channel where notifications will be
@@ -166,15 +166,15 @@ class Downtime(commands.Cog):
         await self.bot.pool.execute(sql, user.id, user.name, owner.id, channel.id)
         await ctx.send(f"Congratulations! You have successfully added {user.name} to the bot monitoring system. "
                        f"If there is an outage that lasts more than 60 seconds, I will ping {owner.display_name} in "
-                       f"{channel.mention}.  To toggle monitoring, please use `/bot monitor {user.id}` or "
-                       f"`/bot monitor @{user.display_name}#{user.discriminator}`.")
+                       f"{channel.mention}.  To toggle monitoring, please use `//bot monitor {user.id}` or "
+                       f"`//bot monitor @{user.display_name}#{user.discriminator}`.")
 
     @my_bot.command(name="list")
     async def my_bot_list(self, ctx):
         """List the bots that are being monitored.
 
         **Example:**
-        /bot list"""
+        //bot list"""
         await self.init_bots()
         embed = discord.Embed(title="Bots that are configured for monitoring")
         for bot in self.bots:
@@ -193,8 +193,8 @@ class Downtime(commands.Cog):
         """Toggle monitoring for the specified bot
 
         **Example:**
-        /bot monitor 1234567890
-        /bot monitor @Ruby
+        //bot monitor 1234567890
+        //bot monitor @Ruby
         """
         if not bot:
             return await ctx.send("Please provide a Discord ID or mention the bot in question.")
