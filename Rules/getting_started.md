@@ -16,3 +16,4 @@ You will need to create a token for each public IP you are interacting with the 
 ![With not JWT](images/img_getting_started/01_curl_no_jwt.png)
 ### Querying with a JWT token
 ![With JWT](images/img_getting_started/02_curl_with_jwt.png)
+k
