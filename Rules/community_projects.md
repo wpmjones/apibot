@@ -7,8 +7,7 @@
 4. [clash.ninja - Ninja](#4)
 5. [ClashBot - Lycoon](#5)
 6. [ClashVerse - Roshan](#6)
-7. [ScatterBot - ReverendMike](#7)
-8. [ClashPerk - Suvajit](#8)
+7. [ClashPerk - Suvajit](#7)
 
 ## Clash Recruiter - Immortal <a name="1"></a>
 A Clash of Clans Discord Bot built for advertising clans and alliances, enhances your recruitment method, live showcases your clans in discord, create clan banners for a clan in seconds along with clan and player look up! Evolve your recruitment process!
@@ -39,15 +38,6 @@ Clashbot is a multilingual verified Discord bot aiming to provide Clash of Clans
 
 ## ClashVerse - Roshan <a name="6"></a>
 ClashVerse is a discord bot with in-game like image based responses. It allows finding zapquake combos with cc spells support, clan mates having active super troops, next trader item occurrences with reminders, clan composition including average stats of each th level, and war stats. It also has server utilities like creating embeds and button roles.
-
----
-
-## ScatterBot - ReverendMike <a name="7"></a>
-
-ScatterBot is a Clash of Clans Discord bot tailored to clan families. It has several features like organizing your clans into groups, auto role assignment via player tag linking, in-game and in-family clan/player leaderboard rankings, detailed clan and player lookup data with support for multiple linked accounts, role and username emoji prefix awards, ban/hopper player lists, and much more!
-
-[Invite Link](https://scatterbot.net/invite)
-[Discord Link](https://scatterbot.net/support)
 
 ---
 
