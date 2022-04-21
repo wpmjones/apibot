@@ -123,8 +123,9 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def add_user(self, ctx, usr):
         """Add user for coc discord links api"""
-        pwd = choice(string.ascii_letters) + choice(string.punctuation) + choice(string.digits)
-        characters = string.ascii_letters + string.punctuation + string.digits
+        PUNCTUATION = "!@#$%^&*()"
+        pwd = choice(string.ascii_letters) + choice(PUNCTUATION) + choice(string.digits)
+        characters = string.ascii_letters + PUNCTUATION + string.digits
         pwd += "".join(choice(characters) for x in range(randint(8, 12)))
         await ctx.send(pwd)
         # sql = "INSERT INTO coc_discord_users (username, passwd) VALUES ($1, $2)"
