@@ -5,6 +5,7 @@ import importlib
 import io
 import os
 import re
+import string
 import subprocess
 import sys
 import textwrap
@@ -13,6 +14,7 @@ import traceback
 
 from contextlib import redirect_stdout
 from discord.ext import commands
+from random import choice, randint
 from typing import Optional
 from cogs.utils.formats import TabularData, plural
 
@@ -119,11 +121,15 @@ class Admin(commands.Cog):
 
     @commands.command(name="add_user", hidden=True)
     @commands.is_owner()
-    async def add_user(self, ctx, usr, pwd):
+    async def add_user(self, ctx, usr):
         """Add user for coc discord links api"""
-        sql = "INSERT INTO coc_discord_users (username, passwd) VALUES ($1, $2)"
-        await self.bot.pool.execute(sql, usr, pwd)
-        await ctx.send("\N{OK HAND SIGN}")
+        pwd = choice(string.ascii_letters) + choice(string.punctuation) + choice(string.digits)
+        characters = string.ascii_letters + string.punctuation + string.digits
+        pwd += "".join(choice(characters) for x in range(randint(8, 12)))
+        await ctx.send(pwd)
+        # sql = "INSERT INTO coc_discord_users (username, passwd) VALUES ($1, $2)"
+        # await self.bot.pool.execute(sql, usr, pwd)
+        # await ctx.send("\N{OK HAND SIGN}")
 
     @commands.command(hidden=True)
     async def load(self, ctx, *, module):
