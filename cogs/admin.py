@@ -117,6 +117,14 @@ class Admin(commands.Cog):
             return f"```py\n{e.__class__.__name__}: {e}\n```"
         return f"```py\n{e.text}{'^':>{e.offset}}\n{e.__class__.__name__}: {e}```"
 
+    @commands.command(name="add_user", hidden=True)
+    @commands.is_owner()
+    async def add_user(self, ctx, usr, pwd):
+        """Add user for coc discord links api"""
+        sql = "INSERT INTO coc_discord_users (username, passwd) VALUES ($1, $2)"
+        await self.bot.pool.execute(sql, usr, pwd)
+        await ctx.send("\N{OK HAND SIGN}")
+
     @commands.command(hidden=True)
     async def load(self, ctx, *, module):
         """Loads a module."""
