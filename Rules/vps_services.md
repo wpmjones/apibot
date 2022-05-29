@@ -58,7 +58,7 @@ A few things to keep in mind. With a VPS, there is a good chance that you will o
 encourage you to use the [Raspberry Pi](https://www.raspberrypi.org/documentation/computers/using_linux.html) documentation on basic Linux commands. 
 Keep in mind that the Raspberry Pi base image is Debian, so if you are using a distribution that is not Debian-based such as Ubuntu, PopOS, and Mint then some of the commands may not work. Especially the package commands (apt vs yum vs pacman).
 
-Another thing to consider when using a Linux VPS is how to keep your program running. Most modern Linux systems run on what's called "SystemD". SystemD controls what starts and stops when the operating system starts. You can register your application with the SystemD so that it too can run when the operating system starts. [GalaxyGateway](https://wiki.galaxygate.net/hosting/discord/python/) has a nice writeup on how to set this up!
+Another thing to consider when using a Linux VPS is how to keep your program running. Most modern Linux systems run on what's called "SystemD". SystemD controls what starts and stops when the operating system starts. You can register your application with the SystemD so that it too can run when the operating system starts. [GalaxyGate](https://wiki.galaxygate.net/hosting/discord/python/) has a nice writeup on how to set this up!
 
 > Pro tip! If you want to see your logs from the system d you can use the following commands.
 ```bash
