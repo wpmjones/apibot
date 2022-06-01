@@ -47,23 +47,23 @@ class General(commands.Cog):
         """Responds with a link to a GitHub MD on VPS options"""
         await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
-    @commands.command(name="links")
-    async def links(self, ctx):
-        """Responds with a link to a Discord message on the Discord Link API (by ReverendMike)"""
-        await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
-
     @commands.command(name="rules")
     async def rules(self, ctx):
         """Respond with a link to the rules markdown file."""
         await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md>")
 
+    @commands.command(name="links")
+    async def link_link_api(self, ctx):
+        """Responds with a link to a Discord message on the Discord Link API (by ReverendMike)"""
+        await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
+
     @commands.command(name="coc_wrappers")
-    async def rules(self, ctx):
+    async def link_coc_wrappers(self, ctx):
         """Respond with a link to the page created by @Doluk"""
         await ctx.send("<https://coc-libs.vercel.app/>")
 
     @commands.command(name="discord_wrappers")
-    async def rules(self, ctx):
+    async def link_discord_wrappers(self, ctx):
         """Respond with a link to a list of known discord wrappers"""
         await ctx.send("<https://libs.advaith.io/>")
 
