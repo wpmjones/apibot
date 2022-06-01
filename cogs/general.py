@@ -57,6 +57,16 @@ class General(commands.Cog):
         """Respond with a link to the rules markdown file."""
         await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md>")
 
+    @commands.command(name="coc_wrappers")
+    async def rules(self, ctx):
+        """Respond with a link to the page created by @Doluk"""
+        await ctx.send("<https://coc-libs.vercel.app/>")
+
+    @commands.command(name="discord_wrappers")
+    async def rules(self, ctx):
+        """Respond with a link to a list of known discord wrappers"""
+        await ctx.send("<https://libs.advaith.io/>")
+
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
