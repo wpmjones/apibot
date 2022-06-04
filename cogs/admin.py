@@ -1,6 +1,6 @@
 import asyncio
 import copy
-import discord
+import nextcord
 import importlib
 import io
 import os
@@ -13,7 +13,7 @@ import time
 import traceback
 
 from contextlib import redirect_stdout
-from discord.ext import commands
+from nextcord.ext import commands
 from random import choice, randint
 from typing import Optional
 from cogs.utils.formats import TabularData, plural
@@ -34,7 +34,7 @@ class PerformanceMocker:
         # This makes it so pagination sessions just abruptly end on __init__
         # Most checks based on permission have a bypass for the owner anyway
         # So this lie will not affect the actual command invocation.
-        perms = discord.Permissions.all()
+        perms = nextcord.Permissions.all()
         perms.administrator = False
         perms.embed_links = False
         perms.add_reactions = False
@@ -293,7 +293,7 @@ class Admin(commands.Cog):
                 await ctx.send(f"```py\n{value}{ret}\n```")
 
     @commands.command(hidden=True)
-    async def sudo(self, ctx, channel: Optional[GlobalChannel], who: discord.User, *, command: str):
+    async def sudo(self, ctx, channel: Optional[GlobalChannel], who: nextcord.User, *, command: str):
         """Run a command as another user optionally in another channel."""
         msg = copy.copy(ctx.message)
         channel = channel or ctx.channel
@@ -341,7 +341,7 @@ class Admin(commands.Cog):
             success = False
             try:
                 await ctx.send(f"```py\n{traceback.format_exc()}\n```")
-            except discord.HTTPException:
+            except nextcord.HTTPException:
                 pass
         else:
             end = time.perf_counter()
@@ -382,7 +382,7 @@ class Admin(commands.Cog):
         fmt = f'```{query}\n\n{render}\n```\n*Returned {plural(rows):row} in {dt:.2f}ms*'
         if len(fmt) > 2000:
             fp = io.BytesIO(fmt.encode('utf-8'))
-            await ctx.send('Too many results...', file=discord.File(fp, 'results.txt'))
+            await ctx.send('Too many results...', file=nextcord.File(fp, 'results.txt'))
         else:
             await ctx.send(fmt)
 

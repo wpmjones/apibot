@@ -1,4 +1,4 @@
-from discord.ext import commands
+from nextcord.ext import commands
 
 
 async def check_guild_permissions(ctx, perms, check=all):

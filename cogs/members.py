@@ -1,8 +1,8 @@
-import discord
+import nextcord
 import random
 
 from config import settings
-from discord.ext import commands
+from nextcord.ext import commands
 
 WELCOME_MESSAGE = ("Welcome to the Clash API Developers server, {}! We're glad to have you!\n"
                    "First, please let us know what your preferred programming language is. "
@@ -16,7 +16,7 @@ class MembersCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="welcome", hidden=True)
-    async def welcome(self, ctx, member: discord.Member = None):
+    async def welcome(self, ctx, member: nextcord.Member = None):
         if not member:
             return await ctx.send("Member does not exist.")
         channel = self.bot.get_channel(settings['channels']['welcome'])
@@ -70,7 +70,7 @@ class MembersCog(commands.Cog):
                         member_languages += f"{language_role[1]}\n"
                         member_role_emoji.append(language_role[2])
             channel = new_member.guild.get_channel(settings['channels']['general'])
-            embed = discord.Embed(color=discord.Color.blue(),
+            embed = nextcord.Embed(color=nextcord.Color.blue(),
                                   description=f"Please welcome {new_member.display_name} to the Clash API Developers "
                                               f"server.")
             embed.set_thumbnail(url=new_member.avatar_url_as(size=128))

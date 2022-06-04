@@ -1,4 +1,4 @@
-import discord
+import nextcord
 import pandas as pd
 import math
 import matplotlib.pyplot as plt
@@ -6,7 +6,7 @@ import requests
 import time
 
 from datetime import datetime
-from discord.ext import commands, tasks
+from nextcord.ext import commands, tasks
 from PIL import Image, ImageDraw, ImageFont
 from config import settings
 
@@ -160,7 +160,7 @@ class Response(commands.Cog):
                   (960, 175))
             align("right", f"War Endpoint: {round_half_up(war, decimals=2)}ms", small_font, (15, 15, 15), (1860, 175))
             img.save("status.png")
-            await ctx.send(file=discord.File('status.png'))
+            await ctx.send(file=nextcord.File('status.png'))
 
     @tasks.loop(minutes=15.0)
     async def response_check(self):

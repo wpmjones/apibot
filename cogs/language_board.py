@@ -1,9 +1,9 @@
 from typing import Optional, Union
 from pathlib import Path
 
-import discord
-from discord.ext import commands
-from discord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
+import nextcord
+from nextcord.ext import commands
+from nextcord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
 
 
 PANEL_DIRECTIONS = "Choose your language to receive your language role"
@@ -97,7 +97,7 @@ class LanguageBoard(commands.Cog):
             "spacing": 0,
         }
         for member in guild.members:
-            member: discord.Member
+            member: nextcord.Member
 
             # If user only has @everyone role, consider them as having no roles
             if len(member.roles) == 1:
@@ -259,7 +259,7 @@ class LanguageBoard(commands.Cog):
                     new_roles.append(role)
             try:
                 await member.edit(roles=new_roles)
-            except discord.Forbidden:
+            except nextcord.Forbidden:
                 self.bot.logger.error(f"Could not add {reaction['role_name']} to {member.display_name}", exc_info=True)
 
         # Otherwise add the role
@@ -267,7 +267,7 @@ class LanguageBoard(commands.Cog):
             role = await self._get_role_obj(payload.guild_id, reaction['role_id'])
             try:
                 await member.add_roles(role)
-            except discord.Forbidden:
+            except nextcord.Forbidden:
                 self.bot.logger.error(f"Could not add {reaction['role_name']} to {member.display_name}", exc_info=True)
 
     @commands.command(
@@ -285,7 +285,7 @@ class LanguageBoard(commands.Cog):
 
         # Save the board image to memory
         with IMAGE_PATH.open("rb") as f_handle:
-            board_image = discord.File(f_handle)
+            board_image = nextcord.File(f_handle)
 
         board = await ctx.send(file=board_image)
 

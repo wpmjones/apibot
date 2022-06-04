@@ -1,10 +1,10 @@
 import coc
-import discord
+import nextcord
 import asyncio
 
 from cogs.utils.send_email import SendMail
 from datetime import datetime, timedelta
-from discord.ext import commands, tasks
+from nextcord.ext import commands, tasks
 from config import settings
 
 
@@ -87,7 +87,7 @@ class Downtime(commands.Cog):
         await ctx.send(response)
 
     @my_bot.command(name="test", hidden=True)
-    async def my_bot_test(self, ctx, member: discord.Member = None):
+    async def my_bot_test(self, ctx, member: nextcord.Member = None):
         if not member:
             return await ctx.send("Gimme a bot man")
         self.bot.logger.debug("Starting...")
@@ -100,7 +100,7 @@ class Downtime(commands.Cog):
         await bot.notify_down(self.bot)
 
     @my_bot.command(name="add")
-    async def my_bot_add(self, ctx, user: discord.User = None):
+    async def my_bot_add(self, ctx, user: nextcord.User = None):
         """Add a bot to be monitored.  Provide the Discord ID or mention the bot and you will be prompted for other
         information.
 
@@ -127,7 +127,7 @@ class Downtime(commands.Cog):
         except asyncio.TimeoutError:
             return await ctx.send("Seriously, I'm not going to wait that long. Start over!")
         try:
-            if type(response.content) == discord.Member:
+            if type(response.content) == nextcord.Member:
                 owner = response
             else:
                 guild = self.bot.get_guild(settings['guild']['junkies'])
@@ -148,7 +148,7 @@ class Downtime(commands.Cog):
         except asyncio.TimeoutError:
             return await ctx.send("I waited 60 seconds for you to talk to me. Now I'm ignoring you!")
         try:
-            if type(response.content) == discord.TextChannel:
+            if type(response.content) == nextcord.TextChannel:
                 channel = response
             else:
                 channel = self.bot.get_channel(int(response.content))
@@ -177,7 +177,7 @@ class Downtime(commands.Cog):
         //bot list"""
         async with ctx.typing():
             await self.init_bots()
-            embed = discord.Embed(title="Bots that are configured for monitoring")
+            embed = nextcord.Embed(title="Bots that are configured for monitoring")
             for bot in self.bots:
                 owner = self.bot.get_user(bot.owner)
                 channel = self.bot.get_channel(bot.channel_id)
@@ -190,7 +190,7 @@ class Downtime(commands.Cog):
             await ctx.send(embed=embed)
 
     @my_bot.command(name="monitor")
-    async def my_bot_monitor(self, ctx, bot: discord.Member = None):
+    async def my_bot_monitor(self, ctx, bot: nextcord.Member = None):
         """Toggle monitoring for the specified bot
 
         **Example:**
@@ -243,31 +243,31 @@ class Downtime(commands.Cog):
         offline_start = await conn.fetchval(offline_sql, member.id)
         if offline_start:
             # simply tells us that the bot is marked offline in the database
-            if member.status == discord.Status.online:
+            if member.status == nextcord.Status.online:
                 # bot is back online
                 downtime = to_time((now - offline_start).total_seconds())
                 try:
                     await bot.notify_up(self.bot, downtime)
                     self.bot.logger.info(f"{bot.name} is back online and notification sent. "
                                          f"Downtime: {downtime}")
-                except discord.errors.Forbidden:
+                except nextcord.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
                 await conn.execute(reported_sql, now, bot.bot_id)
         else:
-            if member.status != discord.Status.online:
+            if member.status != nextcord.Status.online:
                 # bot is offline for the first time
                 # pause 60 seconds to make sure it's a real outage
                 await asyncio.sleep(65)
                 check = member.guild.get_member(member.id)
-                if check.status == discord.Status.online:
+                if check.status == nextcord.Status.online:
                     # bot is back online, no need to report anything
                     return
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
                     await bot.notify_down(self.bot)
                     self.bot.logger.info(f"{bot.name} is down and notification has been sent.")
-                except discord.errors.Forbidden:
+                except nextcord.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
 
@@ -294,7 +294,7 @@ class Downtime(commands.Cog):
                 downtime = to_time((now - offline_start).total_seconds())
                 try:
                     await bot.notify_follow_up(self.bot, downtime)
-                except discord.errors.Forbidden:
+                except nextcord.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
                 await conn.execute(update_sql, now, bot.bot_id)

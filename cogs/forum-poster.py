@@ -1,11 +1,11 @@
 import aiohttp
-import discord
+import nextcord
 import re
 
 from bs4 import BeautifulSoup
 from config import settings
-from discord.ext import commands, tasks
-from discord.utils import find
+from nextcord.ext import commands, tasks
+from nextcord.utils import find
 
 API_SUBFORUM_URL = "https://forum.supercell.com/forumdisplay.php/123-Clash-of-Clans-API"
 FORUM_BASE_URL = "https://forum.supercell.com/"
@@ -22,7 +22,7 @@ class ForumPoster(commands.Cog):
     def cog_unload(self):
         self.forum_post_loop.cancel()
 
-    @discord.utils.cached_property
+    @nextcord.utils.cached_property
     def channel(self):
         return self.bot.get_channel(FORUM_POSTS_CHANNEL_ID)
 
@@ -77,8 +77,8 @@ class ForumPoster(commands.Cog):
                 if len(prefix) + len(content) > 2048:
                     content = content[:2045 - len(prefix)] + "..."
 
-                embed = discord.Embed(
-                    colour=discord.Colour.green(),
+                embed = nextcord.Embed(
+                    colour=nextcord.Colour.green(),
                     title=title.get_text(strip=True),
                     url=FORUM_BASE_URL + title.a['href'],
                     description=prefix + content,
@@ -93,7 +93,7 @@ class ForumPoster(commands.Cog):
                 content = comment.blockquote.get_text(strip=True)
                 if len(prefix) + len(content) > 2048:
                     content = content[:2045 - len(prefix)] + "..."
-                embed = discord.Embed(
+                embed = nextcord.Embed(
                     colour=0xA9EAC5,
                     title=f"New Comment",
                     url=FORUM_BASE_URL + comment_meta['href'],

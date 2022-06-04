@@ -1,13 +1,12 @@
-import copy
-import discord
+import nextcord
 import re
 
 from cogs.utils import checks
 from config import settings
-from discord.ext import commands
+from nextcord.ext import commands
 
 JUNKIES_GUILD_ID = settings['guild']['junkies']
-GUILD_IDS = [JUNKIES_GUILD_ID, 602621563770109992]
+GUILD_IDS = [JUNKIES_GUILD_ID, settings['guild']['bot_logs']]
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
@@ -31,45 +30,46 @@ class General(commands.Cog):
         """Responds with the invite link to this server"""
         await ctx.send("https://discord.gg/clashapi")
 
-    @commands.command(name="regex")
+    @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
     async def regex(self, ctx):
         """Responds with the RegEx for player/clan tags"""
         await ctx.send("^#[PYLQGRJCUV0289]+$")
 
-    @commands.command(name="rate_limit")
+    @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, ctx):
         """Responds with the rate limit information for the Clash API"""
         await ctx.send("We have found that the approximate rate limit is 30-40 requests per second. Staying "
                        "below this should be safe.")
 
-    @commands.command(name="vps")
+    @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, ctx):
         """Responds with a link to a GitHub MD on VPS options"""
         await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
-    @commands.command(name="rules")
-    async def rules(self, ctx):
+    @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
+    async def rules(self, interaction: nextcord.Interaction):
         """Respond with a link to the rules markdown file."""
-        await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md>")
+        await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/"
+                                                "Rules/code_of_conduct.md>")
 
-    @commands.command(name="links")
-    async def link_link_api(self, ctx):
-        """Responds with a link to a Discord message on the Discord Link API (by ReverendMike)"""
-        await ctx.send("https://discordapp.com/channels/566451504332931073/681617252814159904/755489156146397311")
+    @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
+    async def link_api(self, ctx):
+        """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
+        await ctx.send("https://discord.com/channels/566451504332931073/681617252814159904/936126372873650237")
 
-    @commands.command(name="coc_wrappers")
+    @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
     async def link_coc_wrappers(self, ctx):
         """Respond with a link to the page created by @Doluk"""
         await ctx.send("<https://coc-libs.vercel.app/>")
 
-    @commands.command(name="discord_wrappers")
+    @nextcord.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
     async def link_discord_wrappers(self, ctx):
         """Respond with a link to a list of known discord wrappers"""
         await ctx.send("<https://libs.advaith.io/>")
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
-    async def setup_bot(self, ctx, bot: discord.Member = None, owner: discord.Member = None):
+    async def setup_bot(self, ctx, bot: nextcord.Member = None, owner: nextcord.Member = None):
         """Admin use only: For adding bot demo channels
         Creates channel (based on bot name)
         Alphabetizes channel within the Bot-Demos category
@@ -110,50 +110,50 @@ class General(commands.Cog):
 
         # No match found, just keep swimming
         overwrites = {
-            bot: discord.PermissionOverwrite(read_messages=True,
-                                             send_messages=True,
-                                             read_message_history=True,
-                                             manage_messages=True,
-                                             embed_links=True,
-                                             attach_files=True,
-                                             external_emojis=True,
-                                             add_reactions=True),
-            admin_role: discord.PermissionOverwrite(read_messages=True,
-                                                    send_messages=True,
-                                                    read_message_history=True,
-                                                    manage_messages=True,
-                                                    embed_links=True,
-                                                    attach_files=True,
-                                                    external_emojis=True,
-                                                    add_reactions=True,
-                                                    manage_channels=True,
-                                                    manage_permissions=True,
-                                                    manage_webhooks=True),
-            hog_rider_role: discord.PermissionOverwrite(read_messages=True,
-                                                        send_messages=True,
-                                                        read_message_history=True,
-                                                        manage_messages=True,
-                                                        embed_links=True,
-                                                        attach_files=True,
-                                                        external_emojis=True,
-                                                        add_reactions=True),
-            developer_role: discord.PermissionOverwrite(read_messages=True,
-                                                        send_messages=True,
-                                                        read_message_history=True,
-                                                        manage_messages=False,
-                                                        embed_links=True,
-                                                        attach_files=True,
-                                                        external_emojis=True,
-                                                        add_reactions=True),
-            guest_role: discord.PermissionOverwrite(read_messages=True,
-                                                    send_messages=True,
-                                                    read_message_history=True,
-                                                    manage_messages=False,
-                                                    embed_links=True,
-                                                    attach_files=True,
-                                                    external_emojis=False,
-                                                    add_reactions=True),
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            bot: nextcord.PermissionOverwrite(read_messages=True,
+                                              send_messages=True,
+                                              read_message_history=True,
+                                              manage_messages=True,
+                                              embed_links=True,
+                                              attach_files=True,
+                                              external_emojis=True,
+                                              add_reactions=True),
+            admin_role: nextcord.PermissionOverwrite(read_messages=True,
+                                                     send_messages=True,
+                                                     read_message_history=True,
+                                                     manage_messages=True,
+                                                     embed_links=True,
+                                                     attach_files=True,
+                                                     external_emojis=True,
+                                                     add_reactions=True,
+                                                     manage_channels=True,
+                                                     manage_permissions=True,
+                                                     manage_webhooks=True),
+            hog_rider_role: nextcord.PermissionOverwrite(read_messages=True,
+                                                         send_messages=True,
+                                                         read_message_history=True,
+                                                         manage_messages=True,
+                                                         embed_links=True,
+                                                         attach_files=True,
+                                                         external_emojis=True,
+                                                         add_reactions=True),
+            developer_role: nextcord.PermissionOverwrite(read_messages=True,
+                                                         send_messages=True,
+                                                         read_message_history=True,
+                                                         manage_messages=False,
+                                                         embed_links=True,
+                                                         attach_files=True,
+                                                         external_emojis=True,
+                                                         add_reactions=True),
+            guest_role: nextcord.PermissionOverwrite(read_messages=True,
+                                                     send_messages=True,
+                                                     read_message_history=True,
+                                                     manage_messages=False,
+                                                     embed_links=True,
+                                                     attach_files=True,
+                                                     external_emojis=False,
+                                                     add_reactions=True),
+            guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
         }
         try:
             position = category.channels[0].position + sorted(
@@ -194,7 +194,7 @@ class General(commands.Cog):
 
     @commands.command(name="developer", aiases=["dev", "devrole", "dev_role"], hidden=True)
     @commands.has_role("Admin")
-    async def dev_role(self, ctx, member: discord.Member = None):
+    async def dev_role(self, ctx, member: nextcord.Member = None):
         """Add appropriate role to new users.  It will:
 
         Prompt you to add primary language role (optional)
@@ -287,7 +287,7 @@ class General(commands.Cog):
                 content = f"{msg.author.display_name} says:\n>>> {msg.content}"
                 channel = self.bot.get_channel(settings['channels']['general'])
                 await channel.send(content)
-            except (discord.NotFound, discord.HTTPException) as e:
+            except (nextcord.NotFound, nextcord.HTTPException) as e:
                 self.bot.logger.exception(f"Failure trying to send message to #General\n{e}")
                 return await ctx.send(f"Copying of the message failed.  Please confirm you copied the correct "
                                       f"message ID and try `//to_gen`.\n"
@@ -347,39 +347,18 @@ class General(commands.Cog):
             if "." in match.group("number"):
                 colour = 0xBDDDF4  # lighter blue for sub-headings/groups
             else:
-                colour = discord.Colour.blue()
+                colour = nextcord.Colour.blue()
 
-            embeds.append(discord.Embed(title=title, description=description.strip(), colour=colour))
+            embeds.append(nextcord.Embed(title=title, description=description.strip(), colour=colour))
             titles.append(title)
 
         messages = [await channel.send(embed=embed) for embed in embeds]
 
-        rows = []
-        buttons = []
-
-        # FIXME: Update when d.py goes to v2
+        # create buttons
+        view = nextcord.ui.View()
         for i, (message, title) in enumerate(zip(messages, titles)):
-            if i == 3:
-                rows.append({
-                    "type": 1,  # action row
-                    "components": copy.copy(buttons),
-                })
-                buttons.clear()
-
-            buttons.append({
-                "type": 2,  # button type
-                "label": title.replace("#", "").strip(),
-                "style": 5,  # URL
-                "url": message.jump_url,
-            })
-
-        if buttons:
-            rows.append({
-                "type": 1,  # action row
-                "components": buttons,
-            })
-
-        await self.send_buttons(channel.id, rows, "\u200b")
+            view.add_item(nextcord.ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
+        await channel.send(view=view)
         await ctx.send(f"Rules have been recreated. View here <#{RULES_CHANNEL_ID}>")
 
     @commands.command(hidden=True)
@@ -415,49 +394,19 @@ class General(commands.Cog):
                 title = raw_title.replace("#", "").strip()
                 url = ""
 
-            colour = discord.Colour.blue()
+            colour = nextcord.Colour.blue()
 
-            embeds.append(discord.Embed(title=title, url=url, description=description.strip(), colour=colour))
+            embeds.append(nextcord.Embed(title=title, url=url, description=description.strip(), colour=colour))
             titles.append(title)
 
         messages = [await channel.send(embed=embed) for embed in embeds]
 
-        rows = []
-        buttons = []
-
-        # FIXME: Update when d.py goes to v2
+        # create buttons
+        view = nextcord.ui.View()
         for i, (message, title) in enumerate(zip(messages, titles)):
-            if i == 3:
-                rows.append({
-                    "type": 1,  # action row
-                    "components": copy.copy(buttons),
-                })
-                buttons.clear()
-
-            buttons.append({
-                "type": 2,  # button type
-                "label": title.replace("#", "").strip(),
-                "style": 5,  # URL
-                "url": message.jump_url,
-            })
-
-        if buttons:
-            rows.append({
-                "type": 1,  # action row
-                "components": buttons,
-            })
-
-        await self.send_buttons(channel.id, rows, "\u200b")
+            view.add_item(nextcord.ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
+        await channel.send(view=view)
         await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
-
-    async def send_buttons(self, channel_id, action_rows, content):
-        # d.py v1.x doesn't support components, so just construct the payloads manually for now.
-        route = discord.http.Route('POST', '/channels/{channel_id}/messages', channel_id=channel_id)
-        payload = {
-            "components": action_rows,
-            "content": content
-        }
-        await self.bot.http.request(route, json=payload)
 
     # @nextcord.message_command(name="Add Roles",
     #                           guild_ids=[settings['guild']['junkies'], 602621563770109992],
@@ -523,50 +472,6 @@ class General(commands.Cog):
     #         content = f"{member.display_name} says:\n>>> {message.content}"
     #         channel = self.bot.get_channel(settings['channels']['general'])
     #         await channel.send(content)
-
-    @commands.command(name="dtest")
-    async def test_dropdown(self, ctx):
-        class Dropdown(nextcord.ui.Select):
-            def __init__(self, options):
-                super().__init__(placeholder="Choose up to three",
-                                 min_values=1,
-                                 max_values=3,
-                                 options=options)
-
-            async def callback(self, interaction: nextcord.Interaction):
-                # assign roles here
-                await ctx.send(self.values)
-
-        sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
-        fetch = await self.bot.pool.fetch(sql)
-        roles = []
-        for role in fetch:
-            roles.append(nextcord.SelectOption(label=role['role_name'],
-                                               value=role['role_id'],
-                                               emoji=role['emoji_repr']))
-        prompt = "Please select the member's language roles:\n"
-        view = interactions.DropdownView()
-        view.add_item(Dropdown(roles))
-        await ctx.send(prompt, view=view)
-
-    @commands.command(name="butt", hidden=True)
-    async def test_buttons(self, ctx):
-        """Testing button interactions"""
-        await ctx.send("Press button", view=interactions.Counter())
-
-    @commands.command(name="stest", hidden=True)
-    async def test_confirm(self, ctx):
-        """Testing Confirmation prompt"""
-        view = interactions.Confirm()
-        view.timeout = 10.0
-        await ctx.send("I'm about to blow up Memphis. Are you sure?", view=view)
-        await view.wait()
-        if view.value is None:
-            await ctx.send("Timed out")
-        elif view.value:
-            await ctx.send("Confirmed. Memphis is gone.")
-        else:
-            await ctx.send("Destruction cancelled. Memphis is safe.")
 
 
 def setup(bot):
