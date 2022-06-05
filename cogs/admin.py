@@ -129,7 +129,8 @@ class Admin(commands.Cog):
         pwd += "".join(choice(characters) for x in range(randint(8, 12)))
         sql = "INSERT INTO coc_discord_users (username, passwd) VALUES ($1, $2)"
         await self.bot.pool.execute(sql, usr, pwd)
-        await ctx.send("\N{OK HAND SIGN}")
+        await ctx.send(f"User: {usr} has been created with the following password:")
+        await ctx.send(pwd)
 
     @commands.command(hidden=True)
     async def load(self, ctx, *, module):

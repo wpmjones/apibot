@@ -67,6 +67,7 @@ coc_client = coc.login(settings['supercell']['user'],
 intents = nextcord.Intents.default()
 intents.members = True
 intents.presences = True
+intents.message_content = True
 
 
 class ApiBot(commands.Bot):
