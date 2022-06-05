@@ -34,7 +34,7 @@ initial_extensions = [
 
 if enviro == "LIVE":
     token = settings['discord']['token']
-    prefix = "//"
+    prefix = ".."
     log_level = "INFO"
     coc_names = "galaxy"
     # append to initial_extensions if additional cogs are desired
