@@ -3,6 +3,7 @@ import re
 
 from cogs.utils import checks
 from config import settings
+from datetime import datetime, timedelta
 from nextcord.ext import commands
 
 JUNKIES_GUILD_ID = settings['guild']['junkies']
@@ -317,6 +318,15 @@ class General(commands.Cog):
                 await ctx.channel.purge()
             else:
                 await ctx.message.delete()
+
+    @commands.command(name="clear_old", hidden=True)
+    @checks.manage_messages()
+    async def clear(self, ctx):
+        """Clears all messages older than the last 24 hours."""
+        before = datetime.now() - timedelta(hours=24)
+        await ctx.channel.purge(before=before)
+        await ctx.message.delete()
+
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
