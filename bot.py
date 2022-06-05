@@ -34,14 +34,14 @@ initial_extensions = [
 
 if enviro == "LIVE":
     token = settings['discord']['token']
-    prefix = ".."
+    prefix = "//"
     log_level = "INFO"
     coc_names = "galaxy"
     # append to initial_extensions if additional cogs are desired
-    # initial_extensions.append("cogs.members")
-    # initial_extensions.append("cogs.downtime")
-    # initial_extensions.append("cogs.response")
-    # initial_extensions.append("cogs.language_board")
+    initial_extensions.append("cogs.members")
+    initial_extensions.append("cogs.downtime")
+    initial_extensions.append("cogs.response")
+    initial_extensions.append("cogs.language_board")
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
