@@ -309,15 +309,18 @@ class General(commands.Cog):
         **Permissions:**
         Manage Messages
         """
-        if msg_count:
-            await ctx.channel.purge(limit=msg_count + 1)
-        else:
-            prompt = await ctx.prompt(f"Are you sure you want to remove ALL messages from the "
-                                      f"{ctx.channel.name} channel?")
-            if prompt:
-                await ctx.channel.purge()
+        try:
+            if msg_count:
+                await ctx.channel.purge(limit=msg_count + 1)
             else:
-                await ctx.message.delete()
+                prompt = await ctx.prompt(f"Are you sure you want to remove ALL messages from the "
+                                          f"{ctx.channel.name} channel?")
+                if prompt:
+                    await ctx.channel.purge()
+                else:
+                    await ctx.message.delete()
+        except:
+            self.bot.logger.exception("Failed to clear messages")
 
     @commands.command(name="clear_old", hidden=True)
     @checks.manage_messages()
