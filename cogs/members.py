@@ -46,7 +46,7 @@ class RoleButton(nextcord.ui.Button):
         self.member = member
 
     async def callback(self, interaction: nextcord.Interaction):
-        await self.member.add_roles(self.role)
+        await self.member.add_roles(self.role, reason=f"{interaction.user.display_name} using a button.")
         await self.member.edit(nick=f"{self.member.display_name} | {self.role.name}")
 
 
