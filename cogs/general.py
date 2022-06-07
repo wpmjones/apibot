@@ -6,8 +6,13 @@ from config import settings
 from datetime import datetime, timedelta
 from nextcord.ext import commands
 
+enviro = settings['enviro']
+
 JUNKIES_GUILD_ID = settings['guild']['junkies']
-GUILD_IDS = [JUNKIES_GUILD_ID, settings['guild']['bot_logs']]
+if enviro == "LIVE":
+    GUILD_IDS = [JUNKIES_GUILD_ID, settings['guild']['bot_logs']]
+else:
+    GUILD_IDS = [settings['guild']['bot_logs']]
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']

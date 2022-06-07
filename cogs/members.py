@@ -73,7 +73,8 @@ class MembersCog(commands.Cog):
             embed = nextcord.Embed(color=nextcord.Color.blue(),
                                    description=f"Please welcome {new_member.display_name} to the Clash API Developers "
                                                f"server.")
-            embed.set_thumbnail(url=new_member.avatar.url)
+            if new_member.avatar:
+                embed.set_thumbnail(url=new_member.avatar.url)
             if member_languages:
                 embed.add_field(name="Languages:", value=member_languages)
             msg = await channel.send(embed=embed)
