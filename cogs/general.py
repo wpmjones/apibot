@@ -37,20 +37,20 @@ class General(commands.Cog):
         await ctx.send("https://discord.gg/clashapi")
 
     @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
-    async def regex(self, ctx):
+    async def regex(self, interaction: nextcord.Interaction):
         """Responds with the RegEx for player/clan tags"""
-        await ctx.send("^#[PYLQGRJCUV0289]+$")
+        await interaction.response.send_message("^#[PYLQGRJCUV0289]+$")
 
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
-    async def rate_limit(self, ctx):
+    async def rate_limit(self, interaction: nextcord.Interaction):
         """Responds with the rate limit information for the Clash API"""
-        await ctx.send("We have found that the approximate rate limit is 30-40 requests per second. Staying "
+        await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per second. Staying "
                        "below this should be safe.")
 
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
-    async def vps(self, ctx):
+    async def vps(self, interaction: nextcord.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
-        await ctx.send("<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
+        await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
     @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
     async def rules(self, interaction: nextcord.Interaction):
@@ -59,19 +59,19 @@ class General(commands.Cog):
                                                 "Rules/code_of_conduct.md>")
 
     @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
-    async def link_api(self, ctx):
+    async def link_api(self, interaction: nextcord.Interaction):
         """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
-        await ctx.send("https://discord.com/channels/566451504332931073/681617252814159904/936126372873650237")
+        await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/936126372873650237")
 
     @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
-    async def link_coc_wrappers(self, ctx):
+    async def link_coc_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to the page created by @Doluk"""
-        await ctx.send("<https://coc-libs.vercel.app/>")
+        await interaction.response.send_message("<https://coc-libs.vercel.app/>")
 
     @nextcord.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
-    async def link_discord_wrappers(self, ctx):
+    async def link_discord_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to a list of known discord wrappers"""
-        await ctx.send("<https://libs.advaith.io/>")
+        await interaction.response.send_message("<https://libs.advaith.io/>")
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
@@ -331,7 +331,6 @@ class General(commands.Cog):
         before = datetime.now() - timedelta(hours=24)
         await ctx.channel.purge(before=before)
         await ctx.message.delete()
-
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
