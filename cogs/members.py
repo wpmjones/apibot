@@ -3,12 +3,61 @@ import random
 
 from config import settings
 from nextcord.ext import commands
+from typing import List
 
 WELCOME_MESSAGE = ("Welcome to the Clash API Developers server, {}! We're glad to have you!\n"
                    "First, please let us know what your preferred programming language is. "
                    "Next, if you've already started working with the API, please tell us a little about your "
                    "project. If you haven't started a project yet, let us know what you're interested in making.\n"
                    "(Once you introduce yourself, you will be granted roles to access other parts of the server.)")
+
+
+class Confirm(nextcord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    # When the confirm button is pressed, set the inner value to `True` and
+    # stop the View from listening to more input.
+    # We also send the user an ephemeral message that we're confirming their choice.
+    @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await interaction.response.send_message("Confirming", ephemeral=True)
+        self.value = True
+        self.stop()
+
+    # This one is similar to the confirmation button except sets the inner value to `False`
+    @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.grey)
+    async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await interaction.response.send_message("Cancelling", ephemeral=True)
+        self.value = False
+        self.stop()
+
+
+class RoleButton(nextcord.ui.Button):
+    def __init__(self, role: nextcord.Role, member: nextcord.Member):
+        super().__init__(
+            label=role.name,
+            style=nextcord.ButtonStyle.blurple,
+            custom_id=f"RoleView:{role.id}",
+        )
+        self.role = role
+        self.member = member
+
+    async def callback(self, interaction: nextcord.Interaction):
+        await self.member.add_roles(self.role)
+        await self.member.edit(nick=f"{self.member.display_name} | {self.role.name}")
+
+
+class RoleView(nextcord.ui.View):
+    def __init__(self, guild: nextcord.Guild, member: nextcord.Member, role_ids: List[int]):
+        super().__init__(timeout=None)
+        for role_id in role_ids:
+            role = guild.get_role(role_id)
+            if not role:
+                print(f"Role not found: {role_id}")
+                continue
+            self.add_item(RoleButton(role, member))
 
 
 class MembersCog(commands.Cog):
@@ -105,7 +154,60 @@ class MembersCog(commands.Cog):
 
     @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
     async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):
-        await interaction.response.send_message(f"Message: {message}")
+        await interaction.response.defer()
+        member = message.author
+        dev_role = interaction.guild.get_role(settings['roles']['developer'])
+        if dev_role in member.roles:
+            return await interaction.channel.send(f"{member.display_name} already has the Developer role. This "
+                                                  f"command can only be used for members without the Developer role.")
+        if interaction.channel_id != settings['channels']['welcome']:
+            return await interaction.channel.send(f"I'd feel a whole lot better if you ran this command in "
+                                                  f"<#{settings['channels']['welcome']}>.")
+        guest_role = interaction.guild.get_role(settings['roles']['vip_guest'])
+        if guest_role in member.roles:
+            view = Confirm()
+            await interaction.channel.send(f"{member.display_name} currently has the Guest role. Would you "
+                                           f"like to remove the Guest role and add the Developer role?",
+                                           view=view)
+            await view.wait()
+            if view.value is None:
+                return await interaction.channel.send("Action timed out.")
+            elif view.value:
+                await member.remove_roles(guest_role, reason="Changing to Developer role")
+            else:
+                return await interaction.channel.send("Action cancelled.")
+        self.bot.logger.debug("Pre-checks complete. Starting dev add process.")
+        # At this point, we should have a valid member without the dev role
+        # Let's see if we want to add any language roles first
+        self.bot.logger.info(f"Starting Dev Role add process for {member.display_name} (Initiated by "
+                             f"{interaction.user.display_name})")
+        sql = "SELECT role_id FROM bot_language_board ORDER BY role_name"
+        fetch = await self.bot.pool.fetch(sql)
+        role_ids = [x['role_id'] for x in fetch]
+        view = RoleView(interaction.guild, member, role_ids)
+        content = "Please select the member's primary language role:"
+        await interaction.channel.send(content, view=view)
+        # Add developer role
+        await member.add_roles(dev_role, reason=f"Role added by {interaction.user.display_name}")
+        # Send DM to new member
+        welcome_msg = ("Welcome to the Clash API Developers server.  We hope you find this to be a great place to "
+                       "share and learn more about the Clash of Clans API.  You can check out <#641454924172886027> "
+                       "if you need some basic help.  There are some tutorials there as well as some of the more "
+                       "common libraries that are used with various programming languages. If you use more than one "
+                       "programming language, be sure to check out <#885216742903803925> to assign yourself the role "
+                       "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
+        await member.send(welcome_msg)
+        # Copy a message to General??
+        view = Confirm()
+        await interaction.channel.send("Do you want to copy this message to #general?", view=view)
+        await view.wait()
+        if view.value is None:
+            self.bot.logger.debug("Prompt to copy message timed out. No biggie.")
+        elif view.value:
+            # copy message
+            content = f"{message.author.display_name} says:\n>>> {message.content}"
+            general = self.bot.get_channel(settings['channels']['general'])
+            await general.send(content)
 
 
 def setup(bot):
