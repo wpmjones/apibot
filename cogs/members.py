@@ -1,3 +1,4 @@
+import asyncio
 import nextcord
 import random
 
@@ -99,14 +100,18 @@ class MembersCog(commands.Cog):
             # only act if this is the API server
             return
         if old_member.roles == new_member.roles:
+            # only act if roles have changed
             return
         developer_role = new_member.guild.get_role(settings['roles']['developer'])
         if developer_role not in old_member.roles and developer_role in new_member.roles:
+            # only act if the Developer role is new
             if new_member.bot:
                 channel = self.bot.get_channel(settings['channels']['admin'])
                 await channel.send(f"Who is the bonehead that assigned the Developer role to a bot? "
                                    f"{new_member.name} is a bot.")
             # At this point, it should be a member on our server that has just received the developers role
+            # We're going to sleep for 10 seconds to give the admin time to add a language role as well
+            await asyncio.sleep(10)
             self.bot.logger.info(f"New member with Developers role: {new_member.display_name}")
             sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
             fetch = await self.bot.pool.fetch(sql)
