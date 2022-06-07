@@ -103,6 +103,10 @@ class MembersCog(commands.Cog):
         msg = f"{member.display_name}#{member.discriminator} just left the server."
         await mod_log.send(msg)
 
+    @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
+    async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):
+        await interaction.response.send_message(f"Message: {message}")
+
 
 def setup(bot):
     bot.add_cog(MembersCog(bot))

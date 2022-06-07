@@ -32,6 +32,10 @@ initial_extensions = [
                         "cogs.admin",
                       ]
 
+intents = nextcord.Intents.default()
+intents.members = True
+intents.presences = True
+
 if enviro == "LIVE":
     token = settings['discord']['token']
     prefix = "//"
@@ -42,6 +46,7 @@ if enviro == "LIVE":
     initial_extensions.append("cogs.downtime")
     initial_extensions.append("cogs.response")
     initial_extensions.append("cogs.language_board")
+    intents.message_content = True
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
@@ -63,11 +68,6 @@ coc_client = coc.login(settings['supercell']['user'],
                        key_names=coc_names,
                        key_count=2,
                        correct_tags=True)
-
-intents = nextcord.Intents.default()
-intents.members = True
-intents.presences = True
-intents.message_content = True
 
 
 class ApiBot(commands.Bot):
