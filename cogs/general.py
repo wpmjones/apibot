@@ -510,7 +510,7 @@ class General(commands.Cog):
                        "want to learn more about incorporating the Clash of Clans API into a project, you've "
                        "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
                        "bit about yourself and gain access to the rest of the server.")
-        await ctx.send(embed=nextcord.Embed(description=welcome_msg, color=nextcord.Color.yellow()))
+        await ctx.send(embed=nextcord.Embed(description=welcome_msg, color=nextcord.Color.green()))
         await ctx.send(view=WelcomeView(self.bot))
 
 
