@@ -33,13 +33,14 @@ class Dropdown(ui.Select):
         super().__init__(
             placeholder="Select programming languages:",
             min_values=1,
+            max_values=8,
             options=options
         )
 
     async def callback(self, interaction: Interaction):
         # Add language roles
         for value in self.values:
-            await interaction.send(f"I will add {value} role to user")
+            await interaction.channel.send(f"I will add {value} role to user")
 
 
 class Introduce(ui.Modal):
