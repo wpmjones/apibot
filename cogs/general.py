@@ -50,7 +50,7 @@ class Introduce(ui.Modal):
         )
 
         self.add_item(Dropdown(roles))
-        self.information = nextcord.ui.TextInput(
+        self.information = ui.TextInput(
             label="Tell us a little about your project and what you are doing (or would like to do) with the API.",
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Information that can help us get to know you",
@@ -76,7 +76,7 @@ class IntroduceButton(ui.Button["WelcomeView"]):
     def __init__(self):
         super().__init__(
             label="Introduce",
-            style=ui.ButtonStyle.green(),
+            style=nextcord.ButtonStyle.green(),
             custom_id="IntroduceButton"
         )
 
@@ -90,7 +90,7 @@ class IntroduceButton(ui.Button["WelcomeView"]):
         await interaction.response.send_modal(modal)
 
 
-class WelcomeView(nextcord.ui.View):
+class WelcomeView(ui.View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
@@ -446,9 +446,9 @@ class General(commands.Cog):
         messages = [await channel.send(embed=embed) for embed in embeds]
 
         # create buttons
-        view = nextcord.ui.View()
+        view = ui.View()
         for i, (message, title) in enumerate(zip(messages, titles)):
-            view.add_item(nextcord.ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
+            view.add_item(ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
         await channel.send(view=view)
         await ctx.send(f"Rules have been recreated. View here <#{RULES_CHANNEL_ID}>")
 
@@ -493,9 +493,9 @@ class General(commands.Cog):
         messages = [await channel.send(embed=embed) for embed in embeds]
 
         # create buttons
-        view = nextcord.ui.View()
+        view = ui.View()
         for i, (message, title) in enumerate(zip(messages, titles)):
-            view.add_item(nextcord.ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
+            view.add_item(ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
         await channel.send(view=view)
         await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
 
@@ -508,7 +508,7 @@ class General(commands.Cog):
                        "provide some language specific guidance, we are not a 'learn to code' server. There are "
                        "plenty of resources out there for that.  But if you know the basics of coding and "
                        "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                       "come to the right place.\nPlease click the Introduce button below to tell us a little "
+                       "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
                        "bit about yourself and gain access to the rest of the server.")
         await ctx.send(embed=nextcord.Embed(description=welcome_msg, color=nextcord.Color.yellow()))
         await ctx.send(view=WelcomeView(self.bot))
