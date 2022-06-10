@@ -96,12 +96,12 @@ class WelcomeView(ui.View):
         self.bot = bot
         self.add_item(IntroduceButton())
 
-    async def interaction_check(self, interaction: Interaction):
-        if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
-            await interaction.send("You already have the developer role.", ephemeral=True)
-            return False
-        else:
-            return True
+    # async def interaction_check(self, interaction: Interaction):
+    #     if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
+    #         await interaction.send("You already have the developer role.", ephemeral=True)
+    #         return False
+    #     else:
+    #         return True
 
 
 class General(commands.Cog):
