@@ -33,12 +33,13 @@ class Dropdown(ui.Select):
         super().__init__(
             placeholder="Select programming languages:",
             min_values=1,
-            max_values=8,
+            max_values=len(options),
             options=options
         )
 
     async def callback(self, interaction: Interaction):
         # Add language roles
+        print("dropdown callback")
         for value in self.values:
             await interaction.channel.send(f"I will add {value} role to user")
 
@@ -54,9 +55,9 @@ class Introduce(ui.Modal):
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
-            placeholder="Information that can help us get to know you",
+            placeholder="What are you doing or what would you like to be doing with the API?",
             required=True,
-            max_length=1800
+            max_length=544
         )
         self.add_item(self.information)
 
@@ -66,9 +67,8 @@ class Introduce(ui.Modal):
         welcome_msg = ("Welcome to the Clash API Developers server.  We hope you find this to be a great place to "
                        "share and learn more about the Clash of Clans API.  You can check out <#641454924172886027> "
                        "if you need some basic help.  There are some tutorials there as well as some of the more "
-                       "common libraries that are used with various programming languages. If you use more than one "
-                       "programming language, be sure to check out <#885216742903803925> to assign yourself the role "
-                       "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
+                       "common libraries that are used with various programming languages.\n"
+                       "Lastly, say hello in <#566451504903618561> and make some new friends!!")
         await interaction.user.send(welcome_msg)
         await interaction.send(f"This is what I would send to #general.\n{self.information.value}")
 
@@ -82,10 +82,8 @@ class IntroduceButton(ui.Button["WelcomeView"]):
         )
 
     async def callback(self, interaction: Interaction):
-        self.view.bot.logger.info("Button callback")
         sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
         fetch = await self.view.bot.pool.fetch(sql)
-        self.view.bot.logger.info(len(fetch))
         roles = []
         for row in fetch:
             roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
