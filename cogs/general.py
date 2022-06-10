@@ -4,6 +4,7 @@ import re
 from cogs.utils import checks
 from config import settings
 from datetime import datetime, timedelta
+from nextcord import Interaction, ui
 from nextcord.ext import commands
 
 enviro = settings['enviro']
@@ -25,6 +26,82 @@ GUEST_ROLE_ID = settings['roles']['vip_guest']
 SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a>(?P<body>(.|\n)+?(?=(#{2,3}|\Z)))')
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
+
+
+class Dropdown(ui.Select):
+    def __init__(self, options):
+        super().__init__(
+            placeholder="Select programming languages:",
+            min_values=1,
+            options=options
+        )
+
+    async def callback(self, interaction: Interaction):
+        # Add language roles
+        for value in self.values:
+            await interaction.send(f"I will add {value} role to user")
+
+
+class Introduce(ui.Modal):
+    def __init__(self, roles):
+        super().__init__(
+            "Getting to know you",
+            timeout=5*60  # 5 minutes
+        )
+
+        self.add_item(Dropdown(roles))
+        self.information = nextcord.ui.TextInput(
+            label="Tell us a little about your project and what you are doing (or would like to do) with the API.",
+            style=nextcord.TextInputStyle.paragraph,
+            placeholder="Information that can help us get to know you",
+            required=True,
+            max_length=1800
+        )
+        self.add_item(self.information)
+
+    async def callback(self, interaction: Interaction):
+        # Add dev roles
+        await interaction.send("I will add the developer role.")
+        welcome_msg = ("Welcome to the Clash API Developers server.  We hope you find this to be a great place to "
+                       "share and learn more about the Clash of Clans API.  You can check out <#641454924172886027> "
+                       "if you need some basic help.  There are some tutorials there as well as some of the more "
+                       "common libraries that are used with various programming languages. If you use more than one "
+                       "programming language, be sure to check out <#885216742903803925> to assign yourself the role "
+                       "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
+        await interaction.user.send(welcome_msg)
+        await interaction.send(f"This is what I would send to #general.\n{self.information.value}")
+
+
+class IntroduceButton(ui.Button["WelcomeView"]):
+    def __init__(self):
+        super().__init__(
+            label="Introduce",
+            style=ui.ButtonStyle.green(),
+            custom_id="IntroduceButton"
+        )
+
+    async def callback(self, interaction: Interaction):
+        sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
+        fetch = await self.view.bot.pool.fetch(sql)
+        roles = []
+        for row in fetch:
+            roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
+        modal = Introduce(roles)
+        await interaction.response.send_modal(modal)
+
+
+class WelcomeView(nextcord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.add_item(IntroduceButton())
+
+    async def interaction_check(self, interaction: Interaction):
+        if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
+            await interaction.send("You already have the developer role.", ephemeral=True)
+            return False
+        else:
+            return True
 
 
 class General(commands.Cog):
@@ -421,6 +498,20 @@ class General(commands.Cog):
             view.add_item(nextcord.ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
         await channel.send(view=view)
         await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
+
+    @commands.command(hidden=True)
+    @commands.has_role("Admin")
+    async def recreate_welcome(self, ctx):
+        """Recreate the welcome message for new members"""
+        welcome_msg = ("Welcome to the Clash API Developers server! We're glad to have you! "
+                       "We're here to help you do the things you want to do with the Clash API. While we can "
+                       "provide some language specific guidance, we are not a 'learn to code' server. There are "
+                       "plenty of resources out there for that.  But if you know the basics of coding and "
+                       "want to learn more about incorporating the Clash of Clans API into a project, you've "
+                       "come to the right place.\nPlease click the Introduce button below to tell us a little "
+                       "bit about yourself and gain access to the rest of the server.")
+        await ctx.send(embed=nextcord.Embed(description=welcome_msg, color=nextcord.Color.yellow()))
+        await ctx.send(view=WelcomeView(self.bot))
 
 
 def setup(bot):
