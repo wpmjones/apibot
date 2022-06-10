@@ -76,7 +76,7 @@ class IntroduceButton(ui.Button["WelcomeView"]):
     def __init__(self):
         super().__init__(
             label="Introduce",
-            style=nextcord.ButtonStyle.green(),
+            style=nextcord.ButtonStyle.green,
             custom_id="IntroduceButton"
         )
 
