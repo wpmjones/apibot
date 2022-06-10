@@ -81,8 +81,10 @@ class IntroduceButton(ui.Button["WelcomeView"]):
         )
 
     async def callback(self, interaction: Interaction):
+        self.view.bot.logger.info("Button callback")
         sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
         fetch = await self.view.bot.pool.fetch(sql)
+        self.view.bot.logger.info(len(fetch))
         roles = []
         for row in fetch:
             roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
