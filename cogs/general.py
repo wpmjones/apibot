@@ -49,9 +49,9 @@ class Introduce(ui.Modal):
             timeout=5*60  # 5 minutes
         )
 
-        # self.add_item(Dropdown(roles))
+        self.add_item(Dropdown(roles))
         self.information = ui.TextInput(
-            label="Tell us a little about your project and what you are doing (or would like to do) with the API.",
+            label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
             placeholder="Information that can help us get to know you",
             required=True,
