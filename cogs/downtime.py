@@ -211,6 +211,15 @@ class Downtime(commands.Cog):
         await ctx.send(f"Monitoring for {bot.display_name} is now set to {new_monitor}.")
 
     @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel):
+        """Listen for channel delete and alert admins to remove monitoring if it was a demo channel"""
+        if not channel.category_id == 567551986229182474:
+            return
+        sql = "DELETE FROM bot_owners WHERE channel_id = $1"
+        await self.bot.pool.execute(sql, channel.id)
+        self.bot.logger.info(f"Bot monitoring has been removed for {channel.name} because someone deleted the channel.")
+
+    @commands.Cog.listener()
     async def on_member_update(self, before, member):
         """Task for monitoring API bots
         Downtime is stored in the bot_downtime table of postgresql

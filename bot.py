@@ -33,8 +33,10 @@ initial_extensions = [
                       ]
 
 intents = nextcord.Intents.default()
+intents.guilds = True
 intents.members = True
 intents.presences = True
+intents.message_content = True
 
 if enviro == "LIVE":
     token = settings['discord']['token']
@@ -46,7 +48,6 @@ if enviro == "LIVE":
     initial_extensions.append("cogs.downtime")
     initial_extensions.append("cogs.response")
     initial_extensions.append("cogs.language_board")
-    intents.message_content = True
 elif enviro == "test":
     token = settings['discord']['test_token']
     prefix = ">"
