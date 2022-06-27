@@ -422,6 +422,10 @@ class General(commands.Cog):
         channel = self.bot.get_channel(settings['channels']['welcome'])
         await channel.purge(before=before)
 
+    @clear_loop.before_loop
+    async def before_clear_loop(self):
+        await self.bot.wait_until_ready()
+
     @commands.command(hidden=True)
     @commands.has_role("Admin")
     async def recreate_rules(self, ctx):

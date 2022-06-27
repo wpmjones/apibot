@@ -3,7 +3,7 @@ import nextcord
 import random
 
 from config import settings
-from nextcord.ext import commands
+from nextcord.ext import commands, tasks
 from typing import List
 
 WELCOME_MESSAGE = ("Welcome to the Clash API Developers server, {}! We're glad to have you!\n"
@@ -64,6 +64,20 @@ class RoleView(nextcord.ui.View):
 class MembersCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.prune_loop.start()
+
+    def cog_unload(self):
+        self.prune_loop.cancel()
+
+    @tasks.loop(hours=24)
+    async def prune_loop(self):
+        """Prune inactive members (7 days) without roles"""
+        guild = await self.bot.get_guild(settings['guild']['junkies'])
+        await guild.prune_members(reason="Pruned by Hog Rider (members.py)", compute_prune_count=False)
+
+    @prune_loop.before_loop
+    async def before_prune_loop(self):
+        await self.bot.wait_until_ready()
 
     @commands.command(name="welcome", hidden=True)
     async def welcome(self, ctx, member: nextcord.Member = None):
