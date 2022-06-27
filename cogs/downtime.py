@@ -220,11 +220,10 @@ class Downtime(commands.Cog):
         self.bot.logger.info(f"Bot monitoring has been removed for {channel.name} because someone deleted the channel.")
 
     @commands.Cog.listener()
-    async def on_member_update(self, before, member):
+    async def on_presence_update(self, before, member):
         """Task for monitoring API bots
         Downtime is stored in the bot_downtime table of postgresql
         """
-        conn = self.bot.pool
         # Only monitor updates seen in our Discord server
         if member.guild.id != settings['guild']['junkies']:
             return
@@ -234,6 +233,7 @@ class Downtime(commands.Cog):
         # Is this update a status change?
         if before.status == member.status:
             return
+        conn = self.bot.pool
         sql = "SELECT bot_id, name, owner_id, channel_id, monitor, email FROM bot_owners WHERE bot_id = $1"
         row = await conn.fetchrow(sql, member.id)
         if not row:
