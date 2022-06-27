@@ -5,7 +5,7 @@ from cogs.utils import checks
 from config import settings
 from datetime import datetime, timedelta
 from nextcord import Interaction, ui
-from nextcord.ext import commands
+from nextcord.ext import commands, tasks
 
 enviro = settings['enviro']
 
@@ -108,6 +108,10 @@ class WelcomeView(ui.View):
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.clear_loop.start()
+
+    def cog_unload(self):
+        self.clear_loop.cancel()
 
     @commands.command(name="invite")
     async def invite(self, ctx):
@@ -122,8 +126,8 @@ class General(commands.Cog):
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, interaction: nextcord.Interaction):
         """Responds with the rate limit information for the Clash API"""
-        await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per second. Staying "
-                       "below this should be safe.")
+        await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
+                                                "second. Staying below this should be safe.")
 
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
@@ -139,7 +143,8 @@ class General(commands.Cog):
     @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
     async def link_api(self, interaction: nextcord.Interaction):
         """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
-        await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/936126372873650237")
+        await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/"
+                                                "936126372873650237")
 
     @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
     async def link_coc_wrappers(self, interaction: nextcord.Interaction):
@@ -409,6 +414,13 @@ class General(commands.Cog):
         before = datetime.now() - timedelta(hours=24)
         await ctx.channel.purge(before=before)
         await ctx.message.delete()
+
+    @tasks.loop(hours=4.0)
+    async def clear_loop(self):
+        """Clears all messages older than the last 24 hours."""
+        before = datetime.now() - timedelta(hours=24)
+        channel = self.bot.get_channel(settings['channels']['welcome'])
+        await channel.purge(before=before)
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
