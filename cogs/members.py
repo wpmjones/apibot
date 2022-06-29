@@ -3,6 +3,7 @@ import nextcord
 import random
 
 from config import settings
+from datetime import datetime, timezone, timedelta
 from nextcord.ext import commands, tasks
 from typing import List
 
@@ -73,7 +74,19 @@ class MembersCog(commands.Cog):
     async def prune_loop(self):
         """Prune inactive members (7 days) without roles"""
         guild = await self.bot.get_guild(settings['guild']['junkies'])
-        await guild.prune_members(reason="Pruned by Hog Rider (members.py)", compute_prune_count=False)
+        devs = guild.get_role(settings['roles']['developer'])
+        guests = guild.get_role(settings['roles']['vip_guest'])
+        bots = guild.get_role(settings['roles']['bots'])
+        hr = guild.get_role(settings['roles']['hog_rider'])
+        inactive = set(guild.members).difference(devs)
+        inactive = inactive.difference(guests)
+        inactive = inactive.difference(bots)
+        inactive = inactive.difference(hr)
+        now = datetime.utcnow().replace(tzinfo=timezone.utc)
+        self.bot.logger.info(f"Preparing to evaluate {len(inactive)} members for possible pruning.")
+        for member in inactive:
+            if now - timedelta(days=7) > member.joined_at:
+                await member.kick(reason="Pruned by Hog Rider (members.py)")
 
     @prune_loop.before_loop
     async def before_prune_loop(self):
