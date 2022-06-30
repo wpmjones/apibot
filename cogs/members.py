@@ -78,19 +78,22 @@ class MembersCog(commands.Cog):
         if not guild:
             await asyncio.sleep(60)
             guild = await self.bot.get_guild(settings['guild']['junkies'])
-        devs = guild.get_role(settings['roles']['developer'])
-        guests = guild.get_role(settings['roles']['vip_guest'])
-        bots = guild.get_role(settings['roles']['bots'])
-        hr = guild.get_role(settings['roles']['hog_rider'])
-        inactive = set(guild.members).difference(devs)
-        inactive = inactive.difference(guests)
-        inactive = inactive.difference(bots)
-        inactive = inactive.difference(hr)
-        now = datetime.utcnow().replace(tzinfo=timezone.utc)
-        self.bot.logger.info(f"Preparing to evaluate {len(inactive)} members for possible pruning.")
-        for member in inactive:
-            if now - timedelta(days=7) > member.joined_at:
-                await member.kick(reason="Pruned by Hog Rider (members.py)")
+        try:
+            devs = guild.get_role(settings['roles']['developer'])
+            guests = guild.get_role(settings['roles']['vip_guest'])
+            bots = guild.get_role(settings['roles']['bots'])
+            hr = guild.get_role(settings['roles']['hog_rider'])
+            inactive = set(guild.members).difference(devs)
+            inactive = inactive.difference(guests)
+            inactive = inactive.difference(bots)
+            inactive = inactive.difference(hr)
+            now = datetime.utcnow().replace(tzinfo=timezone.utc)
+            self.bot.logger.info(f"Preparing to evaluate {len(inactive)} members for possible pruning.")
+            for member in inactive:
+                if now - timedelta(days=7) > member.joined_at:
+                    await member.kick(reason="Pruned by Hog Rider (members.py)")
+        except:
+            self.bot.logger.exception("Failure in prune_loop")
 
     @prune_loop.before_loop
     async def before_prune_loop(self):
