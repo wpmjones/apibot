@@ -73,6 +73,7 @@ class MembersCog(commands.Cog):
     @tasks.loop(hours=24)
     async def prune_loop(self):
         """Prune inactive members (7 days) without roles"""
+        self.bot.logger.info("Initiating prune loop")
         guild = await self.bot.get_guild(settings['guild']['junkies'])
         devs = guild.get_role(settings['roles']['developer'])
         guests = guild.get_role(settings['roles']['vip_guest'])

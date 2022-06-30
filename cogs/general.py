@@ -108,7 +108,8 @@ class WelcomeView(ui.View):
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.clear_loop.start()
+        if enviro == "LIVE":
+            self.clear_loop.start()
 
     def cog_unload(self):
         self.clear_loop.cancel()
@@ -349,7 +350,10 @@ class General(commands.Cog):
                        "for each language.\nLastly, say hello in <#566451504903618561> and make some new friends!!")
         await member.send(welcome_msg)
         # Copy a message to General??
-        await ctx.invoke(self.bot.get_command("to_gen"))
+        try:
+            await ctx.invoke(self.bot.get_command("to_gen"))
+        except:
+            await self.bot.logger.exception(f"Failure when calling to_gen")
 
     @commands.command(name="to_gen", hidden=True)
     @checks.manage_messages()
