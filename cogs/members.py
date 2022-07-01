@@ -79,6 +79,7 @@ class MembersCog(commands.Cog):
             await asyncio.sleep(60)
             guild = await self.bot.get_guild(settings['guild']['junkies'])
         try:
+            self.bot.logger.info(f"Guild: {guild.name}")
             devs = guild.get_role(settings['roles']['developer'])
             guests = guild.get_role(settings['roles']['vip_guest'])
             bots = guild.get_role(settings['roles']['bots'])
@@ -225,7 +226,7 @@ class MembersCog(commands.Cog):
         role_ids = [x['role_id'] for x in fetch]
         view = RoleView(interaction.guild, member, role_ids)
         content = "Please select the member's primary language role:"
-        await interaction.channel.send(content, view=view)
+        await interaction.channel.send(content, delete_after=60.0, view=view)
         # Add developer role
         await member.add_roles(dev_role, reason=f"Role added by {interaction.user.display_name}")
         # Send DM to new member
@@ -238,7 +239,7 @@ class MembersCog(commands.Cog):
         await member.send(welcome_msg)
         # Copy a message to General??
         view = Confirm()
-        await interaction.channel.send("Do you want to copy this message to #general?", view=view)
+        await interaction.channel.send("Do you want to copy this message to #general?", delete_after=60.0, view=view)
         await view.wait()
         if view.value is None:
             self.bot.logger.debug("Prompt to copy message timed out. No biggie.")
