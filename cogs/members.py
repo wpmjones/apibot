@@ -75,8 +75,8 @@ class MembersCog(commands.Cog):
         """Prune inactive members (7 days) without roles"""
         self.bot.logger.info("Initiating prune loop")
         try:
+            counter = 0
             guild = self.bot.get_guild(settings['guild']['junkies'])
-            self.bot.logger.info(f"Guild: {guild.name}")
             devs = guild.get_role(settings['roles']['developer'])
             guests = guild.get_role(settings['roles']['vip_guest'])
             bots = guild.get_role(settings['roles']['bots'])
@@ -90,6 +90,9 @@ class MembersCog(commands.Cog):
             for member in inactive:
                 if now - timedelta(days=7) > member.joined_at:
                     await member.kick(reason="Pruned by Hog Rider (members.py)")
+                    counter += 1
+            if counter > 0:
+                self.bot.logger.info(f"Pruned {counter} members.")
         except:
             self.bot.logger.exception("Failure in prune_loop")
 
