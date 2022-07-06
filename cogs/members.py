@@ -103,8 +103,6 @@ class MembersCog(commands.Cog):
                                               "other parts of the server.")
             if counter > 0:
                 self.bot.logger.info(f"Pruned {counter} members.")
-            # Send reminder to anyone without a role and on server for more than 5 days
-            for
         except:
             self.bot.logger.exception("Failure in prune_loop")
 
