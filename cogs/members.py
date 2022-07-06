@@ -74,31 +74,56 @@ class MembersCog(commands.Cog):
     async def prune_loop(self):
         """Prune inactive members (7 days) without roles"""
         self.bot.logger.info("Initiating prune loop")
+        counter = 0
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        devs = guild.get_role(settings['roles']['developer'])
+        guests = guild.get_role(settings['roles']['vip_guest'])
+        bots = guild.get_role(settings['roles']['bots'])
+        hr = guild.get_role(settings['roles']['hog_rider'])
+        inactive = set(guild.members).difference(devs.members)
+        inactive = inactive.difference(guests.members)
+        inactive = inactive.difference(bots.members)
+        inactive = inactive.difference(hr.members)
+        now = datetime.utcnow().replace(tzinfo=timezone.utc)
         try:
-            counter = 0
-            guild = self.bot.get_guild(settings['guild']['junkies'])
-            devs = guild.get_role(settings['roles']['developer'])
-            guests = guild.get_role(settings['roles']['vip_guest'])
-            bots = guild.get_role(settings['roles']['bots'])
-            hr = guild.get_role(settings['roles']['hog_rider'])
-            inactive = set(guild.members).difference(devs.members)
-            inactive = inactive.difference(guests.members)
-            inactive = inactive.difference(bots.members)
-            inactive = inactive.difference(hr.members)
-            now = datetime.utcnow().replace(tzinfo=timezone.utc)
-            self.bot.logger.info(f"Preparing to evaluate {len(inactive)} members for possible pruning.")
+            # Prune anyone without a role and on server for more than 7 days.
             for member in inactive:
                 if now - timedelta(days=7) > member.joined_at:
                     await member.kick(reason="Pruned by Hog Rider (members.py)")
                     counter += 1
+                    continue
+                if now - timedelta(days=5) > member.joined_at:
+                    await member.send(content="You have been a member of the Clash API Developers Discord server for "
+                                              "five days, but you have not yet introduced yourself.  Please go to "
+                                              "<#885193658985500722> and let us know what your preferred programming "
+                                              "language is. Next, if you've already started working with the API, "
+                                              "please tell us a little about your project. If you haven't started "
+                                              "a project yet, let us know what you're interested in making. "
+                                              "Once you introduce yourself, you will be granted roles to access "
+                                              "other parts of the server.")
             if counter > 0:
                 self.bot.logger.info(f"Pruned {counter} members.")
+            # Send reminder to anyone without a role and on server for more than 5 days
+            for
         except:
             self.bot.logger.exception("Failure in prune_loop")
 
     @prune_loop.before_loop
     async def before_prune_loop(self):
         await self.bot.wait_until_ready()
+
+    @commands.command(name="ptest", hidden=True)
+    async def ptest(self, ctx):
+        from time import perf_counter
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        now = datetime.utcnow().replace(tzinfo=timezone.utc)
+        start = perf_counter()
+        for member in guild.members:
+            if len(member.roles) == 1:
+                self.bot.logger.info(f"{member.display_name} has only one role. {member.roles[0].name} "
+                                     f"({now - member.joined_at})")
+        stop = perf_counter()
+        self.bot.logger.info(f"Elapsed: {stop - start}")
 
     @commands.command(name="welcome", hidden=True)
     async def welcome(self, ctx, member: nextcord.Member = None):
