@@ -129,6 +129,15 @@ class General(commands.Cog):
         """Responds with the rate limit information for the Clash API"""
         await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
                                                 "second. Staying below this should be safe.")
+        
+    @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
+    async def refresh_intervall(self, interaction: nextcord.Interaction):
+        """Responds with the max age of the information for each endpoint in the ClashAPI"""
+        embed = nextcord.Embed(title="Max age of information due to caching")
+        embed.add_field(name="Clans",value="2 Minutes",inline=False)
+        embed.add_field(name="Wars",value="10 Minutes",inline=False)
+        embed.add_field(name="Player",value="1 Minute",inline=False)
+        await interaction.response.send_message(embed=embed)
 
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
