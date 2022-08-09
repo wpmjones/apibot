@@ -4,7 +4,7 @@ import re
 from cogs.utils import checks
 from config import settings
 from datetime import datetime, timedelta
-from nextcord import Interaction, ui
+from nextcord import Interaction, ui, Thread, ChannelType
 from nextcord.ext import commands, tasks
 
 enviro = settings['enviro']
@@ -15,6 +15,7 @@ if enviro == "LIVE":
 else:
     GUILD_IDS = [settings['guild']['bot_logs']]
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
+WELCOME_CHANNEL_ID = settings['channels']['welcome']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
@@ -28,6 +29,13 @@ UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
 
 
+async def close_welcome_thread(thread_channel: Thread):
+    """Closes a welcome thread. Is called from either the close button or the close command."""
+    if thread_channel.locked or thread_channel.archived:
+        return
+    await thread_channel.edit(locked=True, archived=True)
+
+
 class Dropdown(ui.Select):
     def __init__(self, options):
         super().__init__(
@@ -37,21 +45,23 @@ class Dropdown(ui.Select):
             options=options
         )
 
-    async def callback(self, interaction: Interaction):
-        # Add language roles
-        print("dropdown callback")
-        for value in self.values:
-            await interaction.channel.send(f"I will add {value} role to user")
+    # async def callback(self, interaction: Interaction):
+    #     # Add language roles
+    #     print("dropdown callback")
+    #     for value in self.values:
+    #         await interaction.channel.send(f"I will add {value} role to user")
 
 
 class Introduce(ui.Modal):
-    def __init__(self, roles):
+    def __init__(self, bot, roles):
         super().__init__(
             "Getting to know you",
-            timeout=5*60  # 5 minutes
+            timeout=5 * 60  # 5 minutes
         )
+        self.bot = bot
 
-        self.add_item(Dropdown(roles))
+        self.language_roles = Dropdown(roles)
+        self.add_item(self.language_roles)
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
@@ -61,16 +71,101 @@ class Introduce(ui.Modal):
         )
         self.add_item(self.information)
 
+    async def create_welcome_thread(self, interaction: Interaction, roles, content) -> Thread:
+        thread = await interaction.channel.create_thread(
+            name=f"Welcome {interaction.user.display_name}",
+            type=ChannelType.public_thread,
+        )
+        embed = nextcord.Embed(
+            title=f"Introducing {interaction.user.display_name}",
+            description=f"Created by: {interaction.user} ({interaction.user.id})",
+            color=nextcord.Color.green()
+        )
+        # Parse roles from selected values
+        sql = ("SELECT role_name FROM bot_language_board "
+               "WHERE role_id = $1"
+               "ORDER BY role_name")
+        role_names = []
+        for role_id in roles:
+            role_names.append(await self.bot.pool.fetchval(sql, int(role_id)))
+        new_line = "\n"
+        role_list = new_line.join(role_names)
+        embed.add_field(name="Languages:", value=role_list, inline=False)
+        embed.add_field(name="Message:", value=content, inline=False)
+        embed.set_footer(text="Admins can approve or invite the member to request more information.")
+
+        welcome_button_view = WelcomeButtonView(self.bot, interaction.user, roles, content)
+
+        msg = await thread.send(embed=embed, view=welcome_button_view)
+        # welcome_button_view.stop()
+        return thread
+
     async def callback(self, interaction: Interaction):
-        # Add dev roles
-        await interaction.send("I will add the developer role.")
-        welcome_msg = ("Welcome to the Clash API Developers server.  We hope you find this to be a great place to "
-                       "share and learn more about the Clash of Clans API.  You can check out <#641454924172886027> "
-                       "if you need some basic help.  There are some tutorials there as well as some of the more "
-                       "common libraries that are used with various programming languages.\n"
-                       "Lastly, say hello in <#566451504903618561> and make some new friends!!")
+        # Create welcome thread for admins to verify
+        roles = self.language_roles.values
+        content = self.information.value
+        created_thread = await self.create_welcome_thread(interaction, roles, content)
+        await created_thread.send(f"<@&{settings['roles']['admin']}>", delete_after=5)
+        # Add temp_guest role, Send DM so user knows we're working on it
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
+        await interaction.user.add_roles(temp_guest_role)
+        welcome_msg = ("Thank you for introducing yourself.  One of our admins will review your information "
+                       "shortly and get things moving. If they have any other questions, they will let you know! "
+                       "In the meantime, we've given you access to a few channels.")
         await interaction.user.send(welcome_msg)
-        await interaction.send(f"This is what I would send to #general.\n{self.information.value}")
+
+
+class WelcomeButtonView(ui.View):
+    def __init__(self, bot, member, roles, msg):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.member = member
+        self.roles = roles
+        self.content = msg
+
+    @ui.button(label="Approve", style=nextcord.ButtonStyle.green, custom_id="welcome_thread_close")
+    async def thread_approve_button(self, button: nextcord.Button, interaction: Interaction):
+        print("Inside approve button")
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+        # Add dev role and language roles
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        dev_role = guild.get_role(settings['roles']['developer'])
+        # Add language roles first so that on_member_join detects roles when dev role is added
+        for role_id in self.roles:
+            lang_role = guild.get_role(int(role_id))
+            self.member.add_roles(lang_role)
+            # Change nickname (Yes, I'm aware this will change it each time, but there is no good
+            # way to determine their "primary" language, so I'm just taking the last one. In most cases,
+            # they will only pick one language anyway.
+            self.member.edit(nick={self.member.display_name} | {lang_role.name})
+        self.member.add_roles(dev_role)
+        # Post message to #general
+        channel = guild.get_channel(settings['channels']['general'])
+        msg = f"{self.member.display_name} says:\n{self.content}"
+        await channel.send(self.content)
+        await close_welcome_thread(interaction.channel)
+
+    @ui.button(label="More Info", style=nextcord.ButtonStyle.blurple, custom_id="welcome_thread_more")
+    async def thread_info_button(self, button: nextcord.Button, interaction: Interaction):
+        print("Inside More Info button")
+        # add user to this channel and post message?
+        await interaction.channel.add_user(self.member)
+        # guild = self.bot.get_guild(settings['guild']['junkies'])
+        # channel = interaction.channel.parent.set_permissions(self.member, send_messages=True)
+        await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
+
+    async def interaction_check(self, interaction: Interaction) -> bool:
+        if not isinstance(interaction.channel, Thread) or interaction.channel.parent_id != WELCOME_CHANNEL_ID:
+            return False
+        if interaction.channel.archived or interaction.channel.locked:
+            return False
+        if interaction.user.get_role(ADMIN_ROLE_ID):
+            return True
+        else:
+            await interaction.send("Only admins may use these buttons.", ephemeral=True)
+            return False
 
 
 class IntroduceButton(ui.Button["WelcomeView"]):
@@ -87,7 +182,7 @@ class IntroduceButton(ui.Button["WelcomeView"]):
         roles = []
         for row in fetch:
             roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
-        modal = Introduce(roles)
+        modal = Introduce(self.view.bot, roles)
         await interaction.response.send_modal(modal)
 
 
@@ -97,12 +192,29 @@ class WelcomeView(ui.View):
         self.bot = bot
         self.add_item(IntroduceButton())
 
-    # async def interaction_check(self, interaction: Interaction):
-    #     if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
-    #         await interaction.send("You already have the developer role.", ephemeral=True)
-    #         return False
-    #     else:
-    #         return True
+    async def interaction_check(self, interaction: Interaction):
+        if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
+            await interaction.send("You already have the developer role.", ephemeral=True)
+            return False
+        else:
+            return True
+
+
+class ConfirmButton(ui.Button["ConfirmView"]):
+    def __init__(self, label: str, style: nextcord.ButtonStyle, *, custom_id: str):
+        super().__init__(label=label, style=style, custom_id=custom_id)
+
+    async def callback(self, interaction: Interaction):
+        self.view.value = True if self.custom_id == f"confirm_button" else False
+        self.view.stop()
+
+
+class ConfirmView(ui.View):
+    def __init__(self):
+        super().__init__(timeout=10.0)
+        self.value = None
+        self.add_item(ConfirmButton("Yes", nextcord.ButtonStyle.green, custom_id="confirm_button"))
+        self.add_item(ConfirmButton("No", nextcord.ButtonStyle.red, custom_id="decline_button"))
 
 
 class General(commands.Cog):
@@ -142,7 +254,8 @@ class General(commands.Cog):
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
-        await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
+        await interaction.response.send_message(
+            "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
     @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
     async def rules(self, interaction: nextcord.Interaction):
@@ -338,7 +451,7 @@ class General(commands.Cog):
             role_ids = [x['role_id'] for x in fetch]
             content = "Please select the member's primary language role:\n"
             for i in range(len(fetch)):
-                content += f"{i+1} - {role_names[i]}\n"
+                content += f"{i + 1} - {role_names[i]}\n"
             lang_int = await ctx.prompt(content, additional_options=len(fetch))
             lang_int -= 1  # decrement by one for list index
             role = member.guild.get_role(role_ids[lang_int])
@@ -413,20 +526,22 @@ class General(commands.Cog):
         if msg_count:
             await ctx.channel.purge(limit=msg_count + 1)
         else:
-            prompt = await ctx.prompt(f"Are you sure you want to remove ALL messages from the "
-                                      f"{ctx.channel.name} channel?")
-            if prompt:
-                await ctx.channel.purge()
-            else:
-                await ctx.message.delete()
+            view = ConfirmView()
 
-    @commands.command(name="clear_old", hidden=True)
-    @checks.manage_messages()
-    async def clear_old(self, ctx):
-        """Clears all messages older than the last 24 hours."""
-        before = datetime.now() - timedelta(hours=24)
-        await ctx.channel.purge(before=before)
-        await ctx.message.delete()
+            def disable_all_buttons():
+                for _item in view.children:
+                    _item.disabled = True
+
+            confirm_content = (f"Are you really sure you want to remove ALL messages from "
+                               f"the {ctx.channel.name} channel?")
+            msg = await ctx.send(content=confirm_content, view=view)
+            await view.wait()
+            if view.value is False or view.value is None:
+                disable_all_buttons()
+                await msg.delete()
+            else:
+                disable_all_buttons()
+                await ctx.channel.purge()
 
     @tasks.loop(hours=4.0)
     async def clear_loop(self):
@@ -530,7 +645,7 @@ class General(commands.Cog):
         await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
 
     @commands.command(hidden=True)
-    @commands.has_role("Admin")
+    # @commands.has_role("Admin")
     async def recreate_welcome(self, ctx):
         """Recreate the welcome message for new members"""
         welcome_msg = ("Welcome to the Clash API Developers server! We're glad to have you! "

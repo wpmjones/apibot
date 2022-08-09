@@ -221,18 +221,20 @@ class MembersCog(commands.Cog):
         dev_role = interaction.guild.get_role(settings['roles']['developer'])
         if dev_role in member.roles:
             return await interaction.send(f"{member.display_name} already has the Developer role. "
-                                                           f"This command can only be used for members without the "
-                                                           f"Developer role.")
+                                          f"This command can only be used for members without the "
+                                          f"Developer role.",
+                                          ephemeral=True)
         if interaction.channel_id != settings['channels']['welcome']:
             return await interaction.send(f"I'd feel a whole lot better if you ran this command in "
-                                                           f"<#{settings['channels']['welcome']}>.")
+                                          f"<#{settings['channels']['welcome']}>.",
+                                          ephemeral=True)
         await interaction.response.defer(ephemeral=True)
         guest_role = interaction.guild.get_role(settings['roles']['vip_guest'])
         if guest_role in member.roles:
             view = Confirm()
             await interaction.send(f"{member.display_name} currently has the Guest role. Would you "
-                                                    f"like to remove the Guest role and add the Developer role?",
-                                                    view=view)
+                                   f"like to remove the Guest role and add the Developer role?",
+                                   view=view)
             await view.wait()
             if view.value is None:
                 return await interaction.send("Action timed out.")
