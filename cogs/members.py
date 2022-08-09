@@ -217,15 +217,15 @@ class MembersCog(commands.Cog):
 
     @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
     async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):
-        await interaction.response.defer()
         member = message.author
         dev_role = interaction.guild.get_role(settings['roles']['developer'])
         if dev_role in member.roles:
-            return await interaction.channel.send(f"{member.display_name} already has the Developer role. This "
+            return await interaction.response(f"{member.display_name} already has the Developer role. This "
                                                   f"command can only be used for members without the Developer role.")
         if interaction.channel_id != settings['channels']['welcome']:
-            return await interaction.channel.send(f"I'd feel a whole lot better if you ran this command in "
+            return await interaction.response(f"I'd feel a whole lot better if you ran this command in "
                                                   f"<#{settings['channels']['welcome']}>.")
+        await interaction.response.defer()
         guest_role = interaction.guild.get_role(settings['roles']['vip_guest'])
         if guest_role in member.roles:
             view = Confirm()
