@@ -39,6 +39,7 @@ of the top recommended sites are as follow:
 | [Azure](https://azure.microsoft.com/en-us/) | US | Same as AWS. They also offer a free tier for a year that you can take advantage of |
 | [Google Cloud](https://cloud.google.com) | US | Same as AWS. They also offer up to $300 worth of credit to use on ther services |
 | [time4vps](https://www.time4vps.eu/) | EU | Cheap VPSes, seemingly based in Lithuania. |
+| [netcup](https://www.netcup.eu/vserver/vps.php) | EU | Based in Germany, very reliable |
 | [GalaxyGate](https://galaxygate.net/) | US | A big takeaway on this one is their great Linux guide for setting up a [discord bot systemd service](https://wiki.galaxygate.net/hosting/discord/python/) |
 
 
