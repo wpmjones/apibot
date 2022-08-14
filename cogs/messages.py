@@ -36,7 +36,7 @@ class MessagesCog(commands.Cog):
             return
         if message.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
-        if before.author.bot:
+        if message.author.bot:
             return
         guild = self.bot.get_guild(settings['guild']['junkies'])
         admin_role = guild.get_role(settings['roles']['admin'])
