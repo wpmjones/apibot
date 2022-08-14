@@ -36,6 +36,7 @@ intents = nextcord.Intents.default()
 intents.guilds = True
 intents.members = True
 intents.presences = True
+intents.messages = True
 intents.message_content = True
 
 if enviro == "LIVE":
