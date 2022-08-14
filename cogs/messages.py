@@ -11,8 +11,11 @@ class MessagesCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         """Deal with edited messages"""
+        if before.guild.id != settings['guild']['junkies']:
+            return
         if before.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
+        self.bot.logger.info("Message edited")
         embed = nextcord.Embed(title=f"Message edited in #{before.channel.name}")
         embed.set_author(name=before.author.name, icon_url=before.author.display_author.url)
         embed.add_field(name="Before:", value=before.content, inline=False)
@@ -24,8 +27,11 @@ class MessagesCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message):
         """Deal with deleted messages"""
+        if message.guild.id != settings['guild']['junkies']:
+            return
         if message.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
+        self.bot.logger.info("Message deleted")
         embed = nextcord.Embed()
         embed.set_author(name=message.author.name, icon_url=message.author.display_author.url)
         embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content)

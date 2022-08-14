@@ -46,6 +46,7 @@ if enviro == "LIVE":
     coc_names = "galaxy"
     # append to initial_extensions if additional cogs are desired
     initial_extensions.append("cogs.members")
+    initial_extensions.append("cogs.messages")
     initial_extensions.append("cogs.downtime")
     initial_extensions.append("cogs.response")
     initial_extensions.append("cogs.language_board")
