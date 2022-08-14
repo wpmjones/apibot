@@ -15,6 +15,12 @@ class MessagesCog(commands.Cog):
             return
         if before.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
+        if before.author.bot:
+            return
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        admin_role = guild.get_role(settings['roles']['admin'])
+        if admin_role in before.author.roles:
+            return
         embed = nextcord.Embed(title=f"Message edited in #{before.channel.name}", color=nextcord.Color.blue())
         embed.set_author(name=before.author.name, icon_url=before.author.display_avatar.url)
         embed.add_field(name="Before:", value=before.content, inline=False)
@@ -29,6 +35,12 @@ class MessagesCog(commands.Cog):
         if message.guild.id != settings['guild']['junkies']:
             return
         if message.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
+            return
+        if before.author.bot:
+            return
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        admin_role = guild.get_role(settings['roles']['admin'])
+        if admin_role in message.author.roles:
             return
         embed = nextcord.Embed(color=nextcord.Color.red())
         embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
