@@ -15,9 +15,8 @@ class MessagesCog(commands.Cog):
             return
         if before.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
-        self.bot.logger.info("Message edited")
         embed = nextcord.Embed(title=f"Message edited in #{before.channel.name}")
-        embed.set_author(name=before.author.name, icon_url=before.author.display_author.url)
+        embed.set_author(name=before.author.name, icon_url=before.author.display_avatar.url)
         embed.add_field(name="Before:", value=before.content, inline=False)
         embed.add_field(name="After:", value=after.content, inline=False)
         embed.set_footer(text=f"ID: {after.id} | {after.edited_at}")
@@ -31,9 +30,8 @@ class MessagesCog(commands.Cog):
             return
         if message.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
-        self.bot.logger.info("Message deleted")
         embed = nextcord.Embed()
-        embed.set_author(name=message.author.name, icon_url=message.author.display_author.url)
+        embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
         embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content)
         embed.set_footer(text=f"ID: {message.id} | {message.edited_at}")
         mod_channel = self.bot.get_channel(settings['channels']['mod-log'])
