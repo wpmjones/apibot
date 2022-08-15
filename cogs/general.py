@@ -76,6 +76,7 @@ class Introduce(ui.Modal):
             description=f"Created by: {interaction.user} ({interaction.user.id})",
             color=nextcord.Color.green()
         )
+        self.bot.logger.info("Created embed")
         # Parse roles from selected values
         sql = ("SELECT role_name FROM bot_language_board "
                "WHERE role_id = $1"
@@ -83,12 +84,14 @@ class Introduce(ui.Modal):
         role_names = []
         for role_id in roles:
             role_names.append(await self.bot.pool.fetchval(sql, int(role_id)))
+        self.bot.logger.info(len(role_names))
         new_line = "\n"
         role_list = new_line.join(role_names)
         embed.add_field(name="Languages:", value=role_list, inline=False)
         embed.add_field(name="Message:", value=content, inline=False)
         embed.set_footer(text="Admins can approve or invite the member to request more information.")
 
+        self.bot.logger.info("About to create button view")
         welcome_button_view = WelcomeButtonView(self.bot, interaction.user, roles, content)
 
         await thread.send(embed=embed, view=welcome_button_view)
