@@ -1,4 +1,5 @@
 import nextcord
+import random
 import re
 
 from cogs.utils import checks
@@ -45,12 +46,6 @@ class Dropdown(ui.Select):
             options=options
         )
 
-    # async def callback(self, interaction: Interaction):
-    #     # Add language roles
-    #     print("dropdown callback")
-    #     for value in self.values:
-    #         await interaction.channel.send(f"I will add {value} role to user")
-
 
 class Introduce(ui.Modal):
     def __init__(self, bot, roles):
@@ -96,7 +91,7 @@ class Introduce(ui.Modal):
 
         welcome_button_view = WelcomeButtonView(self.bot, interaction.user, roles, content)
 
-        msg = await thread.send(embed=embed, view=welcome_button_view)
+        await thread.send(embed=embed, view=welcome_button_view)
         # welcome_button_view.stop()
         return thread
 
@@ -105,7 +100,7 @@ class Introduce(ui.Modal):
         roles = self.language_roles.values
         content = self.information.value
         created_thread = await self.create_welcome_thread(interaction, roles, content)
-        await created_thread.send(f"<@&{settings['roles']['admin']}>", delete_after=5)
+        # await created_thread.send(f"<@&{settings['roles']['admin']}>", delete_after=5)
         # Add temp_guest role, Send DM so user knows we're working on it
         guild = self.bot.get_guild(settings['guild']['junkies'])
         temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
@@ -124,42 +119,59 @@ class WelcomeButtonView(ui.View):
         self.roles = roles
         self.content = msg
 
-    @ui.button(label="Approve", style=nextcord.ButtonStyle.green, custom_id="welcome_thread_close")
+    @ui.button(
+        label="Approve",
+        style=nextcord.ButtonStyle.green,
+        custom_id=f"{random.randint(1234567890,9999999999)}_welcome_thread_close"
+    )
     async def thread_approve_button(self, button: nextcord.Button, interaction: Interaction):
-        print("Inside approve button")
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
+        # button.disabled = True
+        # await interaction.response.edit_message(view=self)
         # Add dev role and language roles
         guild = self.bot.get_guild(settings['guild']['junkies'])
         dev_role = guild.get_role(settings['roles']['developer'])
+        temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
+        if temp_guest_role in self.member.roles:
+            await self.member.remove_roles(temp_guest_role)
         # Add language roles first so that on_member_join detects roles when dev role is added
         for role_id in self.roles:
             lang_role = guild.get_role(int(role_id))
-            self.member.add_roles(lang_role)
+            await self.member.add_roles(lang_role)
             # Change nickname (Yes, I'm aware this will change it each time, but there is no good
             # way to determine their "primary" language, so I'm just taking the last one. In most cases,
             # they will only pick one language anyway.
-            self.member.edit(nick={self.member.display_name} | {lang_role.name})
-        self.member.add_roles(dev_role)
+            # await self.member.edit(nick=f"{self.member.display_name} | {lang_role.name}")
+        await self.member.add_roles(dev_role)
         # Post message to #general
         channel = guild.get_channel(settings['channels']['general'])
         msg = f"{self.member.display_name} says:\n{self.content}"
         await channel.send(self.content)
         await close_welcome_thread(interaction.channel)
 
-    @ui.button(label="More Info", style=nextcord.ButtonStyle.blurple, custom_id="welcome_thread_more")
+    @ui.button(
+        label="More Info",
+        style=nextcord.ButtonStyle.blurple,
+        custom_id=f"{random.randint(1234567890,9999999999)}_welcome_thread_more"
+    )
     async def thread_info_button(self, button: nextcord.Button, interaction: Interaction):
-        print("Inside More Info button")
         # add user to this channel and post message?
         await interaction.channel.add_user(self.member)
-        # guild = self.bot.get_guild(settings['guild']['junkies'])
-        # channel = interaction.channel.parent.set_permissions(self.member, send_messages=True)
+        await interaction.channel.parent.set_permissions(
+            self.member,
+            send_messages=True,
+            read_messages=True,
+            send_messages_in_threads=True,
+            add_reactions=True
+        )
         await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
+        button.disabled = True
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         if not isinstance(interaction.channel, Thread) or interaction.channel.parent_id != WELCOME_CHANNEL_ID:
+            print("failing on thread check")
             return False
         if interaction.channel.archived or interaction.channel.locked:
+            print("failing on archive/locked")
             return False
         if interaction.user.get_role(ADMIN_ROLE_ID):
             return True
@@ -241,14 +253,14 @@ class General(commands.Cog):
         """Responds with the rate limit information for the Clash API"""
         await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
                                                 "second. Staying below this should be safe.")
-        
+
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
     async def refresh_intervall(self, interaction: nextcord.Interaction):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
         embed = nextcord.Embed(title="Max age of information due to caching")
-        embed.add_field(name="Clans",value="2 Minutes",inline=False)
-        embed.add_field(name="Wars",value="10 Minutes",inline=False)
-        embed.add_field(name="Player",value="1 Minute",inline=False)
+        embed.add_field(name="Clans", value="2 Minutes", inline=False)
+        embed.add_field(name="Wars", value="10 Minutes", inline=False)
+        embed.add_field(name="Player", value="1 Minute", inline=False)
         await interaction.response.send_message(embed=embed)
 
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
@@ -648,7 +660,7 @@ class General(commands.Cog):
     # @commands.has_role("Admin")
     async def recreate_welcome(self, ctx):
         """Recreate the welcome message for new members"""
-        welcome_msg = ("Welcome to the Clash API Developers server! We're glad to have you! "
+        welcome_msg = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
                        "We're here to help you do the things you want to do with the Clash API. While we can "
                        "provide some language specific guidance, we are not a 'learn to code' server. There are "
                        "plenty of resources out there for that.  But if you know the basics of coding and "
@@ -657,6 +669,7 @@ class General(commands.Cog):
                        "bit about yourself and gain access to the rest of the server.")
         await ctx.send(embed=nextcord.Embed(description=welcome_msg, color=nextcord.Color.green()))
         await ctx.send(view=WelcomeView(self.bot))
+        await ctx.message.delete()
 
 
 def setup(bot):
