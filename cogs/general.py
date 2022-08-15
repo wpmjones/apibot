@@ -246,6 +246,7 @@ class General(commands.Cog):
 
     async def create_welcome(self):
         """Recreate the welcome message for new members"""
+        self.bot.logger.info("Recreating welcome message")
         channel = await self.bot.get_channel(WELCOME_CHANNEL_ID)
         await channel.purge()
         await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
