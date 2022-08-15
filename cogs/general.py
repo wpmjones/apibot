@@ -98,7 +98,6 @@ class Introduce(ui.Modal):
         embed.add_field(name="Message:", value=content, inline=False)
         embed.set_footer(text="Admins can approve or invite the member to request more information.")
 
-        self.bot.logger.info("About to create button view")
         welcome_button_view = WelcomeButtonView(self.bot, interaction.user, roles, content)
 
         await thread.send(embed=embed, view=welcome_button_view)
