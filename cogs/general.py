@@ -76,7 +76,7 @@ class Introduce(ui.Modal):
             description=f"Created by: {interaction.user} ({interaction.user.id})",
             color=nextcord.Color.green()
         )
-        self.bot.logger.info("Created embed")
+        self.bot.logger.info(roles)
         # Parse roles from selected values
         sql = ("SELECT role_name FROM bot_language_board "
                "WHERE role_id = $1"
@@ -84,7 +84,6 @@ class Introduce(ui.Modal):
         role_names = []
         for role_id in roles:
             role_names.append(await self.bot.pool.fetchval(sql, int(role_id)))
-        self.bot.logger.info(len(role_names))
         new_line = "\n"
         role_list = new_line.join(role_names)
         embed.add_field(name="Languages:", value=role_list, inline=False)
@@ -103,7 +102,7 @@ class Introduce(ui.Modal):
         roles = self.language_roles.values
         content = self.information.value
         created_thread = await self.create_welcome_thread(interaction, roles, content)
-        # await created_thread.send(f"<@&{settings['roles']['admin']}>", delete_after=5)
+        await created_thread.send(f"<@&{settings['roles']['admin']}>", delete_after=5)
         # Add temp_guest role, Send DM so user knows we're working on it
         guild = self.bot.get_guild(settings['guild']['junkies'])
         temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
@@ -147,8 +146,8 @@ class WelcomeButtonView(ui.View):
         await self.member.add_roles(dev_role)
         # Post message to #general
         channel = guild.get_channel(settings['channels']['general'])
-        msg = f"{self.member.display_name} says:\n{self.content}"
-        await channel.send(self.content)
+        msg = f"{self.member.display_name} says:\n>>> {self.content}"
+        await channel.send(f"{self.member.display_name} says: {self.content}")
         await close_welcome_thread(interaction.channel)
 
     @ui.button(
