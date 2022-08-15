@@ -146,8 +146,7 @@ class WelcomeButtonView(ui.View):
         await self.member.add_roles(dev_role)
         # Post message to #general
         channel = guild.get_channel(settings['channels']['general'])
-        msg = f"{self.member.display_name} says:\n>>> {self.content}"
-        await channel.send(f"{self.member.display_name} says: {self.content}")
+        await channel.send(f"{self.member.display_name} says:\n>>> {self.content}")
         await close_welcome_thread(interaction.channel)
 
     @ui.button(

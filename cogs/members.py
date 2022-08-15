@@ -94,11 +94,11 @@ class MembersCog(commands.Cog):
                     continue
                 if now - timedelta(days=5) > member.joined_at:
                     await member.send(content="You have been a member of the Clash API Developers Discord server for "
-                                              "five days, but you have not yet introduced yourself.  Please go to "
-                                              "<#885193658985500722> and let us know what your preferred programming "
-                                              "language is. Next, if you've already started working with the API, "
-                                              "please tell us a little about your project. If you haven't started "
-                                              "a project yet, let us know what you're interested in making. "
+                                              "at least five days, but you have not yet introduced yourself.  Please "
+                                              "got to <#885193658985500722> and let us know what your preferred "
+                                              "programming language is. Next, if you've already started working with "
+                                              "the API, please tell us a little about your project. If you haven't "
+                                              "started a project yet, let us know what you're interested in making. "
                                               "Once you introduce yourself, you will be granted roles to access "
                                               "other parts of the server.")
             if counter > 0:
