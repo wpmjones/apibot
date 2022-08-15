@@ -29,6 +29,14 @@ SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
 
+WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
+                   "We're here to help you do the things you want to do with the Clash API. While we can "
+                   "provide some language specific guidance, we are not a 'learn to code' server. There are "
+                   "plenty of resources out there for that.  But if you know the basics of coding and "
+                   "want to learn more about incorporating the Clash of Clans API into a project, you've "
+                   "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
+                   "bit about yourself and gain access to the rest of the server.")
+
 
 async def close_welcome_thread(thread_channel: Thread):
     """Closes a welcome thread. Is called from either the close button or the close command."""
@@ -234,10 +242,14 @@ class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if enviro == "LIVE":
-            self.clear_loop.start()
+            self.bot.loop.create_task(self.create_welcome())
 
-    def cog_unload(self):
-        self.clear_loop.cancel()
+    async def create_welcome(self):
+        """Recreate the welcome message for new members"""
+        channel = await self.bot.get_channel(WELCOME_CHANNEL_ID)
+        await channel.purge()
+        await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
+        await channel.send(view=WelcomeView(self.bot))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -561,17 +573,6 @@ class General(commands.Cog):
                 disable_all_buttons()
                 await ctx.channel.purge()
 
-    @tasks.loop(hours=4.0)
-    async def clear_loop(self):
-        """Clears all messages older than the last 24 hours."""
-        before = datetime.now() - timedelta(hours=24)
-        channel = self.bot.get_channel(settings['channels']['welcome'])
-        await channel.purge(before=before)
-
-    @clear_loop.before_loop
-    async def before_clear_loop(self):
-        await self.bot.wait_until_ready()
-
     @commands.command(hidden=True)
     @commands.has_role("Admin")
     async def recreate_rules(self, ctx):
@@ -661,21 +662,6 @@ class General(commands.Cog):
             view.add_item(ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
         await channel.send(view=view)
         await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
-
-    @commands.command(hidden=True)
-    # @commands.has_role("Admin")
-    async def recreate_welcome(self, ctx):
-        """Recreate the welcome message for new members"""
-        welcome_msg = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
-                       "We're here to help you do the things you want to do with the Clash API. While we can "
-                       "provide some language specific guidance, we are not a 'learn to code' server. There are "
-                       "plenty of resources out there for that.  But if you know the basics of coding and "
-                       "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                       "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                       "bit about yourself and gain access to the rest of the server.")
-        await ctx.send(embed=nextcord.Embed(description=welcome_msg, color=nextcord.Color.green()))
-        await ctx.send(view=WelcomeView(self.bot))
-        await ctx.message.delete()
 
 
 def setup(bot):
