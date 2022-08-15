@@ -144,10 +144,10 @@ class MembersCog(commands.Cog):
         if member.guild.id != 566451504332931073:
             # only act if they are joining API server
             return
-        if not member.bot:
-            channel = self.bot.get_channel(settings['channels']['welcome'])
-            await channel.send(WELCOME_MESSAGE.format(member.mention))
-        else:
+        # if not member.bot:
+        #     channel = self.bot.get_channel(settings['channels']['welcome'])
+        #     await channel.send(WELCOME_MESSAGE.format(member.mention))
+        if member.bot:
             channel = self.bot.get_channel(settings['channels']['admin'])
             await channel.send(f"{member.mention} has just been invited to the server. "
                                f"Perhaps it is time to set up a demo channel?  Try `//setup {member.mention} @owner`")
