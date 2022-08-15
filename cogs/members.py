@@ -1,6 +1,5 @@
 import asyncio
 import nextcord
-import random
 
 from config import settings
 from datetime import datetime, timezone, timedelta
@@ -12,6 +11,15 @@ WELCOME_MESSAGE = ("Welcome to the Clash API Developers server, {}! We're glad t
                    "Next, if you've already started working with the API, please tell us a little about your "
                    "project. If you haven't started a project yet, let us know what you're interested in making.\n"
                    "(Once you introduce yourself, you will be granted roles to access other parts of the server.)")
+
+PRUNE_WARNING = ("You have been a member of the Clash API Developers Discord server for "
+                 "at least five days, but you have not yet introduced yourself.  Please "
+                 "got to <#885193658985500722> and let us know what your preferred "
+                 "programming language is. Next, if you've already started working with "
+                 "the API, please tell us a little about your project. If you haven't "
+                 "started a project yet, let us know what you're interested in making. "
+                 "Once you introduce yourself, you will be granted roles to access "
+                 "other parts of the server.")
 
 
 class Confirm(nextcord.ui.View):
@@ -93,14 +101,10 @@ class MembersCog(commands.Cog):
                     counter += 1
                     continue
                 if now - timedelta(days=5) > member.joined_at:
-                    await member.send(content="You have been a member of the Clash API Developers Discord server for "
-                                              "at least five days, but you have not yet introduced yourself.  Please "
-                                              "got to <#885193658985500722> and let us know what your preferred "
-                                              "programming language is. Next, if you've already started working with "
-                                              "the API, please tell us a little about your project. If you haven't "
-                                              "started a project yet, let us know what you're interested in making. "
-                                              "Once you introduce yourself, you will be granted roles to access "
-                                              "other parts of the server.")
+                    try:
+                        await member.send(content=PRUNE_WARNING)
+                    except nextcord.errors.Forbidden:
+                        self.bot.logger.info(f"Prune warning failed. {member.display_name} does not allow DMs.")
             if counter > 0:
                 self.bot.logger.info(f"Pruned {counter} members.")
         except:
