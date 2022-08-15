@@ -240,6 +240,11 @@ class General(commands.Cog):
     def cog_unload(self):
         self.clear_loop.cancel()
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.channel.id == WELCOME_CHANNEL_ID and message.type is nextcord.MessageType.thread_created:
+            await message.delete(delay=5)
+
     @commands.command(name="invite")
     async def invite(self, ctx):
         """Responds with the invite link to this server"""
