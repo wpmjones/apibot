@@ -142,6 +142,12 @@ class WelcomeButtonView(ui.View):
         temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
         if temp_guest_role in self.member.roles:
             await self.member.remove_roles(temp_guest_role)
+        # remove perms for welcome - this covers a case where they were individually
+        # added with the More Info button
+        await interaction.channel.parent.set_permissions(
+            self.member,
+            overwrite=None
+        )
         # Add language roles first so that on_member_join detects roles when dev role is added
         for role_id in self.roles:
             lang_role = guild.get_role(int(role_id))
