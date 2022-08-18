@@ -284,7 +284,8 @@ class General(commands.Cog):
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
     async def refresh_intervall(self, interaction: nextcord.Interaction):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
-        embed = nextcord.Embed(title="Max age of information due to caching")
+        embed = nextcord.Embed(title="Max age of information due to caching",
+                color=nextcord.Color.green())
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
         embed.add_field(name="Wars", value="10 Minutes", inline=False)
         embed.add_field(name="Player", value="1 Minute", inline=False)
@@ -438,7 +439,8 @@ class General(commands.Cog):
         await channel.send(embed=nextcord.Embed(
                 description=f"{owner.mention} This channel has been set up for your use in demonstrating the " 
                             f"features of **{bot.name}**. Limited troubleshooting with others is acceptable, "
-                            f"but please do not allow this channel to become a testing platform.\nThanks!"))
+                            f"but please do not allow this channel to become a testing platform.\nThanks!",
+                color=nextcord.Color.green()))
 
         # add the "Bots" role
         await bot.add_roles(ctx.guild.get_role(BOTS_ROLE_ID),
