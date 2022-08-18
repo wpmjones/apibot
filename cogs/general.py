@@ -261,21 +261,25 @@ class General(commands.Cog):
         if message.channel.id == WELCOME_CHANNEL_ID and message.type is nextcord.MessageType.thread_created:
             await message.delete(delay=5)
 
-    @commands.command(name="invite")
-    async def invite(self, ctx):
+    @nextcord.slash_command(name="invite")
+    async def invite(self, interaction):
         """Responds with the invite link to this server"""
-        await ctx.send("https://discord.gg/clashapi")
+        await interaction.response.send_message("https://discord.gg/clashapi")
 
     @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
     async def regex(self, interaction: nextcord.Interaction):
         """Responds with the RegEx for player/clan tags"""
-        await interaction.response.send_message("^#[PYLQGRJCUV0289]+$")
+        await interaction.response.send_message(embed=nextcord.Embed(title="RegEx for player/clan tags",
+                                                                     description="^#[PYLQGRJCUV0289]+$",
+                                                                     color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, interaction: nextcord.Interaction):
         """Responds with the rate limit information for the Clash API"""
-        await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
-                                                "second. Staying below this should be safe.")
+        await interaction.response.send_message(embed=nextcord.Embed(
+                description="We have found that the approximate rate limit is 30-40 requests per "
+                                                "second. Staying below this should be safe.",
+                color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
     async def refresh_intervall(self, interaction: nextcord.Interaction):
@@ -289,30 +293,41 @@ class General(commands.Cog):
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
-        await interaction.response.send_message(
-            "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
+        await interaction.response.send_message(embed=nextcord.Embed(
+                title="VPS services",
+                description="<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>",
+                url="https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md",
+                color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
     async def rules(self, interaction: nextcord.Interaction):
         """Respond with a link to the rules markdown file."""
         await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/"
-                                                "Rules/code_of_conduct.md>")
+                                                "Rules/code_of_conduct.md>", ephemeral=True)
 
     @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
     async def link_api(self, interaction: nextcord.Interaction):
         """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
         await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/"
-                                                "936126372873650237")
+                                                "936126372873650237", ephemeral=True)
 
     @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
     async def link_coc_wrappers(self, interaction: nextcord.Interaction):
-        """Respond with a link to the page created by @Doluk"""
-        await interaction.response.send_message("<https://coc-libs.vercel.app/>")
+        """Respond with a link to a list of known coc wrappers"""
+        await interaction.response.send_message(embed=nextcord.Embed(
+                title="Known CoC API wrappers",
+                description="<https://coc-libs.vercel.app/>",
+                url="https://coc-libs.vercel.app/",
+                color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
     async def link_discord_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to a list of known discord wrappers"""
-        await interaction.response.send_message("<https://libs.advaith.io/>")
+        await interaction.response.send_message(embed=nextcord.Embed(
+                title="Known CoC API wrappers",
+                description="<https://libs.advaith.io/>",
+                url="https://libs.advaith.io/",
+                color=nextcord.Color.green()))
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
@@ -414,13 +429,16 @@ class General(commands.Cog):
                                                           topic=topic,
                                                           reason=f"Created by the setup command of Hog Rider ({ctx.author})",
                                                           )
-        except:
+        except Exception:
             self.bot.logger.exception("Failed creating channel")
+            await ctx.send('Failed creating channel')
+            return
 
         # ping owner
-        await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
-                           f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
-                           f"allow this channel to become a testing platform.  Thanks!")
+        await channel.send(embed=nextcord.Embed(
+                description=f"{owner.mention} This channel has been set up for your use in demonstrating the " 
+                            f"features of **{bot.name}**. Limited troubleshooting with others is acceptable, "
+                            f"but please do not allow this channel to become a testing platform.\nThanks!"))
 
         # add the "Bots" role
         await bot.add_roles(ctx.guild.get_role(BOTS_ROLE_ID),
