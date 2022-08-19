@@ -279,7 +279,7 @@ class LanguageBoard(commands.Cog):
 
     @commands.command(
         name="language_board",
-        description= (
+        description=(
                     "Create a reaction based panel that gives users roles when they click " 
                     "on the emoji. The message ID is saved in memory, so if you reboot the "
                     "bot, you will have to re-create the panels."
@@ -386,9 +386,9 @@ class LanguageBoard(commands.Cog):
         the exclude list"""
         role_stats = await self._get_role_stats(interaction.guild)
         panel = self._get_roles_panel(role_stats, with_emojis=False)
-
-        await interaction.response.send_message(embed=nextcord.Embed(
-                title="Role stats",description=panel,color=nextcord.Color.green()))
+        await interaction.response.send_message(embed=nextcord.Embed(title="Role stats",
+                                                                     description=panel,
+                                                                     color=nextcord.Color.green()))
 
 
 def setup(bot):

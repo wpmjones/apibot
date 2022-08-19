@@ -276,16 +276,16 @@ class General(commands.Cog):
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, interaction: nextcord.Interaction):
         """Responds with the rate limit information for the Clash API"""
-        await interaction.response.send_message(embed=nextcord.Embed(
-                description="We have found that the approximate rate limit is 30-40 requests per "
-                                                "second. Staying below this should be safe.",
-                color=nextcord.Color.green()))
+        description = ("We have found that the approximate rate limit is 30-40 requests per second. Staying below "
+                       "this should be safe.")
+        await interaction.response.send_message(embed=nextcord.Embed(description=description,
+                                                                     color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
-    async def refresh_intervall(self, interaction: nextcord.Interaction):
+    async def refresh_interval(self, interaction: nextcord.Interaction):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
         embed = nextcord.Embed(title="Max age of information due to caching",
-                color=nextcord.Color.green())
+                               color=nextcord.Color.green())
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
         embed.add_field(name="Wars", value="10 Minutes", inline=False)
         embed.add_field(name="Player", value="1 Minute", inline=False)
@@ -294,41 +294,40 @@ class General(commands.Cog):
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
-        await interaction.response.send_message(embed=nextcord.Embed(
-                title="VPS services",
-                description="<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>",
-                url="https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md",
-                color=nextcord.Color.green()))
+        description = "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>"
+        url = "https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md"
+        await interaction.response.send_message(embed=nextcord.Embed(title="VPS services",
+                                                                     description=description,
+                                                                     url=url,
+                                                                     color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
     async def rules(self, interaction: nextcord.Interaction):
         """Respond with a link to the rules markdown file."""
-        await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/"
-                                                "Rules/code_of_conduct.md>", ephemeral=True)
+        rules = "<https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md>"
+        await interaction.response.send_message(rules, ephemeral=True)
 
     @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
     async def link_api(self, interaction: nextcord.Interaction):
         """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
-        await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/"
-                                                "936126372873650237", ephemeral=True)
+        links = "https://discord.com/channels/566451504332931073/681617252814159904/936126372873650237"
+        await interaction.response.send_message(links, ephemeral=True)
 
     @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
     async def link_coc_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to a list of known coc wrappers"""
-        await interaction.response.send_message(embed=nextcord.Embed(
-                title="Known CoC API wrappers",
-                description="<https://coc-libs.vercel.app/>",
-                url="https://coc-libs.vercel.app/",
-                color=nextcord.Color.green()))
+        await interaction.response.send_message(embed=nextcord.Embed(title="Known CoC API wrappers",
+                                                                     description="<https://coc-libs.vercel.app/>",
+                                                                     url="https://coc-libs.vercel.app/",
+                                                                     color=nextcord.Color.green()))
 
     @nextcord.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
     async def link_discord_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to a list of known discord wrappers"""
-        await interaction.response.send_message(embed=nextcord.Embed(
-                title="Known CoC API wrappers",
-                description="<https://libs.advaith.io/>",
-                url="https://libs.advaith.io/",
-                color=nextcord.Color.green()))
+        await interaction.response.send_message(embed=nextcord.Embed(title="Known CoC API wrappers",
+                                                                     description="<https://libs.advaith.io/>",
+                                                                     url="https://libs.advaith.io/",
+                                                                     color=nextcord.Color.green()))
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
