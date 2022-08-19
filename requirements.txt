@@ -5,7 +5,7 @@ asyncpg==0.22.0
 attrs==20.3.0
 beautifulsoup4==4.9.3
 chardet==4.0.0
-coc.py==1.1.0
+coc.py>=2
 nextcord>=2
 idna==3.1
 loguru==0.5.3
