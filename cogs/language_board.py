@@ -380,7 +380,7 @@ class LanguageBoard(commands.Cog):
             panel += f"`{row['role_name']:<15}` {row['emoji_repr']}\n"
         await ctx.send(panel)
 
-    @nextcord.slash_command(description="Show role stats", guild_ids=GUILD_IDS)
+    @nextcord.slash_command(name="role_stats", description="Show role stats", guild_ids=GUILD_IDS)
     async def role_stats(self, interaction: nextcord.Interaction):
         """Responds with a formatted code block containing the number of members with each role excluding those in
         the exclude list"""

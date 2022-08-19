@@ -1,12 +1,12 @@
+import asyncio
 import nextcord
 import random
 import re
 
 from cogs.utils import checks
 from config import settings
-from datetime import datetime, timedelta
 from nextcord import Interaction, ui, Thread, ChannelType
-from nextcord.ext import commands, tasks
+from nextcord.ext import commands
 
 enviro = settings['enviro']
 
@@ -247,6 +247,7 @@ class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if enviro == "LIVE":
+            asyncio.sleep(60)  # Give bot time to get ready so you can collect the channel in create_welcome
             self.bot.loop.create_task(self.create_welcome())
 
     async def create_welcome(self):
