@@ -262,7 +262,7 @@ class General(commands.Cog):
         if message.channel.id == WELCOME_CHANNEL_ID and message.type is nextcord.MessageType.thread_created:
             await message.delete(delay=5)
 
-    @nextcord.slash_command(name="invite")
+    @nextcord.slash_command(name="invite", guild_ids=GUILD_IDS)
     async def invite(self, interaction):
         """Responds with the invite link to this server"""
         await interaction.response.send_message("https://discord.gg/clashapi")
