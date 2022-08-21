@@ -113,7 +113,10 @@ class Introduce(ui.Modal):
         self.bot = pass_bot
 
         self.bot.logger.info("about to load dropdown")
-        self.language_roles = Dropdown(roles)
+        try:
+            self.language_roles = Dropdown(roles)
+        except:
+            self.bot.logger.info("failed to load options")
         self.add_item(self.language_roles)
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
@@ -254,17 +257,13 @@ class IntroduceButton(ui.Button['WelcomeView']):
         )
 
     async def callback(self, interaction: Interaction):
-        self.view.bot.logger.info("Callback for IntroduceButton")
         sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
         fetch = await self.view.bot.pool.fetch(sql)
         roles = []
         for row in fetch:
             roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
         modal = Introduce(self.view.bot, roles)
-        try:
-            await interaction.response.send_modal(modal)
-        except:
-            self.view.bot.logger.exception("Failed")
+        await interaction.response.send_modal(modal)
 
 
 class IntroduceView(ui.View):
