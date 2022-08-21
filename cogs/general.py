@@ -194,7 +194,7 @@ class WelcomeButtonView(ui.View):
             return False
 
 
-class IntroduceButton(ui.Button["WelcomeView"]):
+class IntroduceButton(ui.Button['WelcomeView']):
     def __init__(self):
         super().__init__(
             label="Introduce",
@@ -216,21 +216,7 @@ class WelcomeView(ui.View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
-        # self.add_item(IntroduceButton())
-
-    @ui.button(
-        label="Introduce",
-        style=nextcord.ButtonStyle.green,
-        custom_id="IntroduceButton"
-    )
-    async def intro_button(self, button: ui.Button, interaction: Interaction):
-        sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
-        fetch = await self.bot.pool.fetch(sql)
-        roles = []
-        for row in fetch:
-            roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
-        modal = Introduce(self.bot, roles)
-        await interaction.response.send_modal(modal)
+        self.add_item(IntroduceButton())
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
