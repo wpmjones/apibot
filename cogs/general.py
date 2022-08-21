@@ -246,11 +246,10 @@ class ConfirmView(ui.View):
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if enviro == "LIVE":
-            await asyncio.sleep(60)  # Give bot time to get ready so you can collect the channel in create_welcome
-            self.bot.add_view(WelcomeView(self.bot))
-            self.bot.logger.info("Persistent view added")
-            self.bot.loop.create_task(self.create_welcome())
+        # if enviro == "LIVE":
+            # self.bot.add_view(WelcomeView(self.bot))
+            # self.bot.logger.info("Persistent view added")
+            # self.bot.loop.create_task(self.create_welcome())
 
     async def create_welcome(self):
         """Recreate the welcome message for new members"""
