@@ -118,6 +118,7 @@ class Introduce(ui.Modal):
             self.add_item(self.language_roles)
         except:
             self.bot.logger.exception("failed to load options")
+        self.bot.logger.info("Roles loaded")
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
