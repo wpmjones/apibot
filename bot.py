@@ -154,6 +154,7 @@ class Introduce(ui.Modal):
         return thread
 
     async def callback(self, interaction: Interaction):
+        self.bot.logger.info("Callback for modal")
         # Create welcome thread for admins to verify
         roles = self.language_roles.values
         content = self.information.value
@@ -258,15 +259,14 @@ class IntroduceButton(ui.Button['WelcomeView']):
         roles = []
         for row in fetch:
             roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
-        self.view.bot.logger.info(roles)
         modal = Introduce(self.view.bot, roles)
         await interaction.response.send_modal(modal)
 
 
 class IntroduceView(ui.View):
-    def __init__(self, bot):
+    def __init__(self, pass_bot):
         super().__init__(timeout=None)
-        self.bot = bot
+        self.bot = pass_bot
         self.add_item(IntroduceButton())
 
     async def interaction_check(self, interaction: Interaction):
@@ -383,18 +383,18 @@ class ApiBot(commands.Bot):
     async def on_ready(self):
         activity = nextcord.Activity(type=nextcord.ActivityType.watching, name="you write code")
         await bot.change_presence(activity=activity)
-        if not self.persistent_views_added:
-            self.add_view(IntroduceView(self))
-            self.persistent_views_added = True
+        # if not self.persistent_views_added:
+        #     self.add_view(IntroduceView(self))
+        #     self.persistent_views_added = True
 
     async def after_ready(self):
         await self.wait_until_ready()
         logger.add(self.send_log, level=log_level)
         await self._initialize_db()
-        welcome_channel = self.get_channel(settings['channels']['welcome'])
-        await welcome_channel.purge()
-        await welcome_channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
-        await welcome_channel.send(view=IntroduceView(self))
+        # welcome_channel = self.get_channel(settings['channels']['welcome'])
+        # await welcome_channel.purge()
+        # await welcome_channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
+        # await welcome_channel.send(view=IntroduceView(self))
 
 
 if __name__ == "__main__":
