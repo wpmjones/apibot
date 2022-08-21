@@ -261,7 +261,7 @@ class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         if enviro == "LIVE":
-            asyncio.sleep(60)  # Give bot time to get ready so you can collect the channel in create_welcome
+            await asyncio.sleep(60)  # Give bot time to get ready so you can collect the channel in create_welcome
             self.bot.add_view(WelcomeView(self.bot))
             self.bot.logger.info("Persistent view added")
             self.bot.loop.create_task(self.create_welcome())
