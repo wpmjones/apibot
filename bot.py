@@ -261,8 +261,7 @@ class IntroduceButton(ui.Button['WelcomeView']):
             roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
         self.view.bot.logger.info(roles)
         modal = Introduce(self.view.bot, roles)
-        self.view.bot.logger.info(interaction.created_at)
-        self.view.bot.logger.info(modal)
+        self.view.bot.logger.info(interaction.id)
         await interaction.response.send_modal(modal)
 
 
