@@ -112,13 +112,14 @@ class Introduce(ui.Modal):
         )
         self.bot = pass_bot
 
-        # self.bot.logger.info("about to load dropdown")
-        # try:
-        #     self.language_roles = Dropdown(roles)
-        #     self.add_item(self.language_roles)
-        # except:
-        #     self.bot.logger.exception("failed to load options")
-        # self.bot.logger.info("Roles loaded")
+        role_list =  [
+            nextcord.SelectOption(label="C", value="818659616229294090"),
+            nextcord.SelectOption(label="C#", value="667565424669491220")
+        ]
+
+        # self.language_roles = Dropdown(roles)
+        self.language_roles = Dropdown(role_list)
+        self.add_item(self.language_roles)
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
