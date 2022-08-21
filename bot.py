@@ -112,6 +112,7 @@ class Introduce(ui.Modal):
         )
         self.bot = pass_bot
 
+        self.bot.logger.info("about to load dropdown")
         self.language_roles = Dropdown(roles)
         self.add_item(self.language_roles)
         self.information = ui.TextInput(
