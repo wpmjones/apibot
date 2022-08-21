@@ -115,9 +115,9 @@ class Introduce(ui.Modal):
         self.bot.logger.info("about to load dropdown")
         try:
             self.language_roles = Dropdown(roles)
+            self.add_item(self.language_roles)
         except:
-            self.bot.logger.info("failed to load options")
-        self.add_item(self.language_roles)
+            self.bot.logger.exception("failed to load options")
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
