@@ -374,7 +374,7 @@ class ApiBot(commands.Bot):
         activity = nextcord.Activity(type=nextcord.ActivityType.watching, name="you write code")
         await bot.change_presence(activity=activity)
         if not self.persistent_views_added:
-            self.add_view(IntroduceView())
+            self.add_view(IntroduceView(self))
             self.persistent_views_added = True
 
     async def after_ready(self):
