@@ -112,13 +112,13 @@ class Introduce(ui.Modal):
         )
         self.bot = pass_bot
 
-        self.bot.logger.info("about to load dropdown")
-        try:
-            self.language_roles = Dropdown(roles)
-            self.add_item(self.language_roles)
-        except:
-            self.bot.logger.exception("failed to load options")
-        self.bot.logger.info("Roles loaded")
+        # self.bot.logger.info("about to load dropdown")
+        # try:
+        #     self.language_roles = Dropdown(roles)
+        #     self.add_item(self.language_roles)
+        # except:
+        #     self.bot.logger.exception("failed to load options")
+        # self.bot.logger.info("Roles loaded")
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
@@ -138,7 +138,6 @@ class Introduce(ui.Modal):
             description=f"Created by: {interaction.user} ({interaction.user.id})",
             color=nextcord.Color.green()
         )
-        self.bot.logger.info(roles)
         # Parse roles from selected values
         sql = ("SELECT role_name FROM bot_language_board "
                "WHERE role_id = $1"
