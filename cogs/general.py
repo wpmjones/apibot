@@ -63,7 +63,7 @@ class Introduce(ui.Modal):
         self.bot = bot
 
         self.language_roles = Dropdown(roles)
-        # self.add_item(self.language_roles)
+        self.add_item(self.language_roles)
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
