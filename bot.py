@@ -381,6 +381,8 @@ class ApiBot(commands.Bot):
         await self.wait_until_ready()
         logger.add(self.send_log, level=log_level)
         await self._initialize_db()
+        welcome_channel = self.get_channel(settings['channels']['welcome'])
+        await welcome_channel.send(view=IntroduceView(self))
 
 
 if __name__ == "__main__":
