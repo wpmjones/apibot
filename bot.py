@@ -67,9 +67,17 @@ else:
     log_level = "DEBUG"
     coc_names = "delete_me"
 
-description = ("Welcome to the Clash API Developers bot. This is a custom bot created by and for the users of the "
+DESCRIPTION = ("Welcome to the Clash API Developers bot. This is a custom bot created by and for the users of the "
                "Clash API Developers Discord server. If you have questions, please reach out to "
                "@Admins on this server.")
+
+WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
+                   "We're here to help you do the things you want to do with the Clash API. While we can "
+                   "provide some language specific guidance, we are not a 'learn to code' server. There are "
+                   "plenty of resources out there for that.  But if you know the basics of coding and "
+                   "want to learn more about incorporating the Clash of Clans API into a project, you've "
+                   "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
+                   "bit about yourself and gain access to the rest of the server.")
 
 coc_client = coc.login(settings['supercell']['user'],
                        settings['supercell']['pass'],
@@ -244,6 +252,7 @@ class IntroduceButton(ui.Button['WelcomeView']):
         )
 
     async def callback(self, interaction: Interaction):
+        self.view.bot.logger.info("Callback for IntroduceButton")
         sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board ORDER BY role_name"
         fetch = await self.view.bot.pool.fetch(sql)
         roles = []
@@ -270,7 +279,7 @@ class IntroduceView(ui.View):
 class ApiBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=prefix,
-                         description=description,
+                         description=DESCRIPTION,
                          case_insensitive=True,
                          intents=intents,
                          )
@@ -382,6 +391,8 @@ class ApiBot(commands.Bot):
         logger.add(self.send_log, level=log_level)
         await self._initialize_db()
         welcome_channel = self.get_channel(settings['channels']['welcome'])
+        await welcome_channel.purge()
+        await welcome_channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
         await welcome_channel.send(view=IntroduceView(self))
 
 
