@@ -112,15 +112,8 @@ class Introduce(ui.Modal):
         )
         self.bot = pass_bot
 
-        role_list = [
-            nextcord.SelectOption(label="C", value="818659616229294090"),
-            nextcord.SelectOption(label="C#", value="667565424669491220")
-        ]
-        self.bot.logger.info(roles)
-        self.bot.logger.info(role_list)
-
-        # self.language_roles = Dropdown(roles)
-        self.language_roles = Dropdown(role_list)
+        self.language_roles = Dropdown(roles)
+        self.bot.logger.info(self.language_roles)
         self.add_item(self.language_roles)
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
