@@ -79,6 +79,12 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
                    "bit about yourself and gain access to the rest of the server.")
 
+langs = [
+    nextcord.SelectOption(label="C", value="818659616229294090"),
+    nextcord.SelectOption(label="C#", value="667565424669491220"),
+    nextcord.SelectOption(label="Python", value="667565378624290857", emoji="<:python:747213161437986896>")
+]
+
 coc_client = coc.login(settings['supercell']['user'],
                        settings['supercell']['pass'],
                        client=coc.EventsClient,
@@ -99,8 +105,8 @@ class Dropdown(ui.Select):
         super().__init__(
             placeholder="Select programming languages:",
             min_values=1,
-            max_values=len(options),
-            options=options
+            max_values=len(langs),
+            options=langs
         )
 
 
