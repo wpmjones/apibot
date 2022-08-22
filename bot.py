@@ -98,10 +98,9 @@ class Dropdown(ui.Select):
     def __init__(self, options):
         super().__init__(
             placeholder="Select programming languages:",
-            min_values=1,
             max_values=len(options),
             options=options,
-            custom_id="persistent_modal:dropdown"
+            custom_id="persistent_modal:lang_dropdown"
         )
 
 
@@ -183,7 +182,7 @@ class WelcomeButtonView(ui.View):
     @ui.button(
         label="Approve",
         style=nextcord.ButtonStyle.green,
-        custom_id=f"{random.randint(1234567890,9999999999)}_welcome_thread_close"
+        custom_id="persistent_view:approve"
     )
     async def thread_approve_button(self, button: nextcord.Button, interaction: Interaction):
         # button.disabled = True
@@ -217,7 +216,7 @@ class WelcomeButtonView(ui.View):
     @ui.button(
         label="More Info",
         style=nextcord.ButtonStyle.blurple,
-        custom_id=f"{random.randint(1234567890,9999999999)}_welcome_thread_more"
+        custom_id="persistent_view:more_info"
     )
     async def thread_info_button(self, button: nextcord.Button, interaction: Interaction):
         # add user to this channel and post message?
@@ -251,7 +250,7 @@ class IntroduceButton(ui.Button['WelcomeView']):
         super().__init__(
             label="Introduce",
             style=nextcord.ButtonStyle.green,
-            custom_id="IntroduceButton"
+            custom_id="persistent_button:intro"
         )
 
     async def callback(self, interaction: Interaction):
