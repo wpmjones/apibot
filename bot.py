@@ -100,25 +100,29 @@ class Dropdown(ui.Select):
             placeholder="Select programming languages:",
             min_values=1,
             max_values=len(options),
-            options=options
+            options=options,
+            custom_id="persistent_modal:dropdown"
         )
 
 
 class Introduce(ui.Modal):
     def __init__(self, pass_bot, roles):
         super().__init__(
-            "Getting to know you",
-            timeout=5 * 60  # 5 minutes
+            title="Getting to know you",
+            timeout=None,
+            custom_id="persistent_modal:intro"
         )
         self.bot = pass_bot
 
-        self.add_item(Dropdown(roles))
+        self.language_roles = Dropdown(roles)
+        self.add_item(self.language_roles)
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
             style=nextcord.TextInputStyle.paragraph,
             placeholder="What are you doing or what would you like to be doing with the API?",
             required=True,
-            max_length=544
+            max_length=544,
+            custom_id="persistent_modal:text_input"
         )
         self.add_item(self.information)
 

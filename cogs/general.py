@@ -28,14 +28,6 @@ SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
 
-WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
-                   "We're here to help you do the things you want to do with the Clash API. While we can "
-                   "provide some language specific guidance, we are not a 'learn to code' server. There are "
-                   "plenty of resources out there for that.  But if you know the basics of coding and "
-                   "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                   "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                   "bit about yourself and gain access to the rest of the server.")
-
 
 class ConfirmButton(ui.Button["ConfirmView"]):
     def __init__(self, label: str, style: nextcord.ButtonStyle, *, custom_id: str):
