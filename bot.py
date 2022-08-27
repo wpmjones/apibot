@@ -31,8 +31,8 @@ enviro = settings['enviro']
 
 ADMIN_ROLE_ID = settings['roles']['admin']
 DEVELOPER_ROLE_ID = settings['roles']['developer']
-# WELCOME_CHANNEL_ID = settings['channels']['welcome']
-WELCOME_CHANNEL_ID = 1011500429969993808
+WELCOME_CHANNEL_ID = settings['channels']['welcome']
+# WELCOME_CHANNEL_ID = 1011500429969993808
 
 initial_extensions = [
                         "cogs.general",
