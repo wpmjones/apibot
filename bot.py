@@ -120,7 +120,6 @@ class Dropdown(ui.Select):
         roles = self.values
 
 
-
 class ApproveButton(ui.Button['WelcomeThread']):
     def __init__(self):
         super().__init__(

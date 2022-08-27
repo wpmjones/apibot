@@ -4,7 +4,7 @@ import re
 from cogs.utils import checks
 from config import settings
 from nextcord import Interaction, ui, Thread, ChannelType
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 
 enviro = settings['enviro']
 
@@ -268,10 +268,10 @@ class General(commands.Cog):
         if message.channel.id == WELCOME_CHANNEL_ID and message.type is nextcord.MessageType.thread_created:
             await message.delete(delay=5)
 
-    @commands.command(name="invite")
-    async def invite(self, ctx):
+    @nextcord.slash_command(name="invite", guild_ids=GUILD_IDS)
+    async def invite(self, interaction: nextcord.Interaction):
         """Responds with the invite link to this server"""
-        await ctx.send("https://discord.gg/clashapi")
+        await interaction.response.send_message("https://discord.gg/clashapi")
 
     @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
     async def regex(self, interaction: nextcord.Interaction):
@@ -553,20 +553,20 @@ class General(commands.Cog):
                                       f"This message will self-destruct in 120 seconds.",
                                       delete_after=120.0)
 
-    @commands.command(name="clear", hidden=True)
-    @checks.manage_messages()
-    async def clear(self, ctx, msg_count: int = None):
+    @nextcord.slash_command(name="clear", guild_ids=GUILD_IDS)
+    @application_checks.has_role("Admin")
+    async def clear(self, interaction: nextcord.Interaction, msg_count: int = None):
         """Clears the specified number of messages in the current channel (defaults to all messages).
 
         **Examples:**
-        //clear (will ask for confirmation first)
-        //clear 7 (no confirmation, will delete the clear command and the 7 previous messages)
+        /clear (will ask for confirmation first)
+        /clear 7 (no confirmation, will delete the clear command and the 7 previous messages)
 
         **Permissions:**
         Manage Messages
         """
         if msg_count:
-            await ctx.channel.purge(limit=msg_count + 1)
+            await interaction.channel.purge(limit=msg_count + 1)
         else:
             view = ConfirmView()
 
@@ -575,15 +575,15 @@ class General(commands.Cog):
                     _item.disabled = True
 
             confirm_content = (f"Are you really sure you want to remove ALL messages from "
-                               f"the {ctx.channel.name} channel?")
-            msg = await ctx.send(content=confirm_content, view=view)
+                               f"the {interaction.channel.name} channel?")
+            msg = await interaction.send(content=confirm_content, view=view)
             await view.wait()
             if view.value is False or view.value is None:
                 disable_all_buttons()
                 await msg.delete()
             else:
                 disable_all_buttons()
-                await ctx.channel.purge()
+                await interaction.channel.purge()
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
