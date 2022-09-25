@@ -561,7 +561,7 @@ class General(commands.Cog):
                                       f"This message will self-destruct in 120 seconds.",
                                       delete_after=120.0)
 
-    @nextcord.slash_command(name="xc", guild_ids=GUILD_IDS)
+    @nextcord.slash_command(name="doobie", guild_ids=GUILD_IDS)
     @application_checks.has_role("Admin")
     async def clear(self, interaction: nextcord.Interaction, msg_count: int = None):
         """Clears the specified number of messages in the current channel (defaults to all messages).
