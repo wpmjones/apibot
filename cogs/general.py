@@ -27,13 +27,21 @@ SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
 
+# WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
+#                    "We're here to help you do the things you want to do with the Clash API. While we can "
+#                    "provide some language specific guidance, we are not a 'learn to code' server. There are "
+#                    "plenty of resources out there for that.  But if you know the basics of coding and "
+#                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
+#                    "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
+#                    "bit about yourself and gain access to the rest of the server.")
+
 WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
                    "We're here to help you do the things you want to do with the Clash API. While we can "
                    "provide some language specific guidance, we are not a 'learn to code' server. There are "
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                   "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                   "bit about yourself and gain access to the rest of the server.")
+                   "come to the right place.\n\nPlease tell us your preferred programming language and what you "
+                   "are doing with the Clash API.")
 
 
 async def close_welcome_thread(thread_channel: Thread):
@@ -254,14 +262,14 @@ class General(commands.Cog):
         # if enviro == "LIVE":
         #     self.bot.loop.create_task(self.create_welcome())
 
-    @commands.command(name="xtest")
+    @commands.command(name="xtest", hidden=True)
     async def create_welcome(self, ctx):
         """Doobie, don't run this command in #admin. No bueno"""
         # channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
         channel = ctx.channel
         await channel.purge()
         await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
-        await channel.send(view=WelcomeView(self.bot))
+        # await channel.send(view=WelcomeView(self.bot))
 
     @commands.Cog.listener()
     async def on_message(self, message):
