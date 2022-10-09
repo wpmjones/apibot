@@ -10,7 +10,10 @@ This server is not affiliated with, endorsed, sponsored, or specifically approve
     2. [Asset Extraction](#3.2)
     3. [API Usage](#3.3) 
     4. [Third Party Tools](#3.4)
-    5. [FAQ](#3.5)
+    5. [Game Update/Content Leaks](#3.5)
+    6. [FAQ](#3.6)
+
+
 
 ## Our Admin pledge to you <a name="1"></a>
 
@@ -79,7 +82,14 @@ This does not apply to community tools such as Discord bots, websites, applicati
 
 ---
 
-### FAQ <a name="3.5"></a>
+### Game Update/Content Leaks <a name="3.5"></a>
+
+We regard game content leaks to be information about upcoming game updates or content that didn't originate from an official source, such as Supercell's social media accounts or "Sneak Peeks" from Supercell affiliated content creators.
+
+Discussion or sharing of leaked information is not permitted here.
+---
+
+### FAQ <a name="3.6"></a>
 
 Examples I kept in mind when putting this together:
 
