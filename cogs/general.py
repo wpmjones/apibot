@@ -1,12 +1,10 @@
-import asyncio
 import nextcord
-import random
 import re
 
 from cogs.utils import checks
 from config import settings
 from nextcord import Interaction, ui, Thread, ChannelType
-from nextcord.ext import commands
+from nextcord.ext import commands, application_checks
 
 enviro = settings['enviro']
 
@@ -16,7 +14,7 @@ if enviro == "LIVE":
 else:
     GUILD_IDS = [settings['guild']['bot_logs']]
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
-WELCOME_CHANNEL_ID = settings['channels']['welcome']
+WELCOME_CHANNEL_ID = 1011500429969993808   # settings['channels']['welcome']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
@@ -29,13 +27,21 @@ SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
 
+# WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
+#                    "We're here to help you do the things you want to do with the Clash API. While we can "
+#                    "provide some language specific guidance, we are not a 'learn to code' server. There are "
+#                    "plenty of resources out there for that.  But if you know the basics of coding and "
+#                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
+#                    "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
+#                    "bit about yourself and gain access to the rest of the server.")
+
 WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad to have you! "
                    "We're here to help you do the things you want to do with the Clash API. While we can "
                    "provide some language specific guidance, we are not a 'learn to code' server. There are "
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                   "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                   "bit about yourself and gain access to the rest of the server.")
+                   "come to the right place.\n\nPlease tell us your preferred programming language and what you "
+                   "are doing with the Clash API.")
 
 
 async def close_welcome_thread(thread_channel: Thread):
@@ -119,6 +125,9 @@ class Introduce(ui.Modal):
                        "In the meantime, we've given you access to a few channels.")
         await interaction.user.send(welcome_msg)
 
+    async def on_error(self, error, interaction):
+        self.bot.logger.exception(f"Welcome view failure\n{error}\n")
+
 
 class WelcomeButtonView(ui.View):
     def __init__(self, bot, member, roles, msg):
@@ -131,7 +140,7 @@ class WelcomeButtonView(ui.View):
     @ui.button(
         label="Approve",
         style=nextcord.ButtonStyle.green,
-        custom_id=f"{random.randint(1234567890,9999999999)}_welcome_thread_close"
+        custom_id="approve_button"
     )
     async def thread_approve_button(self, button: nextcord.Button, interaction: Interaction):
         # button.disabled = True
@@ -165,7 +174,7 @@ class WelcomeButtonView(ui.View):
     @ui.button(
         label="More Info",
         style=nextcord.ButtonStyle.blurple,
-        custom_id=f"{random.randint(1234567890,9999999999)}_welcome_thread_more"
+        custom_id="more_info_button"
     )
     async def thread_info_button(self, button: nextcord.Button, interaction: Interaction):
         # add user to this channel and post message?
@@ -211,6 +220,10 @@ class IntroduceButton(ui.Button["WelcomeView"]):
         modal = Introduce(self.view.bot, roles)
         await interaction.response.send_modal(modal)
 
+    async def on_error(self, error, item, interaction):
+        self.view.bot.logger.info(error)
+        self.view.bot.logger.info(item)
+
 
 class WelcomeView(ui.View):
     def __init__(self, bot):
@@ -246,16 +259,17 @@ class ConfirmView(ui.View):
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        if enviro == "LIVE":
-            asyncio.sleep(60)  # Give bot time to get ready so you can collect the channel in create_welcome
-            self.bot.loop.create_task(self.create_welcome())
+        # if enviro == "LIVE":
+        #     self.bot.loop.create_task(self.create_welcome())
 
-    async def create_welcome(self):
-        """Recreate the welcome message for new members"""
-        channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
+    @commands.command(name="xtest", hidden=True)
+    async def create_welcome(self, ctx):
+        """Doobie, don't run this command in #admin. No bueno"""
+        # channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
+        channel = ctx.channel
         await channel.purge()
         await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
-        await channel.send(view=WelcomeView(self.bot))
+        # await channel.send(view=WelcomeView(self.bot))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -270,23 +284,18 @@ class General(commands.Cog):
     @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
     async def regex(self, interaction: nextcord.Interaction):
         """Responds with the RegEx for player/clan tags"""
-        await interaction.response.send_message(embed=nextcord.Embed(title="RegEx for player/clan tags",
-                                                                     description="^#[PYLQGRJCUV0289]+$",
-                                                                     color=nextcord.Color.green()))
+        await interaction.response.send_message("^#[PYLQGRJCUV0289]+$")
 
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, interaction: nextcord.Interaction):
         """Responds with the rate limit information for the Clash API"""
-        description = ("We have found that the approximate rate limit is 30-40 requests per second. Staying below "
-                       "this should be safe.")
-        await interaction.response.send_message(embed=nextcord.Embed(description=description,
-                                                                     color=nextcord.Color.green()))
+        await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
+                                                "second. Staying below this should be safe.")
 
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
-    async def refresh_interval(self, interaction: nextcord.Interaction):
+    async def refresh_intervall(self, interaction: nextcord.Interaction):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
-        embed = nextcord.Embed(title="Max age of information due to caching",
-                               color=nextcord.Color.green())
+        embed = nextcord.Embed(title="Max age of information due to caching")
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
         embed.add_field(name="Wars", value="10 Minutes", inline=False)
         embed.add_field(name="Player", value="1 Minute", inline=False)
@@ -295,40 +304,30 @@ class General(commands.Cog):
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
-        description = "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>"
-        url = "https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md"
-        await interaction.response.send_message(embed=nextcord.Embed(title="VPS services",
-                                                                     description=description,
-                                                                     url=url,
-                                                                     color=nextcord.Color.green()))
+        await interaction.response.send_message(
+            "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
     @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
     async def rules(self, interaction: nextcord.Interaction):
         """Respond with a link to the rules markdown file."""
-        rules = "<https://github.com/wpmjones/apibot/blob/master/Rules/code_of_conduct.md>"
-        await interaction.response.send_message(rules, ephemeral=True)
+        await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/"
+                                                "Rules/code_of_conduct.md>")
 
     @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
     async def link_api(self, interaction: nextcord.Interaction):
         """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
-        links = "https://discord.com/channels/566451504332931073/681617252814159904/936126372873650237"
-        await interaction.response.send_message(links, ephemeral=True)
+        await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/"
+                                                "936126372873650237")
 
     @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
     async def link_coc_wrappers(self, interaction: nextcord.Interaction):
-        """Respond with a link to a list of known coc wrappers"""
-        await interaction.response.send_message(embed=nextcord.Embed(title="Known CoC API wrappers",
-                                                                     description="<https://coc-libs.vercel.app/>",
-                                                                     url="https://coc-libs.vercel.app/",
-                                                                     color=nextcord.Color.green()))
+        """Respond with a link to the page created by @Doluk"""
+        await interaction.response.send_message("<https://coc-libs.vercel.app/>")
 
     @nextcord.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
     async def link_discord_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to a list of known discord wrappers"""
-        await interaction.response.send_message(embed=nextcord.Embed(title="Known CoC API wrappers",
-                                                                     description="<https://libs.advaith.io/>",
-                                                                     url="https://libs.advaith.io/",
-                                                                     color=nextcord.Color.green()))
+        await interaction.response.send_message("<https://libs.advaith.io/>")
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
@@ -430,17 +429,13 @@ class General(commands.Cog):
                                                           topic=topic,
                                                           reason=f"Created by the setup command of Hog Rider ({ctx.author})",
                                                           )
-        except Exception:
+        except:
             self.bot.logger.exception("Failed creating channel")
-            await ctx.send('Failed creating channel')
-            return
 
         # ping owner
-        await channel.send(embed=nextcord.Embed(
-                description=f"{owner.mention} This channel has been set up for your use in demonstrating the " 
-                            f"features of **{bot.name}**. Limited troubleshooting with others is acceptable, "
-                            f"but please do not allow this channel to become a testing platform.\nThanks!",
-                color=nextcord.Color.green()))
+        await channel.send(f"{owner.mention} This channel has been set up for your use in demonstrating the features "
+                           f"of **{bot.name}**. Limited troubleshooting with others is acceptable, but please do not "
+                           f"allow this channel to become a testing platform.  Thanks!")
 
         # add the "Bots" role
         await bot.add_roles(ctx.guild.get_role(BOTS_ROLE_ID),
@@ -566,20 +561,21 @@ class General(commands.Cog):
                                       f"This message will self-destruct in 120 seconds.",
                                       delete_after=120.0)
 
-    @commands.command(name="clear", hidden=True)
-    @checks.manage_messages()
-    async def clear(self, ctx, msg_count: int = None):
+    @nextcord.slash_command(name="doobie", guild_ids=GUILD_IDS)
+    @application_checks.has_role("Admin")
+    async def clear(self, interaction: nextcord.Interaction, msg_count: int = None):
         """Clears the specified number of messages in the current channel (defaults to all messages).
 
         **Examples:**
-        //clear (will ask for confirmation first)
-        //clear 7 (no confirmation, will delete the clear command and the 7 previous messages)
+        /clear (will ask for confirmation first)
+        /clear 7 (no confirmation, will delete the clear command and the 7 previous messages)
 
         **Permissions:**
         Manage Messages
         """
         if msg_count:
-            await ctx.channel.purge(limit=msg_count + 1)
+            await interaction.channel.purge(limit=msg_count)
+            await interaction.response.send_message(f"{msg_count} messages deleted.", delete_after=5)
         else:
             view = ConfirmView()
 
@@ -588,15 +584,15 @@ class General(commands.Cog):
                     _item.disabled = True
 
             confirm_content = (f"Are you really sure you want to remove ALL messages from "
-                               f"the {ctx.channel.name} channel?")
-            msg = await ctx.send(content=confirm_content, view=view)
+                               f"the {interaction.channel.name} channel?")
+            msg = await interaction.send(content=confirm_content, view=view)
             await view.wait()
             if view.value is False or view.value is None:
                 disable_all_buttons()
                 await msg.delete()
             else:
                 disable_all_buttons()
-                await ctx.channel.purge()
+                await interaction.channel.purge()
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
