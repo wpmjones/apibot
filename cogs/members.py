@@ -150,8 +150,7 @@ class MembersCog(commands.Cog):
         if member.bot:
             channel = self.bot.get_channel(settings['channels']['admin'])
             await channel.send(f"{member.mention} has just been invited to the server. "
-                               f"Perhaps it is time to set up a demo channel?  Try `/bot add {member.mention} "
-                               f"@owner #demo-channel`")
+                               f"Perhaps it is time to set up a demo channel?  Try `//setup {member.mention} @owner`")
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
         msg = f"{member.display_name}#{member.discriminator} just joined the server."
         await mod_log.send(msg)
