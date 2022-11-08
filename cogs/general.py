@@ -284,7 +284,7 @@ class General(commands.Cog):
     @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
     async def regex(self, interaction: nextcord.Interaction):
         """Responds with the RegEx for player/clan tags"""
-        await interaction.response.send_message("^#[PYLQGRJCUV0289]+$")
+        await interaction.response.send_message("^#[PYLQGRJCUV0289]{3,9}$")
 
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, interaction: nextcord.Interaction):
