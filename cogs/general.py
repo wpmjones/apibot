@@ -1,3 +1,4 @@
+import coc.utils
 import nextcord
 import re
 
@@ -328,6 +329,23 @@ class General(commands.Cog):
     async def link_discord_wrappers(self, interaction: nextcord.Interaction):
         """Respond with a link to a list of known discord wrappers"""
         await interaction.response.send_message("<https://libs.advaith.io/>")
+
+    @nextcord.slash_command(name="player_url", guild_ids=GUILD_IDS)
+    async def format_player_url(self, interaction: nextcord.Interaction,
+                                player_tag: str = ""):
+        """Gives info on how to construct a player profile url and optionally the url for a specific player"""
+        if player_tag:
+            if coc.utils.is_valid_tag(player_tag):
+                response = f"https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=%23" \
+                           f"{coc.utils.correct_tag(player_tag, prefix='')}\n\n"
+            else:
+                response = "I will not construct you a link with an invalid player tag\n\n"
+        else:
+            response = ""
+        response += "You can construct a profile link for any player by combining the following base url with the " \
+                    "player's tag. But make sure to replace the `#` prefix with its encoded form `%23`\n" \
+                    "```https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=```"
+        await interaction.response.send_message(response)
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
