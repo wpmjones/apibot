@@ -135,7 +135,6 @@ class Downtime(commands.Cog):
         await self.init_bots()
         embeds = []
         for i, bot in enumerate(self.bots):
-            self.bot.logger.info(f"Bot list: Inside first for loop\nListing {i} of {len(self.bots)} bots.")
             if i % 24 == 0:
                 embeds.append(nextcord.Embed(title="Bots that are configured for monitoring"))
             owner = self.bot.get_user(bot.owner)
@@ -146,11 +145,10 @@ class Downtime(commands.Cog):
                                        f"Channel: {channel.mention}\n"
                                        f"Monitoring: {bot.monitor}",
                                  inline=True)
-        self.bot.logger.info("All bots processed")
         if len(embeds) > 1:
             for i, embed in enumerate(embeds):
                 embed.title += f" ({i})"
-        await interaction.response.send_message(embeds=embeds)
+        await interaction.followup.send(embeds=embeds)
 
     @my_bot.subcommand(name="monitor")
     async def my_bot_monitor(self, interaction: nextcord.Interaction, bot: nextcord.Member):
