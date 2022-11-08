@@ -135,6 +135,7 @@ class Downtime(commands.Cog):
         await self.init_bots()
         embeds = []
         for i, bot in enumerate(self.bots):
+            self.bot.logger.info(f"Bot list: Inside first for loop\nListing {len(self.bots)} bots.")
             if i % 24 == 0:
                 embeds.append(nextcord.Embed(title="Bots that are configured for monitoring"))
             owner = self.bot.get_user(bot.owner)
