@@ -306,11 +306,12 @@ class ApiBot(commands.Bot):
     async def after_ready(self):
         await self.wait_until_ready()
         logger.add(self.send_log, level=log_level)
-        await self._initialize_db()
-        welcome_channel = self.get_channel(WELCOME_CHANNEL_ID)
-        await welcome_channel.purge()
-        await welcome_channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
-        # await welcome_channel.send(view=IntroduceView(self))
+        if enviro == "LIVE":
+            await self._initialize_db()
+            welcome_channel = self.get_channel(WELCOME_CHANNEL_ID)
+            # await welcome_channel.purge()
+            await welcome_channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
+            # await welcome_channel.send(view=IntroduceView(self))
 
 
 if __name__ == "__main__":

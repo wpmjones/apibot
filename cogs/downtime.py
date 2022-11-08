@@ -123,8 +123,7 @@ class Downtime(commands.Cog):
         await interaction.response.send_message(f"Congratulations! You have successfully added {bot.name} to the bot "
                                                 f"monitoring system. If there is an outage that lasts more than 60 "
                                                 f"seconds, I will ping {owner.display_name} in {channel.mention}.  To "
-                                                f"toggle monitoring, please use `//bot monitor {bot.id}` or "
-                                                f"`//bot monitor @{bot.display_name}#{bot.discriminator}`.")
+                                                f"toggle monitoring, please use `/bot monitor <bot tag>.")
 
     @my_bot.subcommand(name="list")
     async def my_bot_list(self, interaction: nextcord.Interaction):
