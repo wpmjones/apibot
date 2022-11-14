@@ -15,7 +15,7 @@ if enviro == "LIVE":
 else:
     GUILD_IDS = [settings['guild']['bot_logs']]
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
-WELCOME_CHANNEL_ID = 1011500429969993808   # settings['channels']['welcome']
+WELCOME_CHANNEL_ID = settings['channels']['welcome']   # 1011500429969993808
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
@@ -263,11 +263,10 @@ class General(commands.Cog):
         # if enviro == "LIVE":
         #     self.bot.loop.create_task(self.create_welcome())
 
-    @commands.command(name="xtest", hidden=True)
-    async def create_welcome(self, ctx):
+    @commands.command(name="recreate_welcome", hidden=True)
+    async def recreate_welcome(self, ctx):
         """Doobie, don't run this command in #admin. No bueno"""
-        # channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
-        channel = ctx.channel
+        channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
         await channel.purge()
         await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
         # await channel.send(view=WelcomeView(self.bot))
