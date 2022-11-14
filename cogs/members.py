@@ -236,16 +236,16 @@ class MembersCog(commands.Cog):
         guest_role = interaction.guild.get_role(settings['roles']['vip_guest'])
         if guest_role in member.roles:
             view = Confirm()
-            await interaction.send(f"{member.display_name} currently has the Guest role. Would you "
-                                   f"like to remove the Guest role and add the Developer role?",
-                                   view=view)
+            await interaction.followup.send(f"{member.display_name} currently has the Guest role. Would you "
+                                            f"like to remove the Guest role and add the Developer role?",
+                                            view=view)
             await view.wait()
             if view.value is None:
-                return await interaction.send("Action timed out.")
+                return await interaction.followup.send("Action timed out.")
             elif view.value:
                 await member.remove_roles(guest_role, reason="Changing to Developer role")
             else:
-                return await interaction.send("Action cancelled.")
+                return await interaction.followup.send("Action cancelled.")
         self.bot.logger.debug("Pre-checks complete. Starting dev add process.")
         # At this point, we should have a valid member without the dev role
         # Let's see if we want to add any language roles first
@@ -256,7 +256,7 @@ class MembersCog(commands.Cog):
         role_ids = [x['role_id'] for x in fetch]
         view = RoleView(interaction.guild, member, role_ids)
         content = "Please select the member's primary language role:"
-        await interaction.send(content, delete_after=60.0, view=view)
+        await interaction.followup.send(content, delete_after=60.0, view=view)
         # Add developer role
         await member.add_roles(dev_role, reason=f"Role added by {interaction.user.display_name}")
         # Send DM to new member
@@ -269,9 +269,9 @@ class MembersCog(commands.Cog):
         await member.send(welcome_msg)
         # Copy a message to General??
         view = Confirm()
-        await interaction.send("Do you want to copy this message to #general?",
-                               delete_after=60.0,
-                               view=view)
+        await interaction.followup.send("Do you want to copy this message to #general?",
+                                        delete_after=60.0,
+                                        view=view)
         await view.wait()
         if view.value is None:
             self.bot.logger.debug("Prompt to copy message timed out. No biggie.")
