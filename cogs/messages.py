@@ -47,10 +47,11 @@ class MessagesCog(commands.Cog):
         admin_role = guild.get_role(settings['roles']['admin'])
         if admin_role in message.author.roles:
             return
-        deleted_by = "Message author"
+        deleted_by = "Message author or someone else (still testing)"
         async for entry in guild.audit_logs(action=nextcord.AuditLogAction.message_delete, limit=1):
-            if entry.created_at > datetime.utcnow() - timedelta(seconds=15):
-                deleted_by = entry.user.name
+            self.bot.logger.info(f"Entry date: {entry.created_at} compared to {datetime.now()}")
+            # if entry.created_at > datetime.utcnow() - timedelta(seconds=15):
+            #     deleted_by = entry.user.name
         embed = nextcord.Embed(color=nextcord.Color.red())
         embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
         embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content)
