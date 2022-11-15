@@ -85,9 +85,9 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "provide some language specific guidance, we are not a 'learn to code' server. There are "
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                   "come to the right place.\n\nPlease tell us your preferred programming lanugage and share "
+                   "come to the right place.\n\n**Please tell us your preferred programming language and share "
                    "a little bit about what you are doing with the API and we will give you additional roles to "
-                   "gain access to the rest of the server.")
+                   "gain access to the rest of the server.**")
 
 coc_client = coc.login(settings['supercell']['user'],
                        settings['supercell']['pass'],
