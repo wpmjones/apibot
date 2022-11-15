@@ -585,8 +585,8 @@ class General(commands.Cog):
         """Clears the specified number of messages in the current channel (defaults to all messages).
 
         **Examples:**
-        /clear (will ask for confirmation first)
-        /clear 7 (no confirmation, will delete the clear command and the 7 previous messages)
+        /doobie (will ask for confirmation first)
+        /doobie 7 (no confirmation, will delete the clear command and the 7 previous messages)
 
         **Permissions:**
         Manage Messages
