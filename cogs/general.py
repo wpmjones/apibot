@@ -41,8 +41,8 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "provide some language specific guidance, we are not a 'learn to code' server. There are "
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
-                   "come to the right place.\n\nPlease tell us your preferred programming language and what you "
-                   "are doing with the Clash API.")
+                   "come to the right place.\n\n**Please tell us your preferred programming language and what you "
+                   "are doing with the Clash API.**")
 
 
 async def close_welcome_thread(thread_channel: Thread):
@@ -269,6 +269,7 @@ class General(commands.Cog):
         channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
         await channel.purge()
         await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
+        await ctx.tick()
         # await channel.send(view=WelcomeView(self.bot))
 
     @commands.Cog.listener()
