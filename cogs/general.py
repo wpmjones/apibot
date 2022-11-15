@@ -290,8 +290,10 @@ class General(commands.Cog):
     @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
     async def rate_limit(self, interaction: nextcord.Interaction):
         """Responds with the rate limit information for the Clash API"""
+        print("preparing to respond")
         await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
                                                 "second. Staying below this should be safe.")
+        print("done responding")
 
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
     async def refresh_intervall(self, interaction: nextcord.Interaction):
@@ -592,11 +594,14 @@ class General(commands.Cog):
         Manage Messages
         """
         await interaction.response.defer()
+        print("response deferred")
         if msg_count:
             await interaction.channel.purge(limit=msg_count)
+            print("purge complete")
             await interaction.followup.send(f"{msg_count} messages deleted.",
                                             delete_after=5,
                                             ephemeral=True)
+            print("response complete")
         else:
             view = ConfirmView()
 
