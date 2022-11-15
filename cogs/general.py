@@ -596,7 +596,7 @@ class General(commands.Cog):
         await interaction.response.defer()
         print("response deferred")
         if msg_count:
-            await interaction.channel.purge(limit=msg_count)
+            await interaction.channel.purge(limit=msg_count + 1)
             print("purge complete")
             await interaction.followup.send(f"{msg_count} messages deleted.",
                                             delete_after=5,
