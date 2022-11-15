@@ -2,6 +2,11 @@ import nextcord
 
 from nextcord.ext import commands
 from config import settings
+from datetime import datetime, timedelta
+
+
+class Deleted:
+    pass
 
 
 class MessagesCog(commands.Cog):
@@ -42,10 +47,14 @@ class MessagesCog(commands.Cog):
         admin_role = guild.get_role(settings['roles']['admin'])
         if admin_role in message.author.roles:
             return
+        deleted_by = "Message author"
+        async for entry in guild.audit_logs(action=nextcord.AuditLogAction.message_delete, limit=1):
+            if entry.created_at > datetime.utcnow() - timedelta(seconds=15):
+                deleted_by = entry.user.name
         embed = nextcord.Embed(color=nextcord.Color.red())
         embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
         embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content)
-        embed.set_footer(text=f"ID: {message.id} | {message.edited_at}")
+        embed.set_footer(text=f"ID: {message.id} | Deleted by: {deleted_by}")
         mod_channel = self.bot.get_channel(settings['channels']['mod-log'])
         await mod_channel.send(embed=embed)
 
