@@ -46,14 +46,14 @@ class MessagesCog(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
         """Deal with deleted messages"""
+        if payload.guild_id != settings['guild']['junkies']:
+            return
         guild = self.bot.get_guild(settings['guild']['junkies'])
         if not payload.cached_message:
             channel = self.bot.get_channel(payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
         else:
             message = payload.cached_message
-        if message.guild.id != settings['guild']['junkies']:
-            return
         if message.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
         if message.author.bot:
