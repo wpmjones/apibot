@@ -1,4 +1,5 @@
 import nextcord
+import asyncio
 
 from nextcord.ext import commands
 from config import settings
@@ -43,10 +44,11 @@ class MessagesCog(commands.Cog):
             return
         if message.author.bot:
             return
+        # await asyncio.sleep(15.0)
         guild = self.bot.get_guild(settings['guild']['junkies'])
-        admin_role = guild.get_role(settings['roles']['admin'])
-        if admin_role in message.author.roles:
-            return
+        # admin_role = guild.get_role(settings['roles']['admin'])
+        # if admin_role in message.author.roles:
+        #     return
         deleted_by = "Message author or someone else (still testing)"
         async for entry in guild.audit_logs(action=nextcord.AuditLogAction.message_delete, limit=1):
             self.bot.logger.info(f"Entry date: {entry.created_at} compared to {datetime.now()}")
