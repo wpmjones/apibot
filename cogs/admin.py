@@ -17,6 +17,7 @@ from nextcord.ext import commands
 from random import choice, randint
 from typing import Optional, Dict
 from cogs.utils.formats import TabularData, plural
+from cogs.utils import chat_exporter
 
 # to expose to the eval command
 import datetime
@@ -118,6 +119,17 @@ class Admin(commands.Cog):
         if e.text is None:
             return f"```py\n{e.__class__.__name__}: {e}\n```"
         return f"```py\n{e.text}{'^':>{e.offset}}\n{e.__class__.__name__}: {e}```"
+
+    @commands.command(name="archive", hidden=True)
+    @commands.has_role("Admin")
+    async def archive_channel(self, ctx, limit: int = None):
+        transcript = await chat_exporter.export(ctx.channel, limit=limit, bot=self.bot)
+        if transcript is None:
+            return await ctx.send("Nothing to export")
+        transcript_file = nextcord.File(io.BytesIO(transcript.encode()),
+                                        filename=f"transcript-{ctx.channel.name}.html"
+                                        )
+        await ctx.send(file=transcript_file)
 
     @commands.command(name="add_user", hidden=True)
     @commands.is_owner()
