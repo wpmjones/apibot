@@ -6,15 +6,15 @@ from typing import List, Optional
 
 import pytz
 
-from chat_exporter.ext.discord_import import discord
+from cogs.utils.chat_ext.discord_import import discord
 
-from chat_exporter.construct.message import gather_messages
-from chat_exporter.construct.assets.component import Component
+from cogs.utils.chat_construct.message import gather_messages
+from cogs.utils.chat_construct.assets.component import Component
 
-from chat_exporter.ext.cache import clear_cache
-from chat_exporter.parse.mention import pass_bot
-from chat_exporter.ext.discord_utils import DiscordUtils
-from chat_exporter.ext.html_generator import (
+from cogs.utils.chat_ext.cache import clear_cache
+from cogs.utils.chat_parse.mention import pass_bot
+from cogs.utils.chat_ext.discord_utils import DiscordUtils
+from cogs.utils.chat_ext.html_generator import (
     fill_out, total, channel_topic, meta_data_temp, fancy_time, channel_subject, PARSE_MODE_NONE
 )
 
