@@ -3,7 +3,7 @@ import asyncio
 
 from nextcord.ext import commands
 from config import settings
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 
 class Deleted:
@@ -44,16 +44,17 @@ class MessagesCog(commands.Cog):
             return
         if message.author.bot:
             return
-        # await asyncio.sleep(15.0)
+        await asyncio.sleep(5.0)
         guild = self.bot.get_guild(settings['guild']['junkies'])
+        now_tz = datetime.now().replace(tzinfo=timezone.utc)
         # admin_role = guild.get_role(settings['roles']['admin'])
         # if admin_role in message.author.roles:
         #     return
         deleted_by = "Message author or someone else (still testing)"
         async for entry in guild.audit_logs(action=nextcord.AuditLogAction.message_delete, limit=1):
-            self.bot.logger.info(f"Entry date: {entry.created_at} compared to {datetime.now()}")
-            # if entry.created_at > datetime.utcnow() - timedelta(seconds=15):
-            #     deleted_by = entry.user.name
+            self.bot.logger.info(f"Entry date: {entry.created_at} compared to {now_tz}")
+            if entry.created_at > now_tz - timedelta(seconds=15):
+                deleted_by = entry.user.name
         embed = nextcord.Embed(color=nextcord.Color.red())
         embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
         embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content)
