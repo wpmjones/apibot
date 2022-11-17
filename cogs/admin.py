@@ -15,7 +15,7 @@ import traceback
 from contextlib import redirect_stdout
 from nextcord.ext import commands
 from random import choice, randint
-from typing import Optional
+from typing import Optional, Dict
 from cogs.utils.formats import TabularData, plural
 
 # to expose to the eval command
@@ -152,6 +152,30 @@ class Admin(commands.Cog):
             await ctx.send(f"{e.__class__.__name__}: {e}")
         else:
             await ctx.send("\N{OK HAND SIGN}")
+
+    @commands.command(name="resync", hidden=True)
+    @commands.is_owner()
+    async def application_command_resync(self):
+        cached_guild_data: Dict[Optional[int], list[ApplicationCommand]] = {}
+        self.bot.add_all_cog_commands()
+        for app_cmd in self.bot.get_all_application_commands():
+            if not app_cmd.command_ids:
+                if app_cmd.is_global:
+                    if None not in cached_guild_data:
+                        cached_guild_data[None] = await self.bot.http.get_global_commands(self.bot.application_id)
+                elif app_cmd.is_guild:
+                    for guild_id in app_cmd.guild_ids_to_rollout:
+                        if guild_id not in cached_guild_data:
+                            cached_guild_data[guild_id] = await self.bot.http.get_guild_commands(
+                                self.bot.application_id, guild_id
+                            )
+        for guild_id in cached_guild_data:
+            if guild_id is None:
+                await self.bot.sync_application_commands(data=cached_guild_data[None])
+            else:
+                guild = self.bot.get_guild(guild_id)
+
+                await self.bot.sync_application_commands(data=cached_guild_data[guild_id], guild_id=guild.id)
 
     @commands.group(name="reload", hidden=True, invoke_without_command=True)
     async def _reload(self, ctx, *, module):

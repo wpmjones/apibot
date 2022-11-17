@@ -35,6 +35,14 @@ class MessagesCog(commands.Cog):
         mod_channel = self.bot.get_channel(settings['channels']['mod-log'])
         await mod_channel.send(embed=embed)
 
+    @commands.command(name="atest", hidden=True)
+    @commands.is_owner()
+    async def test_audit_log(self, ctx):
+        """Testing audit log checks"""
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        async for entry in guild.audit_logs(action=nextcord.AuditLogAction.message_delete, limit=5):
+            await ctx.send(f"{entry.created_at} - {entry.user} preformed {entry.action}")
+
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
         """Deal with deleted messages"""
