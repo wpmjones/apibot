@@ -1,6 +1,6 @@
 import html
 import re
-from chat_exporter.ext.emoji_convert import convert_emoji
+from cogs.utils.chat_ext.emoji_convert import convert_emoji
 
 
 class ParseMarkdown:
