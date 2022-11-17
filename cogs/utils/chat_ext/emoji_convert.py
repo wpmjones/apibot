@@ -34,7 +34,7 @@ from grapheme import graphemes
 import emoji
 import aiohttp
 
-from chat_exporter.ext.cache import cache
+from cogs.utils.chat_ext.cache import cache
 
 
 cdn_fmt = "https://twemoji.maxcdn.com/v/latest/72x72/{codepoint}.png"
