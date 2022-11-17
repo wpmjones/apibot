@@ -36,16 +36,22 @@ class MessagesCog(commands.Cog):
         await mod_channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message):
+    async def on_raw_message_delete(self, payload):
         """Deal with deleted messages"""
+        guild = self.bot.get_guild(settings['guild']['junkies'])
+        if not payload.cached_message:
+            channel = self.bot.get_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id)
+        else:
+            message = payload.cached_message
         if message.guild.id != settings['guild']['junkies']:
             return
         if message.channel.id in [settings['channels']['admin'], settings['channels']['mod-log']]:
             return
         if message.author.bot:
             return
+        # Not sure if this is necessary, but I want the audit log to have time to register the delete
         await asyncio.sleep(5.0)
-        guild = self.bot.get_guild(settings['guild']['junkies'])
         now_tz = datetime.now().replace(tzinfo=timezone.utc)
         # admin_role = guild.get_role(settings['roles']['admin'])
         # if admin_role in message.author.roles:
