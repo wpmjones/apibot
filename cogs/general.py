@@ -593,11 +593,10 @@ class General(commands.Cog):
         **Permissions:**
         Manage Messages
         """
-        await interaction.response.defer()
         msg_count += 1
         if msg_count:
             await interaction.channel.purge(limit=msg_count)
-            await interaction.followup.send(f"{msg_count} messages deleted.",
+            await interaction.send(f"{msg_count} messages deleted.",
                                             delete_after=5,
                                             ephemeral=True)
         else:
@@ -609,7 +608,7 @@ class General(commands.Cog):
 
             confirm_content = (f"Are you really sure you want to remove ALL messages from "
                                f"the {interaction.channel.name} channel?")
-            msg = await interaction.followup.send(content=confirm_content, view=view)
+            msg = await interaction.send(content=confirm_content, view=view)
             await view.wait()
             if view.value is False or view.value is None:
                 disable_all_buttons()
