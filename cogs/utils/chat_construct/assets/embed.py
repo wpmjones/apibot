@@ -1,6 +1,6 @@
-from chat_exporter.ext.discord_import import discord
+from cogs.utils.chat_ext.discord_import import discord
 
-from chat_exporter.ext.html_generator import (
+from cogs.utils.chat_ext.html_generator import (
     fill_out,
     embed_body,
     embed_title,
