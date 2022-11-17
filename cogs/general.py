@@ -593,12 +593,12 @@ class General(commands.Cog):
         **Permissions:**
         Manage Messages
         """
-        msg_count += 1
         if msg_count:
+            msg_count += 1
             await interaction.channel.purge(limit=msg_count)
             await interaction.send(f"{msg_count} messages deleted.",
-                                            delete_after=5,
-                                            ephemeral=True)
+                                   delete_after=5,
+                                   ephemeral=True)
         else:
             view = ConfirmView()
 
