@@ -1,8 +1,8 @@
 import io
 from typing import List, Optional
 
-from chat_construct.transcript import Transcript
-from chat_ext.discord_import import discord
+from cogs.utils.chat_construct.transcript import Transcript
+from cogs.utils.chat_ext.discord_import import discord
 
 
 async def quick_export(channel: discord.TextChannel,
