@@ -595,14 +595,11 @@ class General(commands.Cog):
         """
         await interaction.response.defer()
         msg_count += 1
-        print("response deferred.")
         if msg_count:
             await interaction.channel.purge(limit=msg_count)
-            print(f"purge complete. removed {msg_count} messages")
             await interaction.followup.send(f"{msg_count} messages deleted.",
                                             delete_after=5,
                                             ephemeral=True)
-            print("response complete")
         else:
             view = ConfirmView()
 
