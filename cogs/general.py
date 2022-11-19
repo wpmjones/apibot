@@ -594,7 +594,6 @@ class General(commands.Cog):
         Manage Messages
         """
         if msg_count:
-            msg_count += 1
             await interaction.channel.purge(limit=msg_count)
             await interaction.send(f"{msg_count} messages deleted.",
                                    delete_after=5,
