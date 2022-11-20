@@ -15,12 +15,12 @@ from nextcord import ChannelType, Interaction, Thread, ui
 from nextcord.ext import commands
 from loguru import logger
 
-# from fancy_logging import setup_logging
+from fancy_logging import setup_logging
 
 # setup_logging("nextcord.state")
 # setup_logging("nextcord.gateway")
 # setup_logging("nextcord.http")
-# setup_logging("nextcord.application_command")
+setup_logging("nextcord.application_command")
 
 # Shared development tips
 # PEP8 whenever possible
