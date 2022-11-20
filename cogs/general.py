@@ -489,6 +489,7 @@ class General(commands.Cog):
         **Permissions:**
         Admin role required
         """
+        await ctx.message.delete()
         if not member:
             return await ctx.send("Please provide a valid member of this server.")
         if member.guild.id != settings['guild']['junkies']:

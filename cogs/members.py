@@ -258,7 +258,7 @@ class MembersCog(commands.Cog):
         role_ids = [x['role_id'] for x in fetch]
         view = RoleView(interaction.guild, member, role_ids)
         content = "Please select the member's primary language role:"
-        await interaction.followup.send(content, delete_after=60.0, view=view)
+        await interaction.followup.send(content, delete_after=60.0, view=view, ephemeral=True)
         # Add developer role
         await member.add_roles(dev_role, reason=f"Role added by {interaction.user.display_name}")
         # Send DM to new member
@@ -273,7 +273,8 @@ class MembersCog(commands.Cog):
         view = Confirm()
         await interaction.followup.send("Do you want to copy this message to #general?",
                                         delete_after=60.0,
-                                        view=view)
+                                        view=view,
+                                        ephemeral=True)
         await view.wait()
         if view.value is None:
             self.bot.logger.debug("Prompt to copy message timed out. No biggie.")
