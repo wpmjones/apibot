@@ -148,13 +148,14 @@ class MembersCog(commands.Cog):
             channel = self.bot.get_channel(settings['channels']['admin'])
             await channel.send(f"{member.mention} has just been invited to the server. "
                                f"Perhaps it is time to set up a demo channel?  Try `//setup {member.mention} @owner`")
-        last_month = datetime.now() - timedelta(days=30)
+        last_month = datetime.now().replace(tzinfo=timezone.utc) - timedelta(days=30)
         if member.created_at > last_month:
             channel = self.bot.get_channel(settings['channels']['admin'])
             msg = f"New member, {member.display_name}#{member.discriminator}, is less than one month old."
             await channel.send(msg)
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
-        msg = f"{member.display_name}#{member.discriminator} just joined the server."
+        msg = (f"{member.display_name}#{member.discriminator} just joined the server. Account creation date: "
+               f"{member.created_at}")
         await mod_log.send(msg)
 
     @commands.Cog.listener()
