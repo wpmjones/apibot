@@ -5,6 +5,9 @@ from nextcord.ext import commands
 from config import settings
 from datetime import datetime, timezone, timedelta
 
+WELCOME_CHANNEL_ID = settings['channels']['welcome']
+# WELCOME_CHANNEL_ID = 1011500429969993808
+
 
 class Deleted:
     pass
@@ -13,6 +16,11 @@ class Deleted:
 class MessagesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.channel.id == WELCOME_CHANNEL_ID and message.type is nextcord.MessageType.thread_created:
+            await message.delete(delay=1)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):

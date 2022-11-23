@@ -1,4 +1,4 @@
-aiohttp==3.7.4.post0
+aiohttp>=3.8.1
 async-timeout==3.0.1
 asyncio==3.4.3
 asyncpg==0.22.0
@@ -14,3 +14,11 @@ nest-asyncio==1.5.1
 PyYAML==5.4.1
 soupsieve==2.2
 typing-extensions==3.7.4.3
+emoji>=2.2.0
+grapheme>=0.6.0
+pytz>=2022.1
+coc>=0.2
+pandas>=1.4.2
+matplotlib>=3.5.2
+requests>=2.22.0
+Pillow>=7.0.0
