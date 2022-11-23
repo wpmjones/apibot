@@ -154,8 +154,9 @@ class MembersCog(commands.Cog):
             msg = f"New member, {member.display_name}#{member.discriminator}, is less than one month old."
             await channel.send(msg)
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
-        msg = (f"{member.display_name}#{member.discriminator} just joined the server. Account creation date: "
-               f"{member.created_at}")
+        msg = (f"{member.display_name}#{member.discriminator} just joined the server.\n"
+               f"Account creation date: {member.created_at.strftime('%d %b %Y')}\n"
+               f"Discord ID: {member.id}")
         await mod_log.send(msg)
 
     @commands.Cog.listener()
