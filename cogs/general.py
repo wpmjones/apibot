@@ -603,8 +603,13 @@ class General(commands.Cog):
                                        delete_after=5,
                                        ephemeral=True)
             else:
-                messages = await interaction.channel.history(after=msg_count).flatten()
+                message_id = msg_count
+                messages = await interaction.channel.history(after=message_id).flatten()
+                msg_count = len(messages)
                 await interaction.channel.delete_messages(messages)
+                await interaction.send(f"{msg_count} messages deleted.",
+                                       delete_after=5,
+                                       ephemeral=True)
         else:
             confirm_view = ConfirmView()
 
