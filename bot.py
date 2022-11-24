@@ -277,6 +277,7 @@ class WelcomeButtonView(ui.View):
                 role_view = RoleView(self.member, roles)
                 content = "Please select the member's primary language role:"
                 await interaction.send(content, delete_after=21.0, view=role_view, ephemeral=False)
+                await role_view.wait()
             channel = interaction.guild.get_channel(GENERAL_CHANNEL_ID)
             await channel.send(f"{self.member.display_name} says:\n>>> {self.info}")
         else:
