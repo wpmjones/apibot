@@ -167,7 +167,7 @@ class Admin(commands.Cog):
 
     @commands.command(name="resync", hidden=True)
     @commands.is_owner()
-    async def application_command_resync(self):
+    async def application_command_resync(self, ctx):
         cached_guild_data: Dict[Optional[int], list[ApplicationCommand]] = {}
         self.bot.add_all_cog_commands()
         for app_cmd in self.bot.get_all_application_commands():
@@ -188,6 +188,7 @@ class Admin(commands.Cog):
                 guild = self.bot.get_guild(guild_id)
 
                 await self.bot.sync_application_commands(data=cached_guild_data[guild_id], guild_id=guild.id)
+        await ctx.send("Application Commands resynced.")
 
     @commands.group(name="reload", hidden=True, invoke_without_command=True)
     async def _reload(self, ctx, *, module):
