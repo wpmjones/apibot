@@ -26,22 +26,6 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "bit about yourself and gain access to the rest of the server.")
 
 
-class RoleButton(nextcord.ui.Button):
-    def __init__(self, role: nextcord.Role, member: nextcord.Member):
-        super().__init__(
-            label=role.name,
-            style=nextcord.ButtonStyle.blurple,
-            custom_id=f"RoleView:{role.id}",
-        )
-        self.role = role
-        self.member = member
-
-    async def callback(self, interaction: nextcord.Interaction):
-        await self.member.add_roles(self.role, reason=f"{interaction.user.display_name} using a button.")
-        if "|" not in self.member.display_name:
-            await self.member.edit(nick=f"{self.member.display_name} | {self.role.name}")
-
-
 class RoleDropdown(nextcord.ui.Select):
     def __init__(self, member: nextcord.Member, options):
         super().__init__(
@@ -55,17 +39,20 @@ class RoleDropdown(nextcord.ui.Select):
     async def callback(self, interaction: Interaction):
         for value in self.values:
             role = interaction.guild.get_role(int(value))
+            self.view.role_list.append(role.name)
             await self.member.add_roles(role)
             try:
                 await self.member.edit(nick=f"{self.member.display_name} | {role.name}")
             except nextcord.HTTPException:
                 # this might happen if the nickname gets too long
                 pass
+            self.view.stop()
 
 
 class RoleView(nextcord.ui.View):
     def __init__(self, member: nextcord.Member, roles):
         super().__init__(timeout=20.0)
+        self.role_list = []
         options = []
         for role in roles:
             options.append(nextcord.SelectOption(label=role[0], value=role[1]))
@@ -147,12 +134,15 @@ class SendButton(nextcord.ui.Button):
 
     async def callback(self, interaction: Interaction):
         channel = interaction.guild.get_channel(GENERAL_CHANNEL_ID)
+        self.view.msg = self.content
         await channel.send(f"{self.author} says:\n>>> {self.content}")
+        self.view.stop()
 
 
 class SendMessage(ui.View):
     def __init__(self, messages: List[nextcord.Message]):
         super().__init__(timeout=20.0)
+        self.msg = ""
         for count, message in enumerate(messages):
             self.add_item(SendButton(count, message.content, message.author.display_name))
 
@@ -171,6 +161,11 @@ class WelcomeButtonView(ui.View):
                custom_id="thread_approve")
     async def thread_approve_button(self, button: nextcord.ui.Button, interaction: Interaction):
         dev_role = interaction.guild.get_role(settings['roles']['developer'])
+        log_channel = interaction.guild.get_channel(settings['channels']['mod-log'])
+        embed = nextcord.Embed(title=f"{self.member.name} Approved",
+                               description=f"{interaction.user.name}#{interaction.user.discriminator} has approved new "
+                                           f"member, {self.member.name}#{self.member.discriminator}",
+                               color=0x00FFFF)
         # remove temp guest role
         temp_guest_role = interaction.guild.get_role(settings['roles']['temp_guest'])
         if temp_guest_role in self.member.roles:
@@ -191,20 +186,27 @@ class WelcomeButtonView(ui.View):
                 if self.lang.lower() == role[0].lower():
                     lang_role = interaction.guild.get_role(role[1])
                     await self.member.add_roles(lang_role)
+                    self.bot.logger.info(f"Adding {lang_role.name} to user")
+                    await self.member.edit(nick=f"{self.member.display_name} | {lang_role.name}")
+                    embed.add_field(name="Role:", value=role[0], inline=False)
                     role_found = True
+                    continue
             if not role_found:  # Couldn't figure out role, let's prompt for it
                 role_view = RoleView(self.member, roles)
                 content = "Please select the member's primary language role:"
                 await interaction.send(content, delete_after=21.0, view=role_view, ephemeral=False)
                 await role_view.wait()
+                embed.add_field(name="Roles:", value=", ".join(role_view.role_list), inline=False)
             channel = interaction.guild.get_channel(GENERAL_CHANNEL_ID)
             await channel.send(f"{self.member.display_name} says:\n>>> {self.info}")
+            embed.add_field(name="Message:", value=self.info, inline=False)
         else:
             # prompt for language role
             role_view = RoleView(self.member, roles)
             content = "Please select the member's primary language role:"
             await interaction.send(content, delete_after=21.0, view=role_view, ephemeral=False)
             await role_view.wait()
+            embed.add_field(name="Roles:", value=", ".join(role_view.role_list), inline=False)
             confirm_view = ConfirmView()
 
             def disable_all_buttons():
@@ -221,19 +223,21 @@ class WelcomeButtonView(ui.View):
             else:
                 disable_all_buttons()
                 messages = []
-                embed = nextcord.Embed(title="Please select the message to copy to #general.")
+                msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
                 description = ""
                 counter = 0
-                async for message in interaction.channel.history():
+                async for message in interaction.channel.history(oldest_first=True):
                     if message.author == self.member and len(message.content) > 8:
                         description += f"\n**{counter}** - {message.content}"
                         counter += 1
                         messages.append(message)
-                embed.description = description
-                role_view = SendMessage(messages)
-                await interaction.send(embed=embed, view=role_view, ephemeral=False)
-                await role_view.wait()
+                msg_embed.description = description
+                msg_view = SendMessage(messages)
+                await interaction.send(embed=msg_embed, view=msg_view, ephemeral=False)
+                await msg_view.wait()
+                embed.add_field(name="Message:", value=msg_view.msg, inline=False)
         await self.member.add_roles(dev_role)
+        await log_channel.send(embed=embed)
         await interaction.channel.delete()
 
     @ui.button(label="More Info",

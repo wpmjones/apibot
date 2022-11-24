@@ -154,10 +154,11 @@ class MembersCog(commands.Cog):
             msg = f"New member, {member.display_name}#{member.discriminator}, is less than one month old."
             await channel.send(msg)
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
-        msg = (f"{member.display_name}#{member.discriminator} just joined the server.\n"
-               f"Account creation date: {member.created_at.strftime('%d %b %Y')}\n"
-               f"Discord ID: {member.id}")
-        await mod_log.send(msg)
+        embed = nextcord.Embed(title="New member joined", color=0xBFFF00)
+        embed.add_field(name="Member name:", value=f"{member.display_name}#{member.discriminator}", inline=True)
+        embed.add_field(name="Creation Date:", value=member.created_at.strftime('%d %b %Y'), inline=True)
+        embed.add_field(name="Discord ID:", value=member.id, inline=True)
+        await mod_log.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_update(self, old_member, new_member):
