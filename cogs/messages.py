@@ -39,6 +39,7 @@ class MessagesCog(commands.Cog):
         embed.set_author(name=before.author.name, icon_url=before.author.display_avatar.url)
         embed.add_field(name="Before:", value=before.content, inline=False)
         embed.add_field(name="After:", value=after.content, inline=False)
+        embed.add_field(name="Message Link:", value=after.jump_url, inline=False)
         embed.set_footer(text=f"ID: {after.id} | {after.edited_at}")
         mod_channel = self.bot.get_channel(settings['channels']['mod-log'])
         await mod_channel.send(embed=embed)
