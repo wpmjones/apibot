@@ -168,6 +168,7 @@ class Admin(commands.Cog):
     @commands.command(name="resync", hidden=True)
     @commands.is_owner()
     async def application_command_resync(self, ctx):
+        """Resync all application commands (saves having to restart the bot)"""
         cached_guild_data: Dict[Optional[int], list[ApplicationCommand]] = {}
         self.bot.add_all_cog_commands()
         for app_cmd in self.bot.get_all_application_commands():
