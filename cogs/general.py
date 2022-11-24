@@ -585,7 +585,7 @@ class General(commands.Cog):
 
     @nextcord.slash_command(name="doobie", guild_ids=GUILD_IDS)
     @application_checks.has_role("Admin")
-    async def clear(self, interaction: nextcord.Interaction, msg_count: int = None):
+    async def clear(self, interaction: nextcord.Interaction, msg_count=None):
         """Clears the specified number of messages in the current channel (defaults to all messages).
 
         **Examples:**
