@@ -12,10 +12,11 @@ enviro = settings['enviro']
 JUNKIES_GUILD_ID = settings['guild']['junkies']
 if enviro == "LIVE":
     GUILD_IDS = [JUNKIES_GUILD_ID, settings['guild']['bot_logs']]
+    WELCOME_CHANNEL_ID = settings['channels']['welcome']
 else:
     GUILD_IDS = [settings['guild']['bot_logs']]
+    WELCOME_CHANNEL_ID = 1011500429969993808
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
-WELCOME_CHANNEL_ID = settings['channels']['welcome']   # 1011500429969993808
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
@@ -586,7 +587,7 @@ class General(commands.Cog):
     @nextcord.slash_command(name="doobie", guild_ids=GUILD_IDS)
     @application_checks.has_role("Admin")
     async def clear(self, interaction: nextcord.Interaction, msg_count=None):
-        """Clears the specified number of messages OR all messages from the specified ID
+        """Clears the specified number of messages OR all messages from the specified ID.
 
         **Examples:**
         /doobie (will ask for confirmation first)
@@ -598,19 +599,18 @@ class General(commands.Cog):
         """
         if msg_count:
             msg_count = int(msg_count)
-            self.bot.logger.info(type(msg_count))
             if msg_count < 100:
                 await interaction.channel.purge(limit=msg_count)
                 await interaction.send(f"{msg_count} messages deleted.",
                                        delete_after=5,
                                        ephemeral=True)
             else:
-                message_id = msg_count
-                messages = await interaction.channel.history(after=message_id).flatten()
-                print(messages)
-                print([x.id for x in messages])
-                msg_count = len(messages)
+                message = await interaction.channel.fetch_message(msg_count)
+                messages = await interaction.channel.history(after=message).flatten()
+                msg_count = len(messages) + 1
                 await interaction.channel.delete_messages(messages)
+                async for message in interaction.channel.history(limit=1):
+                    await message.delete()
                 await interaction.send(f"{msg_count} messages deleted.",
                                        delete_after=5,
                                        ephemeral=True)

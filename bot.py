@@ -59,6 +59,7 @@ if enviro == "LIVE":
     prefix = "//"
     log_level = "INFO"
     coc_names = "galaxy"
+    WELCOME_CHANNEL_ID = settings['channels']['welcome']
     # append to initial_extensions if additional cogs are desired
     initial_extensions.append("cogs.members")
     initial_extensions.append("cogs.messages")
@@ -70,11 +71,13 @@ elif enviro == "test":
     prefix = ">"
     log_level = "DEBUG"
     coc_names = "dev"
+    WELCOME_CHANNEL_ID = 1011500429969993808
 else:
     token = settings['discord']['test_token']
     prefix = ">"
     log_level = "DEBUG"
     coc_names = "delete_me"
+    WELCOME_CHANNEL_ID = 1011500429969993808
 
 DESCRIPTION = ("Welcome to the Clash API Developers bot. This is a custom bot created by and for the users of the "
                "Clash API Developers Discord server. If you have questions, please reach out to "
