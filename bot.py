@@ -40,6 +40,7 @@ ADMIN_ROLE_ID = settings['roles']['admin']
 DEVELOPER_ROLE_ID = settings['roles']['developer']
 WELCOME_CHANNEL_ID = settings['channels']['welcome']
 # WELCOME_CHANNEL_ID = 1011500429969993808
+GENERAL_CHANNEL_ID = settings['channels']['general']
 
 initial_extensions = [
                         "cogs.general",
@@ -138,6 +139,22 @@ async def close_welcome_thread(thread_channel: Thread):
     await thread_channel.edit(locked=True, archived=True)
 
 
+class ConfirmButton(ui.Button["ConfirmView"]):
+    def __init__(self, label: str, style: nextcord.ButtonStyle, *, custom_id: str):
+        super().__init__(label=label, style=style, custom_id=custom_id)
+
+    async def callback(self, interaction: Interaction):
+        self.view.value = True if self.custom_id == f"confirm_button" else False
+        self.view.stop()
+
+class ConfirmView(ui.View):
+    def __init__(self):
+        super().__init__(timeout=10.0)
+        self.value = None
+        self.add_item(ConfirmButton("Yes", nextcord.ButtonStyle.green, custom_id="confirm_button"))
+        self.add_item(ConfirmButton("No", nextcord.ButtonStyle.red, custom_id="decline_button"))
+
+
 class IntroduceModal(ui.Modal):
     def __init__(self, pass_bot):
         super().__init__(title="Getting to know you",
@@ -187,6 +204,26 @@ class IntroduceModal(ui.Modal):
         await interaction.user.send(welcome_msg)
 
 
+class SendButton(nextcord.ui.Button)
+    def __init__(self, content, message_id, author):
+        super().__init__(label=message_id,
+                         style=nextcord.ButtonStyle.primary)
+        self.content = content
+        self.message_id = message_id
+        self.author = author
+
+    async def callback(self, interaction: Interaction):
+        channel = interaction.guild.get_channel(GENERAL_CHANNEL_ID)
+        await channel.send(f"{self.author} says:\n>>> {self.content}")
+
+
+class SendMessage(ui.View):
+    def __init__(self, messages: List[nextcord.Message]):
+        super().__init__(timeout=None)
+        for message in messages:
+            self.add_item(SendButton(message.content, message.id))
+
+
 class WelcomeButtonView(ui.View):
     def __init__(self, pass_bot, member, lang, info):
         super().__init__(timeout=None)
@@ -194,6 +231,7 @@ class WelcomeButtonView(ui.View):
         self.member = member
         self.lang = lang
         self.info = info
+        self.more = False
 
     @ui.button(label="Approve",
                style=nextcord.ButtonStyle.green)
@@ -209,26 +247,66 @@ class WelcomeButtonView(ui.View):
             self.member,
             overwrite=None
         )
-        # prompt for language role
-        sql = "SELECT role_id FROM bot_language_board ORDER BY role_name"
-        fetch = await self.bot.pool.fetch(sql)
-        role_ids = [x['role_id'] for x in fetch]
-        view = RoleView(interaction.guild, self.member, role_ids)
-        content = "Please select the member's primary language role:"
-        await interaction.send(content, delete_after=60.0, view=view, ephemeral=True)
+        await interaction.send(f"{interaction.user.display_name} has started the approval process.")
+        if not self.more:  # We're approving straight away. Try and decipher language from input
+            sql = "SELECT role_id, role_name FROM bot_language_board ORDER BY role_name"
+            fetch = await self.bot.pool.fetch(sql)
+            roles = [(x['role_name'], x['role_id']) for x in fetch]
+            role_found = False
+            for role in roles:
+                if self.lang.lower() == role[0].lower():
+                    lang_role = interaction.guild.get_role(role[1])
+                    self.member.add_roles(lang_role)
+            if not role_found:  # Couldn't figure out role, let's prompt for it
+                role_ids = [x['role_id'] for x in fetch]
+                view = RoleView(interaction.guild, self.member, role_ids)
+                content = "Please select the member's primary language role:"
+                await interaction.send(content, delete_after=60.0, view=view, ephemeral=True)
+            channel = interaction.guild.get_channel(settings['channels']['general'])
+            await channel.send(f"{self.member.display_name} says:\n>>> {self.info}")
+        else:
+            # prompt for language role
+            sql = "SELECT role_id FROM bot_language_board ORDER BY role_name"
+            fetch = await self.bot.pool.fetch(sql)
+            role_ids = [x['role_id'] for x in fetch]
+            view = RoleView(interaction.guild, self.member, role_ids)
+            content = "Please select the member's primary language role:"
+            await interaction.send(content, delete_after=60.0, view=view, ephemeral=True)
+            confirm_view = ConfirmView()
+
+            def disable_all_buttons():
+                for _item in confirm_view.children:
+                    _item.disabled = True
+
+            confirm_content = "Would you like to copy a message to #general?"
+            await interaction.send(content=confirm_content, ephemeral=False, view=confirm_view)
+            await confirm_view.wait()
+            if confirm_view.value is False or confirm_view.value is None:
+                disable_all_buttons()
+                content = "OK, then I won't do it." if confirm_view.value is False else "You're too slow! Cancelled."
+                await interaction.send(content)
+            else:
+                disable_all_buttons()
+                messages = []
+                embed = nextcord.Embed(title="Please select the message to copy to #general.")
+                description = ""
+                async for message in interaction.channel.history():
+                    if message.author == self.member and len(message.content) > 10:
+                        description += f"\n**{message.id}** - {message.content}"
+                        messages.append(message)
+                embed.description = description
+                view = SendMessage(messages)
+                await interaction.send(embed=embed, view=view, ephemeral=True)
         await self.member.add_roles(dev_role)
-        # post message to general
-        channel = interaction.guild.get_channel(settings['channels']['general'])
-        await channel.send(f"{self.member.display_name} says:\n>>> {self.info}")
         await close_welcome_thread(interaction.channel)
 
     @ui.button(label="More Info",
                style=nextcord.ButtonStyle.blurple)
     async def thread_info_button(self, button: nextcord.ui.Button, interaction: Interaction):
-        # disable all buttons in view since we don't want to use them anymore
-        for _item in button.view.children:
-            _item.disabled = True
-            self.bot.logger.info(_item)
+        self.more = True
+        # disable button in view since we don't want to use them anymore
+        button.disabled = True
+        await interaction.edit(view=self)
         # Add user to thread
         await interaction.channel.add_user(self.member)
         await interaction.channel.parent.set_permissions(

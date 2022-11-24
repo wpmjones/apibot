@@ -296,7 +296,7 @@ class General(commands.Cog):
         print("done responding")
 
     @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
-    async def refresh_intervall(self, interaction: nextcord.Interaction):
+    async def refresh_interval(self, interaction: nextcord.Interaction):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
         embed = nextcord.Embed(title="Max age of information due to caching")
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
@@ -506,9 +506,10 @@ class General(commands.Cog):
                 await member.remove_roles(guest_role, reason="Changing to Developer role")
             else:
                 return await ctx.send("Action cancelled.")
-        if ctx.channel.id != settings['channels']['welcome']:
+        if (ctx.channel.id != settings['channels']['welcome'] or
+                ctx.channel.parent.id == settings['channels']['welcome']):
             return await ctx.send(f"I'd feel a whole lot better if you ran this command in "
-                                  f"<#{settings['channels']['welcome']}>.")
+                                  f"<#{settings['channels']['welcome']}> or a thread.")
         self.bot.logger.info("Pre-checks complete. Starting dev add process.")
         # At this point, we should have a valid member without the dev role
         # Let's see if we want to add any language roles first
@@ -589,28 +590,33 @@ class General(commands.Cog):
 
         **Examples:**
         /doobie (will ask for confirmation first)
-        /doobie 7 (no confirmation, will delete the clear command and the 7 previous messages)
+        /doobie 7 (no confirmation, will delete the 7 previous messages)
+        /doobie 1044857124779466812 (no confirmation, will delete all messages up to and including that one)
 
         **Permissions:**
         Manage Messages
         """
         if msg_count:
-            await interaction.channel.purge(limit=msg_count)
-            await interaction.send(f"{msg_count} messages deleted.",
-                                   delete_after=5,
-                                   ephemeral=True)
+            if msg_count < 100:
+                await interaction.channel.purge(limit=msg_count)
+                await interaction.send(f"{msg_count} messages deleted.",
+                                       delete_after=5,
+                                       ephemeral=True)
+            else:
+                messages = await interaction.channel.history(after=msg_count).flatten()
+                await interaction.channel.delete_messages(messages)
         else:
-            view = ConfirmView()
+            confirm_view = ConfirmView()
 
             def disable_all_buttons():
-                for _item in view.children:
+                for _item in confirm_view.children:
                     _item.disabled = True
 
             confirm_content = (f"Are you really sure you want to remove ALL messages from "
                                f"the {interaction.channel.name} channel?")
-            msg = await interaction.send(content=confirm_content, view=view)
-            await view.wait()
-            if view.value is False or view.value is None:
+            msg = await interaction.send(content=confirm_content, view=confirm_view)
+            await confirm_view.wait()
+            if confirm_view.value is False or confirm_view.value is None:
                 disable_all_buttons()
                 await msg.delete()
             else:
