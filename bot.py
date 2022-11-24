@@ -204,7 +204,7 @@ class IntroduceModal(ui.Modal):
         await interaction.user.send(welcome_msg)
 
 
-class SendButton(nextcord.ui.Button)
+class SendButton(nextcord.ui.Button):
     def __init__(self, content, message_id, author):
         super().__init__(label=message_id,
                          style=nextcord.ButtonStyle.primary)
