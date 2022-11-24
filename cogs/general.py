@@ -586,7 +586,10 @@ class General(commands.Cog):
 
     @nextcord.slash_command(name="doobie", guild_ids=GUILD_IDS)
     @application_checks.has_role("Admin")
-    async def clear(self, interaction: nextcord.Interaction, msg_count=None):
+    async def clear(self,
+                    interaction: nextcord.Interaction,
+                    msg_count: str = nextcord.SlashOption(description="Message count OR Message ID",
+                                                          required=False)):
         """Clears the specified number of messages OR all messages from the specified ID.
 
         **Examples:**
@@ -605,15 +608,19 @@ class General(commands.Cog):
                                        delete_after=5,
                                        ephemeral=True)
             else:
-                message = await interaction.channel.fetch_message(msg_count)
-                messages = await interaction.channel.history(after=message).flatten()
-                msg_count = len(messages) + 1
-                await interaction.channel.delete_messages(messages)
-                async for message in interaction.channel.history(limit=1):
-                    await message.delete()
-                await interaction.send(f"{msg_count} messages deleted.",
-                                       delete_after=5,
-                                       ephemeral=True)
+                try:
+                    message = await interaction.channel.fetch_message(msg_count)
+                    messages = await interaction.channel.history(after=message).flatten()
+                    msg_count = len(messages) + 1
+                    await interaction.channel.delete_messages(messages)
+                    async for message in interaction.channel.history(limit=1):
+                        await message.delete()
+                    await interaction.send(f"{msg_count} messages deleted.",
+                                           delete_after=5,
+                                           ephemeral=True)
+                except nextcord.errors.NotFound:
+                    return await interaction.send("It appears that you tried to enter a message ID, but I can't find "
+                                                  "that message in this channel.")
         else:
             confirm_view = ConfirmView()
 

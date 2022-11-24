@@ -162,8 +162,8 @@ class MembersCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, old_member, new_member):
         """Discord listener to announce new member with Developer role to #general"""
-        if new_member.guild.id != 566451504332931073:
-            # only act if this is the API server
+        if new_member.guild.id != 566451504332931073 or new_member.id == 307522080746897409:
+            # only act if this is the API server and the member isn't test account
             return
         if old_member.roles == new_member.roles:
             # only act if roles have changed
