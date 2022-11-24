@@ -598,6 +598,7 @@ class General(commands.Cog):
         """
         if msg_count:
             msg_count = int(msg_count)
+            self.bot.logger.info(type(msg_count))
             if msg_count < 100:
                 await interaction.channel.purge(limit=msg_count)
                 await interaction.send(f"{msg_count} messages deleted.",
