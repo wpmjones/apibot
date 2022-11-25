@@ -95,7 +95,7 @@ class IntroduceModal(ui.Modal):
         self.add_item(self.information)
 
     async def create_welcome_thread(self, interaction: Interaction, lang, info) -> Thread:
-        thread = await interaction.channel.create_thread(name=f"Welcome {interaction.user.display_name}",
+        thread = await interaction.channel.create_thread(name=f"Welcome {interaction.user.name}",
                                                          type=ChannelType.public_thread)
         embed = nextcord.Embed(title=f"Introducing {interaction.user.display_name}",
                                description=f"Created by: {interaction.user} ({interaction.user.id})",
@@ -174,7 +174,9 @@ class WelcomeButtonView(ui.View):
         # added with the More Info button
         await interaction.channel.parent.set_permissions(
             self.member,
-            overwrite=None
+            read_messages=False,
+            send_messages_in_threads=False,
+            add_reactions=False
         )
         await interaction.send(f"{interaction.user.display_name} has started the approval process.")
         sql = "SELECT role_id, role_name FROM bot_language_board ORDER BY role_name"
@@ -304,8 +306,12 @@ class IntroduceView(ui.View):
         if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
             await interaction.send("You already have the developer role.", ephemeral=True)
             return False
-        else:
-            return True
+        for thread in interaction.guild.threads:
+            if thread.name == f"Welcome {interaction.user.name}":
+                await interaction.send("You've already introduced yourself. Please allow the admins time to "
+                                       "review and respond.", ephemeral=True)
+                return False
+        return True
 
 
 class WelcomeCog(commands.Cog):
