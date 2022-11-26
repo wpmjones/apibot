@@ -123,6 +123,7 @@ class Admin(commands.Cog):
     @commands.command(name="archive", hidden=True)
     @commands.has_role("Admin")
     async def archive_channel(self, ctx, limit: int = None):
+        """Create html file with a transcript of the channel (Admin only)"""
         transcript = await chat_exporter.export(ctx.channel, limit=limit, bot=self.bot)
         if transcript is None:
             return await ctx.send("Nothing to export")
@@ -134,7 +135,7 @@ class Admin(commands.Cog):
     @commands.command(name="add_user", hidden=True)
     @commands.is_owner()
     async def add_user(self, ctx, usr):
-        """Add user for coc discord links api"""
+        """Add user for coc discord links api (owner only)"""
         PUNCTUATION = "!@#$%^&*"
         pwd = choice(string.ascii_letters) + choice(PUNCTUATION) + choice(string.digits)
         characters = string.ascii_letters + PUNCTUATION + string.digits
@@ -145,8 +146,9 @@ class Admin(commands.Cog):
         await ctx.send(pwd)
 
     @commands.command(hidden=True)
+    @commands.is_owner()
     async def load(self, ctx, *, module):
-        """Loads a module."""
+        """Loads a module. (owner only)"""
         try:
             self.bot.load_extension(module)
             self.bot.logger.debug(f"{module} loaded successfully")
@@ -156,8 +158,9 @@ class Admin(commands.Cog):
             await ctx.send("\N{OK HAND SIGN}")
 
     @commands.command(hidden=True)
+    @commands.is_owner()
     async def unload(self, ctx, *, module):
-        """Unloads a module."""
+        """Unloads a module. (owner only)"""
         try:
             self.bot.unload_extension(module)
         except commands.ExtensionError as e:
@@ -168,7 +171,7 @@ class Admin(commands.Cog):
     @commands.command(name="resync", hidden=True)
     @commands.is_owner()
     async def application_command_resync(self, ctx):
-        """Resync all application commands (saves having to restart the bot)"""
+        """Resync all application commands (saves having to restart the bot) (owner only)"""
         cached_guild_data: Dict[Optional[int], list[ApplicationCommand]] = {}
         self.bot.add_all_cog_commands()
         for app_cmd in self.bot.get_all_application_commands():
@@ -192,8 +195,9 @@ class Admin(commands.Cog):
         await ctx.send("Application Commands resynced.")
 
     @commands.group(name="reload", hidden=True, invoke_without_command=True)
+    @commands.is_owner()
     async def _reload(self, ctx, *, module):
-        """Reloads a module."""
+        """Reloads a module. (owner only)"""
         try:
             self.bot.reload_extension(module)
         except commands.ExtensionError as e:
@@ -227,8 +231,9 @@ class Admin(commands.Cog):
             self.bot.load_extension(module)
 
     @_reload.command(name="all", hidden=True)
+    @commands.is_owner()
     async def _reload_all(self, ctx):
-        """Reloads all modules, while pulling from git."""
+        """Reloads all modules, while pulling from git. (owner only)"""
 
         async with ctx.typing():
             stdout, stderr = await self.run_process("git pull")
@@ -272,6 +277,7 @@ class Admin(commands.Cog):
         await ctx.send("\n".join(f"{status}: `{module}`" for status, module in statuses))
 
     @commands.command(name="pull", hidden="true")
+    @commands.is_owner()
     async def git_pull(self, ctx):
         async with ctx.typing():
             stdout, stderr = await self.run_process("git pull")
@@ -282,11 +288,12 @@ class Admin(commands.Cog):
         else:
             modules = self.find_modules_from_git(stdout)
             mods_text = '\n'.join(f'{index}. `{module}`' for index, (_, module) in enumerate(modules, start=1))
-            await ctx.send(f"The following files were pull from GitHub:\n{mods_text}")
+            await ctx.send(f"The following files were pulled from GitHub:\n{mods_text}")
 
     @commands.command(pass_context=True, hidden=True, name="eval")
+    @commands.has_role("Admin")
     async def _eval(self, ctx, *, body: str):
-        """Evaluates a code"""
+        """Evaluates a code (Admin only)"""
 
         env = {
             "bot": self.bot,
@@ -332,8 +339,9 @@ class Admin(commands.Cog):
                 await ctx.send(f"```py\n{value}{ret}\n```")
 
     @commands.command(hidden=True)
+    @commands.is_owner()
     async def sudo(self, ctx, channel: Optional[GlobalChannel], who: nextcord.User, *, command: str):
-        """Run a command as another user optionally in another channel."""
+        """Run a command as another user optionally in another channel. (owner only)"""
         msg = copy.copy(ctx.message)
         channel = channel or ctx.channel
         msg.channel = channel
@@ -344,8 +352,9 @@ class Admin(commands.Cog):
         await self.bot.invoke(new_ctx)
 
     @commands.command(hidden=True)
+    @commands.is_owner()
     async def do(self, ctx, times: int, *, command):
-        """Repeats a command a specified number of times."""
+        """Repeats a command a specified number of times. (owner only)"""
         msg = copy.copy(ctx.message)
         msg.content = ctx.prefix + command
 
@@ -356,8 +365,9 @@ class Admin(commands.Cog):
             await new_ctx.reinvoke()
 
     @commands.command(hidden=True)
+    @commands.is_owner()
     async def perf(self, ctx, *, command):
-        """Checks the timing of a command, attempting to suppress HTTP and DB calls."""
+        """Checks the timing of a command, attempting to suppress HTTP and DB calls. (owner only)"""
 
         msg = copy.copy(ctx.message)
         msg.content = ctx.prefix + command
@@ -389,8 +399,9 @@ class Admin(commands.Cog):
         await ctx.send(f"Status: {ctx.tick(success)} Time: {(end - start) * 1000:.2f}ms")
 
     @commands.command(hidden=True)
+    @commands.is_owner()
     async def psql(self, ctx, *, query: str):
-        """Run some SQL."""
+        """Run some PostgreSQL. (owner only)"""
 
         query = self.cleanup_code(query)
 

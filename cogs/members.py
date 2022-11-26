@@ -177,9 +177,6 @@ class MembersCog(commands.Cog):
                 await channel.send(f"Who is the bonehead that assigned the Developer role to a bot? "
                                    f"{new_member.name} is a bot.")
             # At this point, it should be a member on our server that has just received the developers role
-            # We're going to sleep for 10 seconds to give the admin time to add a language role as well
-            await asyncio.sleep(10)
-            self.bot.logger.info(f"New member with Developers role: {new_member.display_name}")
             sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
             fetch = await self.bot.pool.fetch(sql)
             language_roles = [[row['role_id'], row['role_name'], row['emoji_repr']] for row in fetch]

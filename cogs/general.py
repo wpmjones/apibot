@@ -151,7 +151,7 @@ class General(commands.Cog):
         Adds the "Bots" role to the bot.
 
         **Example:**
-        /setup @bot @owner
+        //setup @bot @owner
 
         **Permissions:**
         Admin role required
@@ -379,7 +379,7 @@ class General(commands.Cog):
                     interaction: nextcord.Interaction,
                     msg_count: str = nextcord.SlashOption(description="Message count OR Message ID",
                                                           required=False)):
-        """Clears the specified number of messages OR all messages from the specified ID.
+        """Clears the specified number of messages OR all messages from the specified ID. (Admin only)
 
         **Examples:**
         /doobie (will ask for confirmation first)
@@ -431,7 +431,7 @@ class General(commands.Cog):
     @commands.command(hidden=True)
     @commands.has_role("Admin")
     async def recreate_rules(self, ctx):
-        """Recreate the #rules channel.
+        """Recreate the #rules channel. (Admin only)
 
         This parses the Rules/code_of_conduct.md markdown file, and sends it as a series of embeds.
         Assumptions are made that each section is separated by <a name="x.x"></a>.
@@ -474,7 +474,7 @@ class General(commands.Cog):
     @commands.command(hidden=True)
     @commands.has_role("Admin")
     async def recreate_projects(self, ctx):
-        """Recreate the #community-projects channel.
+        """Recreate the #community-projects channel. (Admin only)
 
         This parses the Rules/community_projects.md markdown file, and sends it as a series of embeds.
         Assumptions are made that each section is separated by <a name="x.x"></a>.

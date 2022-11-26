@@ -8,6 +8,7 @@ import traceback
 
 from cogs.utils import context
 from cogs.utils.db import Psql
+from cogs.utils import embedded_help
 from config import settings
 from datetime import datetime
 from nextcord.ext import commands
@@ -87,6 +88,7 @@ class ApiBot(commands.Bot):
                          description=DESCRIPTION,
                          case_insensitive=True,
                          intents=intents,
+                         help_command=embedded_help.EmbeddedHelpCommand()
                          )
         self.coc = coc_client
         self.color = nextcord.Color.greyple()

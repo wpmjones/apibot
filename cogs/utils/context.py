@@ -221,15 +221,15 @@ class Context(commands.Context):
             await self.bot.pool.release(self._db)
             self._db = None
 
-    async def show_help(self, command=None):
-        """Shows the help command for the specified command if given.
-
-        If no command is given, then it'll show help for the current
-        command.
-        """
-        cmd = self.bot.get_command("help")
-        command = command or self.command.qualified_name
-        await self.invoke(cmd, command=command)
+    # async def show_help(self, command=None):
+    #     """Shows the help command for the specified command if given.
+    #
+    #     If no command is given, then it'll show help for the current
+    #     command.
+    #     """
+    #     cmd = self.bot.get_command("help")
+    #     command = command or self.command.qualified_name
+    #     await self.invoke(cmd, command=command)
 
     async def safe_send(self, content, *, escape_mentions=True, **kwargs):
         """Same as send except with some safe guards.
