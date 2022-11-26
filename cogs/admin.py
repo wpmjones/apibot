@@ -293,7 +293,7 @@ class Admin(commands.Cog):
     @commands.command(pass_context=True, hidden=True, name="eval")
     @commands.has_role("Admin")
     async def _eval(self, ctx, *, body: str):
-        """Evaluates a code (Admin only)"""
+        """Evaluates (executes) supplied Python code (Admin only)"""
 
         env = {
             "bot": self.bot,
