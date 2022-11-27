@@ -285,6 +285,7 @@ class LanguageBoard(commands.Cog):
                     "bot, you will have to re-create the panels."
                     )
     )
+    @commands.has_role("Admin")
     async def language_board(self, ctx):
         # Fetch all the emojis from the database
         async with self.bot.pool.acquire() as conn:
@@ -314,6 +315,7 @@ class LanguageBoard(commands.Cog):
         usage="",
         help=""
     )
+    @commands.has_role("Admin")
     async def configure(self, ctx, *, arg_string=None):
         await ctx.send("Run help on me to get the configuration sub commands")
 
@@ -323,6 +325,7 @@ class LanguageBoard(commands.Cog):
         help="Add a role and emoji to the LanguageBoard table",
         usage="(role_id) (emoji)"
     )
+    @commands.has_role("Admin")
     async def config_add_role(self, ctx, *, arg_string=None):
         try:
             role_id, emoji_id = arg_string.split(' ')[:2]
@@ -357,6 +360,7 @@ class LanguageBoard(commands.Cog):
               "to get a listing."),
         usage="(role_name)"
     )
+    @commands.has_role("Admin")
     async def configure_remove_role(self, ctx, *, role_name=None):
         async with self.bot.pool.acquire() as conn:
             record = await conn.fetchrow("SELECT role_id FROM bot_language_board WHERE role_name = $1", role_name)
@@ -372,6 +376,7 @@ class LanguageBoard(commands.Cog):
         help="List the roles registered and the emojis that they correspond to.",
         usage=""
     )
+    @commands.has_role("Admin")
     async def configure_list_roles(self, ctx):
         async with self.bot.pool.acquire() as conn:
             rows = await conn.fetch("SELECT role_name, emoji_repr FROM bot_language_board;")
