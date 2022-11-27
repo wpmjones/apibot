@@ -147,7 +147,7 @@ class General(commands.Cog):
         commands = ""
         counter = 0
         for command in slash_commands:
-            if command.qualified_name not in ["help", "doobie"]:
+            if command.qualified_name not in ["help", "doobie", "Developer"]:
                 commands += f"`{command.qualified_name}` "
                 counter += 1
         embed.add_field(name=f"Slash Commands [{counter}]:", value=commands, inline=False)
