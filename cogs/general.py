@@ -139,7 +139,7 @@ class General(commands.Cog):
                     "```https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=```"
         await interaction.response.send_message(response)
 
-    @nextcord.slash_command(name="help", guild_ids=GUILD_IDS)
+    @nextcord.slash_command(name="help", description="Help command for slash commands", guild_ids=GUILD_IDS)
     async def slash_help(self, interaction: nextcord.Interaction):
         embed = nextcord.Embed(title="Overview of Slash Commands",
                                color=0xFFFFFF)
