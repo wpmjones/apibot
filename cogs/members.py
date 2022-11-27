@@ -203,6 +203,10 @@ class MembersCog(commands.Cog):
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
         msg = f"{member.display_name}#{member.discriminator} just left the server."
         await mod_log.send(msg)
+        # Check for welcome thread and delete
+        for thread in member.guild.threads:
+            if thread.name == f"Welcome {member.name}":
+                await thread.delete()
 
     @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
     async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):
