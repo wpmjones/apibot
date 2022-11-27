@@ -98,7 +98,7 @@ class IntroduceModal(ui.Modal):
     async def create_welcome_thread(self, interaction: Interaction, lang, info) -> Thread:
         thread = await interaction.channel.create_thread(name=f"Welcome {interaction.user.name}",
                                                          type=ChannelType.public_thread)
-        embed = nextcord.Embed(title=f"Introducing {interaction.user.display_name}",
+        embed = nextcord.Embed(title=f"Introducing {interaction.user.name}",
                                description=f"Created by: {interaction.user} ({interaction.user.id})",
                                color=nextcord.Color.green())
         embed.add_field(name="Language(s):", value=lang, inline=False)
