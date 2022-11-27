@@ -317,16 +317,18 @@ class LanguageBoard(commands.Cog):
     )
     @commands.has_role("Admin")
     async def configure(self, ctx, *, arg_string=None):
+        """Run help on me to get the configuration sub commands (admin only)"""
         await ctx.send("Run help on me to get the configuration sub commands")
 
     @configure.command(
         name="add_role",
         brief="",
         help="Add a role and emoji to the LanguageBoard table",
-        usage="(role_id) (emoji)"
+        usage="<role_id> <emoji>"
     )
     @commands.has_role("Admin")
     async def config_add_role(self, ctx, *, arg_string=None):
+        """Add a role and emoji to the Language Board table (admin only)"""
         try:
             role_id, emoji_id = arg_string.split(' ')[:2]
         except ValueError as error:
@@ -358,10 +360,11 @@ class LanguageBoard(commands.Cog):
         brief="",
         help=("Remove a registered role. This is the only way to \"Edit\" a registration record. User \"list_roles\" "
               "to get a listing."),
-        usage="(role_name)"
+        usage="<role_name>"
     )
     @commands.has_role("Admin")
     async def configure_remove_role(self, ctx, *, role_name=None):
+        """Remove a registered role (admin only)"""
         async with self.bot.pool.acquire() as conn:
             record = await conn.fetchrow("SELECT role_id FROM bot_language_board WHERE role_name = $1", role_name)
             if record:
@@ -378,6 +381,7 @@ class LanguageBoard(commands.Cog):
     )
     @commands.has_role("Admin")
     async def configure_list_roles(self, ctx):
+        """List the roles registered and the corresponding emojis (admin only)"""
         async with self.bot.pool.acquire() as conn:
             rows = await conn.fetch("SELECT role_name, emoji_repr FROM bot_language_board;")
         panel = f"{'Role':<30} {'Emoji'}\n"
