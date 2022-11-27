@@ -57,7 +57,7 @@ class EmbeddedHelpCommand(commands.HelpCommand):
         *,
         dm_help: bool = False,
         default_color: int = 0xFFFFFF,
-        main_embed_title: str = "Overview about Cogs, Groups, and Commands",
+        main_embed_title: str = "Overview of Cogs, Groups, and Commands",
         main_embed_description: Optional[str] = None,
         main_embed_color: Optional[int] = None,
         command_embed_title: str = "Command help",

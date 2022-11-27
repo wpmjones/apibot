@@ -139,6 +139,20 @@ class General(commands.Cog):
                     "```https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=```"
         await interaction.response.send_message(response)
 
+    @nextcord.slash_command(name="help", guild_ids=GUILD_IDS)
+    async def slash_help(self, interaction: nextcord.Interaction):
+        embed = nextcord.Embed(title="Overview of Slash Commands",
+                               color=0xFFFFFF)
+        slash_commands = self.bot.get_all_application_commands()
+        commands = ""
+        counter = 0
+        for command in slash_commands:
+            if command.qualified_name not in ["help", "doobie"]:
+                commands += f"`{command.qualified_name}` "
+                counter += 1
+        embed.add_field(name=f"Slash Commands [{counter}]:", value=commands, inline=False)
+        await interaction.response.send_message(embed=embed)
+
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
     async def setup_bot(self, ctx, bot: nextcord.Member = None, owner: nextcord.Member = None):
