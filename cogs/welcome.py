@@ -90,6 +90,7 @@ class IntroduceModal(ui.Modal):
             style=nextcord.TextInputStyle.paragraph,
             required=True,
             placeholder="What are you doing or what would you like to be doing with the API?",
+            min_length=12,
             max_length=544)
         self.add_item(self.language)
         self.add_item(self.information)
@@ -185,7 +186,7 @@ class WelcomeButtonView(ui.View):
         if not self.more:  # We're approving straight away. Try and decipher language from input
             role_found = False
             for role in roles:
-                if self.lang.lower() == role[0].lower():
+                if self.lang.lower().strip() == role[0].lower():
                     lang_role = interaction.guild.get_role(role[1])
                     await self.member.add_roles(lang_role)
                     self.bot.logger.info(f"Adding {lang_role.name} to user")
