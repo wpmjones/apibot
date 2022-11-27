@@ -4,7 +4,7 @@ import re
 
 from cogs.utils import checks
 from config import settings
-from nextcord import Interaction, ui, Thread, ChannelType
+from nextcord import Interaction, ui
 from nextcord.ext import commands, application_checks
 
 enviro = settings['enviro']
@@ -144,13 +144,15 @@ class General(commands.Cog):
         embed = nextcord.Embed(title="Overview of Slash Commands",
                                color=0xFFFFFF)
         slash_commands = self.bot.get_all_application_commands()
-        commands = ""
+        commands = []
         counter = 0
         for command in slash_commands:
             if command.qualified_name not in ["help", "doobie", "Developer"]:
-                commands += f"`{command.qualified_name}` "
+                commands.append(f"`{command.qualified_name}` {command.description}")
                 counter += 1
-        embed.add_field(name=f"Slash Commands [{counter}]:", value=commands, inline=False)
+        commands = sorted(commands)
+        values = "\n".join(commands)
+        embed.add_field(name=f"Slash Commands [{counter}]:", value=values, inline=False)
         await interaction.response.send_message(embed=embed)
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
