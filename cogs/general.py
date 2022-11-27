@@ -98,7 +98,7 @@ class General(commands.Cog):
     async def vps(self, interaction: nextcord.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
         await interaction.response.send_message(
-            "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
+                "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
     @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
     async def rules(self, interaction: nextcord.Interaction):
@@ -143,15 +143,48 @@ class General(commands.Cog):
     async def slash_help(self, interaction: nextcord.Interaction):
         embed = nextcord.Embed(title="Overview of Slash Commands",
                                color=0xFFFFFF)
-        slash_commands = self.bot.get_all_application_commands()
-        commands = ""
-        counter = 0
-        for command in slash_commands:
-            if command.qualified_name not in ["help", "doobie", "Developer"]:
-                commands += f"`{command.qualified_name}` "
-                counter += 1
-        embed.add_field(name=f"Slash Commands [{counter}]:", value=commands, inline=False)
-        await interaction.response.send_message(embed=embed)
+        commands: list[nextcord.BaseApplicationCommand] = self.bot.get_all_application_commands()
+        global_outside_group = []
+        guild_outside_group = []
+        global_groups = []
+        guild_groups = []
+        for cmd in commands:
+            # skip all non slash commands
+            if cmd.type != nextcord.ApplicationCommandType(1):
+                continue
+            # get guild specific payload
+            payload = cmd.get_payload(interaction.guild_id if cmd.guild_ids else None)
+            options = payload.get("options", {})
+            if all([option['type'] > 2 for option in options]):
+                # there is no subcommand or command group
+                if cmd.guild_ids:
+                    guild_outside_group.append(f"</{cmd.qualified_name}:{self.bot.user.id}> {cmd.description}\n")
+                    continue
+                else:
+                    global_outside_group.append(f"</{cmd.qualified_name}:{self.bot.user.id}> {cmd.description}\n")
+                    continue
+            else:
+                # handle subcommand group/ subcommands
+                sub_commands = sorted([f"</{cmd.qualified_name} {option['name']}:{self.bot.user.id}> "
+                                       f"{option['description']}" for option in options if option['type'] <= 2],
+                                      key=lambda x: x)
+                if cmd.guild_ids:
+                    embed = nextcord.Embed(
+                        title=f'Guild Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
+                        description="\n".join(sub_commands))
+                    guild_groups.append(embed)
+                else:
+                    embed = nextcord.Embed(
+                        title=f'Global Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
+                        description="\n".join(sub_commands))
+                    global_groups.append(embed)
+        ungrouped_global = nextcord.Embed(title=f'Global Commands [{len(global_outside_group)}]',
+                                          description="\n".join(sorted(global_outside_group, key=lambda x: x)))
+        ungrouped_guild = nextcord.Embed(title=f'Guild Commands [{len(guild_outside_group)}]',
+                                         description="\n".join(sorted(guild_outside_group, key=lambda x: x)))
+        embeds = [ungrouped_global] + list(sorted(global_groups, key=lambda x: x.title)) + [ungrouped_guild] + list(
+                sorted(guild_groups, key=lambda x: x.title))
+        await interaction.response.send_message(embeds=embeds)
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
@@ -196,54 +229,54 @@ class General(commands.Cog):
 
         # No match found, just keep swimming
         overwrites = {
-            bot: nextcord.PermissionOverwrite(read_messages=True,
-                                              send_messages=True,
-                                              read_message_history=True,
-                                              manage_messages=True,
-                                              embed_links=True,
-                                              attach_files=True,
-                                              external_emojis=True,
-                                              add_reactions=True),
-            admin_role: nextcord.PermissionOverwrite(read_messages=True,
-                                                     send_messages=True,
-                                                     read_message_history=True,
-                                                     manage_messages=True,
-                                                     embed_links=True,
-                                                     attach_files=True,
-                                                     external_emojis=True,
-                                                     add_reactions=True,
-                                                     manage_channels=True,
-                                                     manage_permissions=True,
-                                                     manage_webhooks=True),
-            hog_rider_role: nextcord.PermissionOverwrite(read_messages=True,
-                                                         send_messages=True,
-                                                         read_message_history=True,
-                                                         manage_messages=True,
-                                                         embed_links=True,
-                                                         attach_files=True,
-                                                         external_emojis=True,
-                                                         add_reactions=True),
-            developer_role: nextcord.PermissionOverwrite(read_messages=True,
-                                                         send_messages=True,
-                                                         read_message_history=True,
-                                                         manage_messages=False,
-                                                         embed_links=True,
-                                                         attach_files=True,
-                                                         external_emojis=True,
-                                                         add_reactions=True),
-            guest_role: nextcord.PermissionOverwrite(read_messages=True,
-                                                     send_messages=True,
-                                                     read_message_history=True,
-                                                     manage_messages=False,
-                                                     embed_links=True,
-                                                     attach_files=True,
-                                                     external_emojis=False,
-                                                     add_reactions=True),
+            bot               : nextcord.PermissionOverwrite(read_messages=True,
+                                                             send_messages=True,
+                                                             read_message_history=True,
+                                                             manage_messages=True,
+                                                             embed_links=True,
+                                                             attach_files=True,
+                                                             external_emojis=True,
+                                                             add_reactions=True),
+            admin_role        : nextcord.PermissionOverwrite(read_messages=True,
+                                                             send_messages=True,
+                                                             read_message_history=True,
+                                                             manage_messages=True,
+                                                             embed_links=True,
+                                                             attach_files=True,
+                                                             external_emojis=True,
+                                                             add_reactions=True,
+                                                             manage_channels=True,
+                                                             manage_permissions=True,
+                                                             manage_webhooks=True),
+            hog_rider_role    : nextcord.PermissionOverwrite(read_messages=True,
+                                                             send_messages=True,
+                                                             read_message_history=True,
+                                                             manage_messages=True,
+                                                             embed_links=True,
+                                                             attach_files=True,
+                                                             external_emojis=True,
+                                                             add_reactions=True),
+            developer_role    : nextcord.PermissionOverwrite(read_messages=True,
+                                                             send_messages=True,
+                                                             read_message_history=True,
+                                                             manage_messages=False,
+                                                             embed_links=True,
+                                                             attach_files=True,
+                                                             external_emojis=True,
+                                                             add_reactions=True),
+            guest_role        : nextcord.PermissionOverwrite(read_messages=True,
+                                                             send_messages=True,
+                                                             read_message_history=True,
+                                                             manage_messages=False,
+                                                             embed_links=True,
+                                                             attach_files=True,
+                                                             external_emojis=False,
+                                                             add_reactions=True),
             guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
         }
         try:
             position = category.channels[0].position + sorted(
-                category.channels + [channel_name], key=lambda c: str(c)
+                    category.channels + [channel_name], key=lambda c: str(c)
             ).index(channel_name)
 
             channel = await ctx.guild.create_text_channel(channel_name,
