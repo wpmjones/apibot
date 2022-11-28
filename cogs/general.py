@@ -50,17 +50,6 @@ class ConfirmView(ui.View):
 class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # if enviro == "LIVE":
-        #     self.bot.loop.create_task(self.create_welcome())
-
-    # @commands.command(name="recreate_welcome", hidden=True)
-    # async def recreate_welcome(self, ctx):
-    #     """Doobie, don't run this command in #admin. No bueno"""
-    #     channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
-    #     await channel.purge()
-    #     await channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
-    #     await ctx.tick(True)
-    #     await channel.send(view=WelcomeView(self.bot))
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -134,9 +123,9 @@ class General(commands.Cog):
                 response = "I will not construct you a link with an invalid player tag\n\n"
         else:
             response = ""
-        response += "You can construct a profile link for any player by combining the following base url with the " \
-                    "player's tag. But make sure to replace the `#` prefix with its encoded form `%23`\n" \
-                    "```https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=```"
+        response += ("You can construct a profile link for any player by combining the following base url with the "
+                     "player's tag. But make sure to replace the `#` prefix with its encoded form `%23`\n"
+                     "```https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=```")
         await interaction.response.send_message(response)
 
     @nextcord.slash_command(name="help", description="Help command for slash commands", guild_ids=GUILD_IDS)
@@ -175,14 +164,14 @@ class General(commands.Cog):
                     embed = nextcord.Embed(
                         title=f'Guild Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
                         description="\n".join(sub_commands),
-                        color=0xDADADA
+                        color=0xDDDDDD
                     )
                     guild_groups.append(embed)
                 else:
                     embed = nextcord.Embed(
                         title=f'Global Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
                         description="\n".join(sub_commands),
-                        color=0xDADADA
+                        color=0xDDDDDD
                     )
                     global_groups.append(embed)
         ungrouped_global = nextcord.Embed(title=f'Global Commands [{len(global_outside_group)}]',
