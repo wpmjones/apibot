@@ -143,17 +143,57 @@ class General(commands.Cog):
     async def slash_help(self, interaction: nextcord.Interaction):
         embed = nextcord.Embed(title="Overview of Slash Commands",
                                color=0xFFFFFF)
-        slash_commands = self.bot.get_all_application_commands()
-        commands = []
-        counter = 0
-        for command in slash_commands:
-            if command.qualified_name not in ["help", "doobie", "Developer"]:
-                commands.append(f"`{command.qualified_name}` {command.description}")
-                counter += 1
-        commands = sorted(commands)
-        values = "\n".join(commands)
-        embed.add_field(name=f"Slash Commands [{counter}]:", value=values, inline=False)
-        await interaction.response.send_message(embed=embed)
+        commands: list[nextcord.BaseApplicationCommand] = self.bot.get_all_application_commands()
+        global_outside_group = []
+        guild_outside_group = []
+        global_groups = []
+        guild_groups = []
+        for cmd in commands:
+            # skip all non slash commands
+            if cmd.type != nextcord.ApplicationCommandType(1):
+                continue
+            # skip admin specific slash commands
+            if cmd.qualified_name in ["doobie", "help"]:
+                continue
+            # get guild specific payload
+            payload = cmd.get_payload(interaction.guild_id if cmd.guild_ids else None)
+            options = payload.get("options", {})
+            if all([option['type'] > 2 for option in options]):
+                # there is no subcommand or command group
+                if cmd.guild_ids:
+                    guild_outside_group.append(f"</{cmd.qualified_name}:{self.bot.user.id}> {cmd.description}\n")
+                    continue
+                else:
+                    global_outside_group.append(f"</{cmd.qualified_name}:{self.bot.user.id}> {cmd.description}\n")
+                    continue
+            else:
+                # handle subcommand group/ subcommands
+                sub_commands = sorted([f"</{cmd.qualified_name} {option['name']}:{self.bot.user.id}> "
+                                       f"{option['description']}" for option in options if option['type'] <= 2],
+                                      key=lambda x: x)
+                if cmd.guild_ids:
+                    embed = nextcord.Embed(
+                        title=f'Guild Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
+                        description="\n".join(sub_commands),
+                        color=0xDADADA
+                    )
+                    guild_groups.append(embed)
+                else:
+                    embed = nextcord.Embed(
+                        title=f'Global Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
+                        description="\n".join(sub_commands),
+                        color=0xDADADA
+                    )
+                    global_groups.append(embed)
+        ungrouped_global = nextcord.Embed(title=f'Global Commands [{len(global_outside_group)}]',
+                                          description="\n".join(sorted(global_outside_group, key=lambda x: x)),
+                                          color=0xFFFFFF)
+        ungrouped_guild = nextcord.Embed(title=f'Guild Commands [{len(guild_outside_group)}]',
+                                         description="\n".join(sorted(guild_outside_group, key=lambda x: x)),
+                                         color=0xFFFFFF)
+        embeds = ([ungrouped_global] + list(sorted(global_groups, key=lambda x: x.title)) + [ungrouped_guild] +
+                  list(sorted(guild_groups, key=lambda x: x.title)))
+        await interaction.response.send_message(embeds=embeds)
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
@@ -174,13 +214,13 @@ class General(commands.Cog):
         """
         if not bot or not owner:
             return await ctx.send("Please be sure to provide a Discord ID or mention both the bot and the owner. "
-                                  "`/setup @bot @owner`")
+                                  "`//setup @bot @owner`")
         if not bot.bot:
             return await ctx.send(f"{bot.mention} does not appear to be a bot. Please try again with "
-                                  f"`/setup @bot @owner`.")
+                                  f"`//setup @bot @owner`.")
         if owner.bot:
             return await ctx.send(f"{owner.mention} appears to be a bot, but should be the bot owner. Please try "
-                                  f"again with `/setup @bot @owner`.")
+                                  f"again with `//setup @bot @owner`.")
 
         category = self.bot.get_channel(BOT_DEMO_CATEGORY_ID)
         guild = self.bot.get_guild(JUNKIES_GUILD_ID)
