@@ -2,6 +2,7 @@ import nextcord
 
 from nextcord.ext import commands, tasks
 from nextcord import ui, Interaction, Thread, ChannelType
+from datetime import datetime, timezone, timedelta
 from typing import List
 from config import settings
 
@@ -115,6 +116,11 @@ class IntroduceModal(ui.Modal):
         info = self.information.value
         created_thread = await self.create_welcome_thread(interaction, lang, info)
         await created_thread.send(f"<@&{ADMIN_ROLE_ID}>", delete_after=5)
+        last_month = datetime.now().replace(tzinfo=timezone.utc) - timedelta(days=30)
+        if interaction.user.created_at > last_month:
+            msg = (f"{interaction.user.name}#{interaction.user.discriminator}, is less than one month old. "
+                   f"Please do not approve without further investigation.")
+            await created_thread.send(msg)
         # Add temp_guest role so they can "look around"
         # Send DM so user knows we're working on it
         guild = self.bot.get_guild(settings['guild']['junkies'])
