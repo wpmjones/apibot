@@ -112,9 +112,12 @@ class IntroduceModal(ui.Modal):
         return thread
 
     async def callback(self, interaction: Interaction):
+        if self.bot.pending_members[interaction.user.id]:
+            return
         lang = self.language.value
         info = self.information.value
         created_thread = await self.create_welcome_thread(interaction, lang, info)
+        self.bot.pending_members[interaction.user.id] = True
         await created_thread.send(f"<@&{ADMIN_ROLE_ID}>", delete_after=5)
         last_month = datetime.now().replace(tzinfo=timezone.utc) - timedelta(days=30)
         if interaction.user.created_at > last_month:
@@ -312,6 +315,10 @@ class IntroduceView(ui.View):
     async def interaction_check(self, interaction: Interaction):
         if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
             await interaction.send("You already have the developer role.", ephemeral=True)
+            return False
+        if self.bot.pending_members[interaction.user.id]:
+            await interaction.send("You've already introduced yourself. Please allow the admins time to "
+                                   "review and respond.", ephemeral=True)
             return False
         for thread in interaction.guild.threads:
             if thread.name == f"Welcome {interaction.user.name}":

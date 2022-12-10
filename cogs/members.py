@@ -142,6 +142,8 @@ class MembersCog(commands.Cog):
             channel = self.bot.get_channel(settings['channels']['admin'])
             await channel.send(f"{member.mention} has just been invited to the server. "
                                f"Perhaps it is time to set up a demo channel?  Try `//setup {member.mention} @owner`")
+        # add new member to pending_members as false (meaning no intro channel yet)
+        self.bot.pending_members[member.id] = False
         last_month = datetime.now().replace(tzinfo=timezone.utc) - timedelta(days=30)
         if member.created_at > last_month:
             channel = self.bot.get_channel(settings['channels']['admin'])
@@ -171,6 +173,7 @@ class MembersCog(commands.Cog):
                 await channel.send(f"Who is the bonehead that assigned the Developer role to a bot? "
                                    f"{new_member.name} is a bot.")
             # At this point, it should be a member on our server that has just received the developers role
+            del self.bot.pending_members[new_member.id]
             sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
             fetch = await self.bot.pool.fetch(sql)
             language_roles = [[row['role_id'], row['role_name'], row['emoji_repr']] for row in fetch]
