@@ -98,7 +98,7 @@ class IntroduceModal(ui.Modal):
 
     async def create_welcome_thread(self, interaction: Interaction, lang, info) -> Thread:
         thread = await interaction.channel.create_thread(name=f"Welcome {interaction.user.name}",
-                                                         type=ChannelType.public_thread)
+                                                         type=ChannelType.private_thread)
         embed = nextcord.Embed(title=f"Introducing {interaction.user.name}",
                                description=f"Created by: {interaction.user} ({interaction.user.id})",
                                color=nextcord.Color.green())
@@ -126,8 +126,7 @@ class IntroduceModal(ui.Modal):
             await created_thread.send(msg)
         # Add temp_guest role so they can "look around"
         # Send DM so user knows we're working on it
-        guild = self.bot.get_guild(settings['guild']['junkies'])
-        temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
+        temp_guest_role = interaction.guild.get_role(settings['roles']['temp_guest'])
         await interaction.user.add_roles(temp_guest_role)
         welcome_msg = ("Thank you for introducing yourself. One of our admins will review your information "
                        "shortly and get things moving. If they have any other questions, they will let you know! "
@@ -182,12 +181,7 @@ class WelcomeButtonView(ui.View):
             await self.member.remove_roles(temp_guest_role)
         # remove perms for welcome - this covers a case where they were individually
         # added with the More Info button
-        await interaction.channel.parent.set_permissions(
-            self.member,
-            read_messages=False,
-            send_messages_in_threads=False,
-            add_reactions=False
-        )
+        await interaction.channel.parent.set_permissions(self.member, overwrite=None)
         await interaction.send(f"{interaction.user.display_name} has started the approval process.")
         sql = "SELECT role_id, role_name FROM bot_language_board ORDER BY role_name"
         fetch = await self.bot.pool.fetch(sql)
