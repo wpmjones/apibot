@@ -173,7 +173,10 @@ class MembersCog(commands.Cog):
                 await channel.send(f"Who is the bonehead that assigned the Developer role to a bot? "
                                    f"{new_member.name} is a bot.")
             # At this point, it should be a member on our server that has just received the developers role
-            del self.bot.pending_members[new_member.id]
+            try:
+                del self.bot.pending_members[new_member.id]
+            except KeyError:
+                pass  # user wasn't in dict anyway
             sql = "SELECT role_id, role_name, emoji_repr FROM bot_language_board"
             fetch = await self.bot.pool.fetch(sql)
             language_roles = [[row['role_id'], row['role_name'], row['emoji_repr']] for row in fetch]
@@ -210,7 +213,10 @@ class MembersCog(commands.Cog):
         for thread in member.guild.threads:
             if thread.name == f"Welcome {member.name}":
                 await thread.delete()
-        del self.bot.pending_members[member.id]
+        try:
+            del self.bot.pending_members[member.id]
+        except KeyError:
+            pass  # user wasn't in dict anyway
 
     @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
     async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):
