@@ -210,6 +210,7 @@ class MembersCog(commands.Cog):
         for thread in member.guild.threads:
             if thread.name == f"Welcome {member.name}":
                 await thread.delete()
+        del self.bot.pending_members[member.id]
 
     @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
     async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):

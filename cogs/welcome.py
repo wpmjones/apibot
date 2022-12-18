@@ -250,19 +250,24 @@ class WelcomeButtonView(ui.View):
                style=nextcord.ButtonStyle.blurple,
                custom_id="thread_more")
     async def thread_info_button(self, button: nextcord.ui.Button, interaction: Interaction):
+        self.bot.logger.info(f"{interaction.user.display_name} pressed the More Info button in "
+                             f"{interaction.channel.name}")
         self.more = True
         # disable button in view since we don't want to use them anymore
         button.disabled = True
         await interaction.edit(view=self)
-        # Add user to thread
-        await interaction.channel.add_user(self.member)
-        await interaction.channel.parent.set_permissions(
-            self.member,
-            read_messages=True,
-            send_messages_in_threads=True,
-            add_reactions=True
-        )
-        await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
+        try:
+            # Add user to thread
+            await interaction.channel.add_user(self.member)
+            await interaction.channel.parent.set_permissions(
+                self.member,
+                read_messages=True,
+                send_messages_in_threads=True,
+                add_reactions=True
+            )
+            await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
+        except Exception as e:
+            self.bot.logger.error(f"More Info button failed.\n{e}")
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         if not isinstance(interaction.channel, Thread) or interaction.channel.parent_id != WELCOME_CHANNEL_ID:
