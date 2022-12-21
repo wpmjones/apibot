@@ -26,9 +26,7 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
                    "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                   "bit about yourself and gain access to the rest of the server.\nYour answers will be evaluated by "
-                   "an admin. After that you will either get directly access to the server or will be added to a "
-                   "private thread in case there are questions about your answers. Thank you for your patience!")
+                   "bit about yourself and gain access to the rest of the server.")
 
 
 class RoleDropdown(nextcord.ui.Select):
