@@ -1,3 +1,5 @@
+import traceback
+
 import nextcord
 
 from nextcord.ext import commands, tasks
@@ -24,7 +26,9 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
                    "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                   "bit about yourself and gain access to the rest of the server.")
+                   "bit about yourself and gain access to the rest of the server.\nYour answers will be evaluated by "
+                   "an admin. After that you will either get directly access to the server or will be added to a "
+                   "private thread in case there are questions about your answers. Thank you for your patience!")
 
 
 class RoleDropdown(nextcord.ui.Select):
@@ -39,6 +43,9 @@ class RoleDropdown(nextcord.ui.Select):
 
     async def callback(self, interaction: Interaction):
         for value in self.values:
+            if int(value) == 0:
+                # escape other role
+                continue
             role = interaction.guild.get_role(int(value))
             self.view.role_list.append(role.name)
             await self.member.add_roles(role)
@@ -198,7 +205,7 @@ class WelcomeButtonView(ui.View):
                     role_found = True
                     continue
             if not role_found:  # Couldn't figure out role, let's prompt for it
-                role_view = RoleView(self.member, roles)
+                role_view = RoleView(self.member, roles + [('other', 0)])
                 content = "Please select the member's primary language role:"
                 await interaction.send(content, delete_after=21.0, view=role_view, ephemeral=False)
                 await role_view.wait()
@@ -208,7 +215,7 @@ class WelcomeButtonView(ui.View):
             embed.add_field(name="Message:", value=self.info, inline=False)
         else:
             # prompt for language role
-            role_view = RoleView(self.member, roles)
+            role_view = RoleView(self.member, roles + [('other', 0)])
             content = "Please select the member's primary language role:"
             await interaction.send(content, delete_after=21.0, view=role_view, ephemeral=False)
             await role_view.wait()
@@ -228,7 +235,7 @@ class WelcomeButtonView(ui.View):
                 await interaction.send(content)
             else:
                 disable_all_buttons()
-                messages = []
+                messages = [self.info] # include the original message
                 msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
                 description = ""
                 counter = 0
@@ -257,17 +264,22 @@ class WelcomeButtonView(ui.View):
         button.disabled = True
         await interaction.edit(view=self)
         try:
-            # Add user to thread
-            await interaction.channel.add_user(self.member)
+            # give the user perms to use threads in general
             await interaction.channel.parent.set_permissions(
-                self.member,
-                read_messages=True,
-                send_messages_in_threads=True,
-                add_reactions=True
+                    self.member,
+                    read_messages=True,
+                    read_message_history=True,
+                    send_messages_in_threads=True,
+                    add_reactions=True,
+                    attach_files=True
             )
+            # Add user to his thread
+            await interaction.channel.add_user(self.member)
+
             await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
         except Exception as e:
             self.bot.logger.error(f"More Info button failed.\n{e}")
+            self.bot.logger.error(traceback.format_exc())
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         if not isinstance(interaction.channel, Thread) or interaction.channel.parent_id != WELCOME_CHANNEL_ID:

@@ -150,14 +150,19 @@ class General(commands.Cog):
             if all([option['type'] > 2 for option in options]):
                 # there is no subcommand or command group
                 if cmd.guild_ids:
-                    guild_outside_group.append(f"</{cmd.qualified_name}:{self.bot.user.id}> {cmd.description}\n")
+                    guild_outside_group.append(f"</{cmd.qualified_name}:"
+                                               f"{cmd.command_ids[interaction.guild_id]}> "
+                                               f"{cmd.description}\n")
                     continue
                 else:
-                    global_outside_group.append(f"</{cmd.qualified_name}:{self.bot.user.id}> {cmd.description}\n")
+                    global_outside_group.append(f"</{cmd.qualified_name}:"
+                                                f"{cmd.command_ids[None]}>"
+                                                f" {cmd.description}\n")
                     continue
             else:
                 # handle subcommand group/ subcommands
-                sub_commands = sorted([f"</{cmd.qualified_name} {option['name']}:{self.bot.user.id}> "
+                sub_commands = sorted([f"</{cmd.qualified_name} {option['name']}:"
+                                       f"{cmd.command_ids[interaction.guild_id if cmd.guild_ids else None]}> "
                                        f"{option['description']}" for option in options if option['type'] <= 2],
                                       key=lambda x: x)
                 if cmd.guild_ids:
