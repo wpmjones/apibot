@@ -94,6 +94,7 @@ class ApiBot(commands.Bot):
         self.color = nextcord.Color.greyple()
         self.logger = logger
         self.stats_board_id = None
+        self.pending_members = {}
         self.loop.create_task(self.after_ready())
 
         for extension in initial_extensions:

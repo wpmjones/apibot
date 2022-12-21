@@ -323,7 +323,7 @@ class LanguageBoard(commands.Cog):
     @configure.command(
         name="add_role",
         brief="",
-        help="Add a role and emoji to the LanguageBoard table",
+        help="Add a role and emoji to the LanguageBoard table (admin only)",
         usage="<role_id> <emoji>"
     )
     @commands.has_role("Admin")
@@ -359,7 +359,7 @@ class LanguageBoard(commands.Cog):
         name="remove_role",
         brief="",
         help=("Remove a registered role. This is the only way to \"Edit\" a registration record. User \"list_roles\" "
-              "to get a listing."),
+              "to get a listing. (admin only)"),
         usage="<role_name>"
     )
     @commands.has_role("Admin")
@@ -376,7 +376,7 @@ class LanguageBoard(commands.Cog):
     @configure.command(
         name="list_roles",
         brief="",
-        help="List the roles registered and the emojis that they correspond to.",
+        help="List the roles registered and the emojis that they correspond to. (admin only)",
         usage=""
     )
     @commands.has_role("Admin")

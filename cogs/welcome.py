@@ -2,6 +2,7 @@ import nextcord
 
 from nextcord.ext import commands, tasks
 from nextcord import ui, Interaction, Thread, ChannelType
+from datetime import datetime, timezone, timedelta
 from typing import List
 from config import settings
 
@@ -97,7 +98,7 @@ class IntroduceModal(ui.Modal):
 
     async def create_welcome_thread(self, interaction: Interaction, lang, info) -> Thread:
         thread = await interaction.channel.create_thread(name=f"Welcome {interaction.user.name}",
-                                                         type=ChannelType.public_thread)
+                                                         type=ChannelType.private_thread)
         embed = nextcord.Embed(title=f"Introducing {interaction.user.name}",
                                description=f"Created by: {interaction.user} ({interaction.user.id})",
                                color=nextcord.Color.green())
@@ -111,14 +112,21 @@ class IntroduceModal(ui.Modal):
         return thread
 
     async def callback(self, interaction: Interaction):
+        if self.bot.pending_members[interaction.user.id]:
+            return
         lang = self.language.value
         info = self.information.value
         created_thread = await self.create_welcome_thread(interaction, lang, info)
+        self.bot.pending_members[interaction.user.id] = True
         await created_thread.send(f"<@&{ADMIN_ROLE_ID}>", delete_after=5)
+        last_month = datetime.now().replace(tzinfo=timezone.utc) - timedelta(days=30)
+        if interaction.user.created_at > last_month:
+            msg = (f"{interaction.user.name}#{interaction.user.discriminator}, is less than one month old. "
+                   f"Please do not approve without further investigation.")
+            await created_thread.send(msg)
         # Add temp_guest role so they can "look around"
         # Send DM so user knows we're working on it
-        guild = self.bot.get_guild(settings['guild']['junkies'])
-        temp_guest_role = guild.get_role(settings['roles']['temp_guest'])
+        temp_guest_role = interaction.guild.get_role(settings['roles']['temp_guest'])
         await interaction.user.add_roles(temp_guest_role)
         welcome_msg = ("Thank you for introducing yourself. One of our admins will review your information "
                        "shortly and get things moving. If they have any other questions, they will let you know! "
@@ -173,12 +181,7 @@ class WelcomeButtonView(ui.View):
             await self.member.remove_roles(temp_guest_role)
         # remove perms for welcome - this covers a case where they were individually
         # added with the More Info button
-        await interaction.channel.parent.set_permissions(
-            self.member,
-            read_messages=False,
-            send_messages_in_threads=False,
-            add_reactions=False
-        )
+        await interaction.channel.parent.set_permissions(self.member, overwrite=None)
         await interaction.send(f"{interaction.user.display_name} has started the approval process.")
         sql = "SELECT role_id, role_name FROM bot_language_board ORDER BY role_name"
         fetch = await self.bot.pool.fetch(sql)
@@ -247,19 +250,24 @@ class WelcomeButtonView(ui.View):
                style=nextcord.ButtonStyle.blurple,
                custom_id="thread_more")
     async def thread_info_button(self, button: nextcord.ui.Button, interaction: Interaction):
+        self.bot.logger.info(f"{interaction.user.display_name} pressed the More Info button in "
+                             f"{interaction.channel.name}")
         self.more = True
         # disable button in view since we don't want to use them anymore
         button.disabled = True
         await interaction.edit(view=self)
-        # Add user to thread
-        await interaction.channel.add_user(self.member)
-        await interaction.channel.parent.set_permissions(
-            self.member,
-            read_messages=True,
-            send_messages_in_threads=True,
-            add_reactions=True
-        )
-        await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
+        try:
+            # Add user to thread
+            await interaction.channel.add_user(self.member)
+            await interaction.channel.parent.set_permissions(
+                self.member,
+                read_messages=True,
+                send_messages_in_threads=True,
+                add_reactions=True
+            )
+            await interaction.send(f"{self.member.mention}, can you please give us a little more information?")
+        except Exception as e:
+            self.bot.logger.error(f"More Info button failed.\n{e}")
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         if not isinstance(interaction.channel, Thread) or interaction.channel.parent_id != WELCOME_CHANNEL_ID:
@@ -306,6 +314,10 @@ class IntroduceView(ui.View):
     async def interaction_check(self, interaction: Interaction):
         if interaction.user.get_role(DEVELOPER_ROLE_ID) is not None:
             await interaction.send("You already have the developer role.", ephemeral=True)
+            return False
+        if self.bot.pending_members[interaction.user.id]:
+            await interaction.send("You've already introduced yourself. Please allow the admins time to "
+                                   "review and respond.", ephemeral=True)
             return False
         for thread in interaction.guild.threads:
             if thread.name == f"Welcome {interaction.user.name}":
