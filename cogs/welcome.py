@@ -232,21 +232,25 @@ class WelcomeButtonView(ui.View):
                 content = "OK, then I won't do it." if confirm_view.value is False else "You're too slow! Cancelled."
                 await interaction.send(content)
             else:
-                disable_all_buttons()
-                messages = [self.info] # include the original message
-                msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
-                description = ""
-                counter = 0
-                async for message in interaction.channel.history(oldest_first=True):
-                    if message.author == self.member and len(message.content) > 8:
-                        description += f"\n**{counter}** - {message.content}"
-                        counter += 1
-                        messages.append(message)
-                msg_embed.description = description
-                msg_view = SendMessage(messages)
-                await interaction.send(embed=msg_embed, view=msg_view, ephemeral=False)
-                await msg_view.wait()
-                embed.add_field(name="Message:", value=msg_view.msg, inline=False)
+                try:
+                    disable_all_buttons()
+                    messages = [self.info]  # include the original message
+                    msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
+                    description = ""
+                    counter = 0
+                    async for message in interaction.channel.history(oldest_first=True):
+                        if message.author == self.member and len(message.content) > 8:
+                            description += f"\n**{counter}** - {message.content}"
+                            counter += 1
+                            messages.append(message)
+                    msg_embed.description = description
+                    msg_view = SendMessage(messages)
+                    await interaction.send(embed=msg_embed, view=msg_view, ephemeral=False)
+                    await msg_view.wait()
+                    embed.add_field(name="Message:", value=msg_view.msg, inline=False)
+                except Exception as e:
+                    self.bot.logger.error(f"Message sending failed: {e}")
+                    self.bot.logger.error(traceback.format_exc())
         await self.member.add_roles(dev_role)
         await log_channel.send(embed=embed)
         await interaction.channel.delete()
