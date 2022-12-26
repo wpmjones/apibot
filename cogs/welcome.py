@@ -229,11 +229,14 @@ class WelcomeButtonView(ui.View):
             await confirm_view.wait()
             if confirm_view.value is False or confirm_view.value is None:
                 disable_all_buttons()
+                await interaction.edit(view=self)
                 content = "OK, then I won't do it." if confirm_view.value is False else "You're too slow! Cancelled."
                 await interaction.send(content)
             else:
                 try:
+                    self.bot.logger.info("Starting prompt for copying message to #general")
                     disable_all_buttons()
+                    await interaction.edit(view=self)
                     messages = [self.info]  # include the original message
                     msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
                     description = ""
