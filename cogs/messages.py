@@ -37,8 +37,8 @@ class MessagesCog(commands.Cog):
             return
         embed = nextcord.Embed(title=f"Message edited in #{before.channel.name}", color=nextcord.Color.blue())
         embed.set_author(name=before.author.name, icon_url=before.author.display_avatar.url)
-        embed.add_field(name="Before:", value=before.content, inline=False)
-        embed.add_field(name="After:", value=after.content, inline=False)
+        embed.add_field(name="Before:", value=before.content[:1022], inline=False)
+        embed.add_field(name="After:", value=after.content[:1022], inline=False)
         embed.add_field(name="Message Link:", value=after.jump_url, inline=False)
         embed.set_footer(text=f"ID: {after.id} | {after.edited_at}")
         mod_channel = self.bot.get_channel(settings['channels']['mod-log'])
@@ -65,7 +65,7 @@ class MessagesCog(commands.Cog):
                 deleted_by = entry.user.name
         embed = nextcord.Embed(color=nextcord.Color.red())
         embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
-        embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content)
+        embed.add_field(name=f"Message deleted in #{message.channel.name}", value=message.content[:1022])
         embed.set_footer(text=f"ID: {message.id} | Deleted by: {deleted_by}")
         mod_channel = self.bot.get_channel(settings['channels']['mod-log'])
         await mod_channel.send(embed=embed)
