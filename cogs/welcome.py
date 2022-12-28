@@ -224,6 +224,7 @@ class WelcomeButtonView(ui.View):
                 for _item in confirm_view.children:
                     _item.disabled = True
 
+            self.bot.logger.info("Starting prompt for copying message to #general")
             confirm_content = "Would you like to copy a message to #general?"
             await interaction.send(content=confirm_content, ephemeral=False, view=confirm_view)
             await confirm_view.wait()
@@ -234,7 +235,7 @@ class WelcomeButtonView(ui.View):
                 await interaction.send(content)
             else:
                 try:
-                    self.bot.logger.info("Starting prompt for copying message to #general")
+                    self.bot.logger.info("Disabling buttons")
                     disable_all_buttons()
                     await interaction.edit(view=self)
                     messages = [self.info]  # include the original message
