@@ -238,7 +238,7 @@ class WelcomeButtonView(ui.View):
                     self.bot.logger.info("Disabling buttons")
                     disable_all_buttons()
                     await interaction.edit(view=self)
-                    messages = [self.info]  # include the original message
+                    messages = []
                     msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
                     description = ""
                     counter = 0
