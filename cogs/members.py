@@ -84,18 +84,11 @@ class MembersCog(commands.Cog):
         self.bot.logger.info("Initiating prune loop")
         counter = 0
         guild = self.bot.get_guild(settings['guild']['junkies'])
-        devs = guild.get_role(settings['roles']['developer'])
-        guests = guild.get_role(settings['roles']['vip_guest'])
-        bots = guild.get_role(settings['roles']['bots'])
-        hr = guild.get_role(settings['roles']['hog_rider'])
-        inactive = set(guild.members).difference(devs.members)
-        inactive = inactive.difference(guests.members)
-        inactive = inactive.difference(bots.members)
-        inactive = inactive.difference(hr.members)
+        temps = guild.get_role(settings['roles']['temp_guest'])
         now = datetime.utcnow().replace(tzinfo=timezone.utc)
         try:
             # Prune anyone without a role and on server for more than 7 days.
-            for member in inactive:
+            for member in temps.members:
                 if now - timedelta(days=7) > member.joined_at:
                     await member.kick(reason="Pruned by Hog Rider (members.py)")
                     counter += 1

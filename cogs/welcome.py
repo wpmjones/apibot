@@ -26,9 +26,7 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "plenty of resources out there for that.  But if you know the basics of coding and "
                    "want to learn more about incorporating the Clash of Clans API into a project, you've "
                    "come to the right place.\n\nPlease click the Introduce button below to tell us a little "
-                   "bit about yourself and gain access to the rest of the server.\nYour answers will be evaluated by "
-                   "an admin. After that you will either get directly access to the server or will be added to a "
-                   "private thread in case there are questions about your answers. Thank you for your patience!")
+                   "bit about yourself and gain access to the rest of the server.")
 
 
 class RoleDropdown(nextcord.ui.Select):
@@ -226,29 +224,37 @@ class WelcomeButtonView(ui.View):
                 for _item in confirm_view.children:
                     _item.disabled = True
 
+            self.bot.logger.info("Starting prompt for copying message to #general")
             confirm_content = "Would you like to copy a message to #general?"
             await interaction.send(content=confirm_content, ephemeral=False, view=confirm_view)
             await confirm_view.wait()
             if confirm_view.value is False or confirm_view.value is None:
                 disable_all_buttons()
+                await interaction.edit(view=self)
                 content = "OK, then I won't do it." if confirm_view.value is False else "You're too slow! Cancelled."
                 await interaction.send(content)
             else:
-                disable_all_buttons()
-                messages = [self.info] # include the original message
-                msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
-                description = ""
-                counter = 0
-                async for message in interaction.channel.history(oldest_first=True):
-                    if message.author == self.member and len(message.content) > 8:
-                        description += f"\n**{counter}** - {message.content}"
-                        counter += 1
-                        messages.append(message)
-                msg_embed.description = description
-                msg_view = SendMessage(messages)
-                await interaction.send(embed=msg_embed, view=msg_view, ephemeral=False)
-                await msg_view.wait()
-                embed.add_field(name="Message:", value=msg_view.msg, inline=False)
+                try:
+                    self.bot.logger.info("Disabling buttons")
+                    disable_all_buttons()
+                    await interaction.edit(view=self)
+                    messages = []
+                    msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
+                    description = ""
+                    counter = 0
+                    async for message in interaction.channel.history(oldest_first=True):
+                        if message.author == self.member and len(message.content) > 8:
+                            description += f"\n**{counter}** - {message.content}"
+                            counter += 1
+                            messages.append(message)
+                    msg_embed.description = description
+                    msg_view = SendMessage(messages)
+                    await interaction.send(embed=msg_embed, view=msg_view, ephemeral=False)
+                    await msg_view.wait()
+                    embed.add_field(name="Message:", value=msg_view.msg, inline=False)
+                except Exception as e:
+                    self.bot.logger.error(f"Message sending failed: {e}")
+                    self.bot.logger.error(traceback.format_exc())
         await self.member.add_roles(dev_role)
         await log_channel.send(embed=embed)
         await interaction.channel.delete()
