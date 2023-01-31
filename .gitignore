@@ -132,5 +132,7 @@ dmypy.json
 # Other
 *.yaml.DS_Store
 *.yaml
+!demo_config.yaml
+!emoji.yaml
 *.otf
 .DS_Store

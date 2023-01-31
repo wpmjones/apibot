@@ -1,0 +1,62 @@
+discord:
+  token: token_here
+  test_token: token_here
+
+enviro: "test"
+
+supercell:
+  user: coc_api_username
+  pass: coc_api_password
+
+email:
+  address: hogrider@email.com
+  password: hog_rider_email_password
+
+guild:
+  bot_logs: guild_id
+  junkies: guild_id
+
+category:
+  bot_demo: category_id
+
+channels:
+  admin: channel_id
+  general: channel_id
+  mod-log: channel_id
+  logs: channel_id
+  forum-poster: channel_id
+  rules: channel_id
+  welcome: channel_id
+  lanugage_roles: channel_id
+  projects: channel_id
+  api_response: channel_id
+  testing: channel_id
+
+roles:
+  admin: role_id
+  developer: role_id
+  bots: role_id
+  hog_rider: role_id
+  vip_guest: role_id
+  temp_guest: role_id
+  everyone: role_id
+
+pg:
+  uri: postgresql://user:password@host:5432
+
+bots:
+  rcs: bot_user_id
+  cr: bot_user_id
+  dt: bot_user_id
+  karen: bot_user_id
+  maniacs: bot_user_id
+  minion: bot_user_id
+  oak: bot_user_id
+  wiz: bot_user_id
+  wm: bot_user_id
+  clashcord: bot_user_id
+  sk: bot_user_id
+  bat: bot_user_id
+  clashperk: bot_user_id
+  ivory: bot_user_id
+  alph4: bot_user_id
