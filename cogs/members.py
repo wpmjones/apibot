@@ -14,12 +14,8 @@ WELCOME_MESSAGE = ("Welcome to the Clash API Developers server, {}! We're glad t
 
 PRUNE_WARNING = ("You have been a member of the Clash API Developers Discord server for "
                  "at least five days, but you have not yet introduced yourself.  Please "
-                 "got to <#885193658985500722> and let us know what your preferred "
-                 "programming language is. Next, if you've already started working with "
-                 "the API, please tell us a little about your project. If you haven't "
-                 "started a project yet, let us know what you're interested in making. "
-                 "Once you introduce yourself, you will be granted roles to access "
-                 "other parts of the server.")
+                 "go to <#885193658985500722> and click the Introduce button.  Failure to do so in the next few "
+                 "days will result in your removal from the server.")
 
 
 class Confirm(nextcord.ui.View):
@@ -88,16 +84,21 @@ class MembersCog(commands.Cog):
         now = datetime.utcnow().replace(tzinfo=timezone.utc)
         try:
             # Prune anyone without a role and on server for more than 7 days.
-            for member in temps.members:
-                if now - timedelta(days=7) > member.joined_at:
-                    await member.kick(reason="Pruned by Hog Rider (members.py)")
-                    counter += 1
-                    continue
-                if now - timedelta(days=5) > member.joined_at:
-                    try:
-                        await member.send(content=PRUNE_WARNING)
-                    except nextcord.errors.Forbidden:
-                        self.bot.logger.info(f"Prune warning failed. {member.display_name} does not allow DMs.")
+            for member in guild.members:
+                if len(member.roles) == 1:
+                    if now - timedelta(days=7) > member.joined_at:
+                        await member.kick(reason="Never introduced themselves")
+                        counter += 1
+                        continue
+                    if now - timedelta(days=5) > member.joined_at:
+                        try:
+                            await member.send(content=PRUNE_WARNING)
+                        except nextcord.errors.Forbidden:
+                            self.bot.logger.info(f"Prune warning failed. {member.display_name} does not allow DMs.")
+            # for member in temps.members:
+            #     if now - timedelta(days=7) > member.joined_at:
+            #         await member.kick(reason="Pruned by Hog Rider (members.py)")
+            #         counter += 1
             if counter > 0:
                 self.bot.logger.info(f"Pruned {counter} members.")
         except:
