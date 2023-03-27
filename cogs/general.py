@@ -1,6 +1,7 @@
 import coc.utils
 import nextcord
 import re
+import youtube_dl
 
 from cogs.utils import checks
 from config import settings
@@ -477,6 +478,24 @@ class General(commands.Cog):
             else:
                 disable_all_buttons()
                 await interaction.channel.purge()
+
+    @nextcord.slash_command(name="youtube", guild_ids=GUILD_IDS)
+    @application_checks.has_role("Admin")
+    async def youtube(self,
+                      interaction: nextcord.Interaction,
+                      youtube_id: str = nextcord.SlashOption(description="Just the ID of the video",
+                                                             required=True)):
+        ydl_options = {
+            "format": "bestaudio/best",
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192"
+            }]
+        }
+        with youtube_dl.YoutubeDL(ydl_options) as ydl:
+            ydl.download(youtube_id)
+
 
     @commands.command(hidden=True)
     @commands.has_role("Admin")
