@@ -486,6 +486,7 @@ class General(commands.Cog):
                       youtube_id: str = nextcord.SlashOption(description="Just the ID of the video",
                                                              required=True)):
         ydl_options = {
+            "default-search": "ytsearch",
             "format": "bestaudio/best",
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
@@ -495,6 +496,7 @@ class General(commands.Cog):
         }
         with youtube_dl.YoutubeDL(ydl_options) as ydl:
             ydl.download(youtube_id)
+        await interaction.response.send_message("Download complete.")
 
 
     @commands.command(hidden=True)
