@@ -23,6 +23,8 @@ else:
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
+FAQS_CHANNEL_ID = 1036742156230070282
+RESOURCES_CATEGORY_ID = 823259072002392134
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
 BOTS_ROLE_ID = settings['roles']['bots']
 DEVELOPER_ROLE_ID = settings['roles']['developer']
@@ -601,15 +603,16 @@ class General(commands.Cog):
         # generate permission overwrite
         guild = ctx.guild
         reader_perms = nextcord.PermissionOverwrite(view_channel=True, read_messages=True, read_message_history=True,
-                                                   create_forum_threads=False, send_messages_in_threads=False)
+                                                    create_private_threads=False, create_public_threads=False,
+                                                    send_messages_in_threads=False)
         everyone_perms = nextcord.PermissionOverwrite(view_channel=False, read_messages=False)
         perm_over = {nextcord.utils.get(guild.roles, name="Developer"): reader_perms,
                      nextcord.utils.get(guild.roles, name="Guest"): reader_perms,
                      guild.default_role: everyone_perms}
         # get admin faq channel
-        template: nextcord.ForumChannel = await guild.fetch_channel(1036742156230070282)
+        template: nextcord.ForumChannel = await guild.fetch_channel(FAQS_CHANNEL_ID)
         # get the resources category
-        cat = nextcord.utils.get(guild.categories, id=823259072002392134)
+        cat = nextcord.utils.get(guild.categories, id=RESOURCES_CATEGORY_ID)
         # check if faq channel exists
         faq_channel = nextcord.utils.get(cat.channels, name="FAQs")
         # create faq channel if not existing
