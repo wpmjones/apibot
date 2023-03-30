@@ -617,8 +617,8 @@ class General(commands.Cog):
         faq_channel = nextcord.utils.get(cat.channels, name="FAQs")
         # create faq channel if not existing
         if not faq_channel:
-            faq_channel = await cat.create_forum_channel(name="FAQ", topic=template.topic,
-                                                         default_auto_archive_duration=10080,
+            faq_channel = await cat.create_forum_channel(name="FAQs", topic=template.topic,
+                                                         auto_archive_duration=10080,
                                                          overwrites=perm_over)
         # pick a template thread, try to find it in the new faq channel
         for t_thread in template.threads:
