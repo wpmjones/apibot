@@ -622,6 +622,7 @@ class General(commands.Cog):
         # pick a template thread, try to find it in the new faq channel
         for t_thread in template.threads:
             try:
+                self.bot.logger.info(f"Attempting to create {t_thread.name}")
                 if not os.path.exists(f"FAQs/{t_thread.name}.md"):
                     continue
                 # prepare embed
