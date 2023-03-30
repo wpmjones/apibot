@@ -1,5 +1,7 @@
 import asyncio
 import copy
+
+import discord
 import nextcord
 import importlib
 import io
@@ -16,13 +18,13 @@ from contextlib import redirect_stdout
 from nextcord.ext import commands
 from random import choice, randint
 from typing import Optional, Dict
+
 from cogs.utils.formats import TabularData, plural
 from cogs.utils import chat_exporter
 
 # to expose to the eval command
 import datetime
 from collections import Counter
-
 
 class PerformanceMocker:
     """A mock object that can also be used in await expressions."""
@@ -290,7 +292,7 @@ class Admin(commands.Cog):
             mods_text = '\n'.join(f'{index}. `{module}`' for index, (_, module) in enumerate(modules, start=1))
             await ctx.send(f"The following files were pulled from GitHub:\n{mods_text}")
 
-    @commands.command(pass_context=True, hidden=True, name="eval")
+    @commands.command(hidden=True, name="eval")
     @commands.has_role("Admin")
     async def _eval(self, ctx, *, body: str):
         """Evaluates (executes) supplied Python code (Admin only)"""

@@ -1,4 +1,8 @@
+import os
+import traceback
+
 import coc.utils
+import discord
 import nextcord
 import re
 import youtube_dl
@@ -29,6 +33,7 @@ GUEST_ROLE_ID = settings['roles']['vip_guest']
 SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a>(?P<body>(.|\n)+?(?=(#{2,3}|\Z)))')
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
+
 
 
 class ConfirmButton(ui.Button["ConfirmView"]):
@@ -80,9 +85,76 @@ class General(commands.Cog):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
         embed = nextcord.Embed(title="Max age of information due to caching")
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
-        embed.add_field(name="Wars", value="10 Minutes", inline=False)
+        embed.add_field(name="current war", value="2 Minutes", inline=False)
+        embed.add_field(name="All other war related", value="10 Minutes", inline=False)
         embed.add_field(name="Player", value="1 Minute", inline=False)
         await interaction.response.send_message(embed=embed)
+
+    @nextcord.slash_command(guild_ids=GUILD_IDS)
+    @commands.has_role("Admin")
+    async def create_faqs(self, interaction: nextcord.Interaction):
+        """Clone the admin faqs to public ones or update them"""
+        # generate permission overwrite
+        guild = interaction.guild
+        reader_perms = discord.PermissionOverwrite(view_channel=True, read_messages=True, read_message_history=True,
+                                                   create_forum_threads=False, send_messages_in_threads=False)
+        everyone_perms = discord.PermissionOverwrite(view_channel=False, read_messages=False)
+        perm_over = {discord.utils.get(guild.roles, name="Developer"): reader_perms,
+                     discord.utils.get(guild.roles, name="Guest")    : reader_perms,
+                     guild.default_role                              : everyone_perms}
+        # get admin faq channel
+        template: discord.ForumChannel = await guild.fetch_channel(1036742156230070282)
+        # get the resources category
+        cat = discord.utils.get(guild.categories, id=823259072002392134)
+        # check if faq channel exists
+        faq_channel = discord.utils.get(cat.channels, name="FAQs")
+        # create faq channel if not existing
+        if not faq_channel:
+            faq_channel = await cat.create_forum_channel(name="FAQ", topic=template.topic,
+                                                         default_auto_archive_duration=10080,
+                                                         overwrites=perm_over)
+        # pick an template thread, try to find it in the new faq channel
+        for t_thread in template.threads:
+            try:
+                if not os.path.exists(f"FAQs/{t_thread.name}.md"):
+                    continue
+                # prepare embed
+                with open(f"FAQs/{t_thread.name}.md", encoding="utf-8") as fp:
+                    text = fp.read()
+
+                sections = SECTION_MATCH.finditer(text)
+
+                embeds = []
+                titles = []
+                for match in sections:
+                    description = match.group("body")
+                    # underlines, dividers, bullet points
+                    description = UNDERLINE_MATCH.sub("__", description).replace("---", "").replace("-", "\u2022")
+                    title = match.group("title").replace("#", "").strip()
+
+                    if "." in match.group("number"):
+                        colour = 0xBDDDF4  # lighter blue for sub-headings/groups
+                    else:
+                        colour = nextcord.Colour.blue()
+
+                    embeds.append(nextcord.Embed(title=title, description=description.strip(), colour=colour))
+                    titles.append(title)
+
+                n_thread = None
+                for thread in faq_channel.threads:
+                    if thread.name == t_thread.name:
+                        n_thread = thread
+
+                # thread does not exist
+                if not n_thread:
+                    n_thread = faq_channel.create_thread(name=t_thread.name, embeds=embeds)
+                else:
+                    msg = await n_thread.fetch_message(n_thread.last_message_id)
+                    await msg.edit(embeds=embeds)
+                await interaction.response.send_message(f'Created {n_thread.name}')
+            except Exception as e:
+                self.bot.logger.error(traceback.format_exc())
+
 
     @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
     async def vps(self, interaction: nextcord.Interaction):
