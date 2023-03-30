@@ -618,7 +618,6 @@ class General(commands.Cog):
         # create faq channel if not existing
         if not faq_channel:
             faq_channel = await cat.create_forum_channel(name="FAQs", topic=template.topic,
-                                                         auto_archive_duration=10080,
                                                          overwrites=perm_over)
         # pick a template thread, try to find it in the new faq channel
         for t_thread in template.threads:
