@@ -126,9 +126,9 @@ class Admin(commands.Cog):
     async def links_get(self, ctx, tag):
         """Get info from links api"""
         if tag.startswith("#"):
-            payload = self.bot.links.get_link(tag)
+            payload = await self.bot.links.get_link(tag)
         else:
-            payload = self.bot.links.get_linked_players(tag)
+            payload = await self.bot.links.get_linked_players(tag)
         return await ctx.send(payload)
 
     @commands.command(name="archive", hidden=True)
