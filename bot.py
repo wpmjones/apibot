@@ -9,6 +9,7 @@ import traceback
 from cogs.utils import context
 from cogs.utils.db import Psql
 from cogs.utils import embedded_help
+from coc.ext import discordlinks
 from config import settings
 from datetime import datetime
 from nextcord.ext import commands
@@ -82,6 +83,10 @@ coc_client = coc.login(settings['supercell']['user'],
                        correct_tags=True)
 
 
+links_client = discordlinks.login(settings['links']['user'],
+                                  settings['links']['pass'])
+
+
 class ApiBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=prefix,
@@ -91,6 +96,7 @@ class ApiBot(commands.Bot):
                          help_command=embedded_help.EmbeddedHelpCommand()
                          )
         self.coc = coc_client
+        self.links = links_client
         self.color = nextcord.Color.greyple()
         self.logger = logger
         self.stats_board_id = None

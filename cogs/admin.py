@@ -120,6 +120,15 @@ class Admin(commands.Cog):
             return f"```py\n{e.__class__.__name__}: {e}\n```"
         return f"```py\n{e.text}{'^':>{e.offset}}\n{e.__class__.__name__}: {e}```"
 
+    @commands.command(name="lg", hidden=True)
+    async def links_get(self, ctx, tag):
+        """Get info from links api"""
+        if tag.startswith("#"):
+            payload = self.bot.links.get_link(tag)
+        else:
+            payload = self.bot.links.get_linked_players(tag)
+        return await ctx.send(payload)
+
     @commands.command(name="archive", hidden=True)
     @commands.has_role("Admin")
     async def archive_channel(self, ctx, limit: int = None):
