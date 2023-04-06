@@ -1,6 +1,10 @@
+import os
+import traceback
+
 import coc.utils
 import nextcord
 import re
+import youtube_dl
 
 from cogs.utils import checks
 from config import settings
@@ -19,6 +23,8 @@ else:
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
+FAQS_CHANNEL_ID = 1036742156230070282
+RESOURCES_CATEGORY_ID = 823259072002392134
 HOG_RIDER_ROLE_ID = settings['roles']['hog_rider']
 BOTS_ROLE_ID = settings['roles']['bots']
 DEVELOPER_ROLE_ID = settings['roles']['developer']
@@ -28,6 +34,7 @@ GUEST_ROLE_ID = settings['roles']['vip_guest']
 SECTION_MATCH = re.compile(r'(?P<title>.+?)<a name="(?P<number>\d+|\d+.\d+)"></a>(?P<body>(.|\n)+?(?=(#{2,3}|\Z)))')
 UNDERLINE_MATCH = re.compile(r"<ins>|</ins>")
 URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
+
 
 
 class ConfirmButton(ui.Button["ConfirmView"]):
@@ -79,7 +86,8 @@ class General(commands.Cog):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
         embed = nextcord.Embed(title="Max age of information due to caching")
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
-        embed.add_field(name="Wars", value="10 Minutes", inline=False)
+        embed.add_field(name="current war", value="2 Minutes", inline=False)
+        embed.add_field(name="All other war related", value="10 Minutes", inline=False)
         embed.add_field(name="Player", value="1 Minute", inline=False)
         await interaction.response.send_message(embed=embed)
 
@@ -478,6 +486,26 @@ class General(commands.Cog):
                 disable_all_buttons()
                 await interaction.channel.purge()
 
+    @nextcord.slash_command(name="youtube", guild_ids=GUILD_IDS)
+    @application_checks.has_role("Admin")
+    async def youtube(self,
+                      interaction: nextcord.Interaction,
+                      youtube_id: str = nextcord.SlashOption(description="Just the ID of the video",
+                                                             required=True)):
+        ydl_options = {
+            "default-search": "ytsearch",
+            "format": "bestaudio/best",
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192"
+            }]
+        }
+        with youtube_dl.YoutubeDL(ydl_options) as ydl:
+            ydl.download(youtube_id)
+        await interaction.response.send_message("Download complete.")
+
+
     @commands.command(hidden=True)
     @commands.has_role("Admin")
     async def recreate_rules(self, ctx):
@@ -567,6 +595,72 @@ class General(commands.Cog):
             view.add_item(ui.Button(label=title.replace("#", "").strip(), url=message.jump_url))
         await channel.send(view=view)
         await ctx.send(f"Project list has been recreated. View here <#{PROJECTS_CHANNEL_ID}>")
+
+    @commands.command(hidden=True)
+    @commands.has_role("Admin")
+    async def recreate_faqs(self, ctx):
+        """Clone the admin faqs to public ones or update them"""
+        # generate permission overwrite
+        guild = ctx.guild
+        reader_perms = nextcord.PermissionOverwrite(view_channel=True, read_messages=True, read_message_history=True,
+                                                    create_private_threads=False, create_public_threads=False,
+                                                    send_messages_in_threads=False)
+        everyone_perms = nextcord.PermissionOverwrite(view_channel=False, read_messages=False)
+        perm_over = {nextcord.utils.get(guild.roles, name="Developer"): reader_perms,
+                     nextcord.utils.get(guild.roles, name="Guest"): reader_perms,
+                     guild.default_role: everyone_perms}
+        # get admin faq channel
+        template: nextcord.ForumChannel = await guild.fetch_channel(FAQS_CHANNEL_ID)
+        # get the resources category
+        cat = nextcord.utils.get(guild.categories, id=RESOURCES_CATEGORY_ID)
+        # check if faq channel exists
+        faq_channel = nextcord.utils.get(cat.channels, name="FAQs")
+        # create faq channel if not existing
+        if not faq_channel:
+            faq_channel = await cat.create_forum_channel(name="FAQs", topic=template.topic,
+                                                         overwrites=perm_over)
+        # pick a template thread, try to find it in the new faq channel
+        for t_thread in template.threads:
+            try:
+                self.bot.logger.info(f"Attempting to create {t_thread.name}")
+                if not os.path.exists(f"FAQs/{t_thread.name}.md"):
+                    continue
+                # prepare embed
+                with open(f"FAQs/{t_thread.name}.md", encoding="utf-8") as fp:
+                    text = fp.read()
+
+                sections = SECTION_MATCH.finditer(text)
+
+                embeds = []
+                titles = []
+                for match in sections:
+                    description = match.group("body")
+                    # underlines, dividers, bullet points
+                    description = UNDERLINE_MATCH.sub("__", description).replace("---", "").replace("-", "\u2022")
+                    title = match.group("title").replace("#", "").strip()
+
+                    if "." in match.group("number"):
+                        color = 0xBDDDF4  # lighter blue for sub-headings/groups
+                    else:
+                        color = nextcord.Color.blue()
+
+                    embeds.append(nextcord.Embed(title=title, description=description.strip(), color=color))
+                    titles.append(title)
+
+                n_thread = None
+                for thread in faq_channel.threads:
+                    if thread.name == t_thread.name:
+                        n_thread = thread
+
+                # thread does not exist
+                if not n_thread:
+                    n_thread = faq_channel.create_thread(name=t_thread.name, embeds=embeds)
+                else:
+                    msg = await n_thread.fetch_message(n_thread.last_message_id)
+                    await msg.edit(embeds=embeds)
+                await ctx.send(f'Created {n_thread.name}')
+            except Exception as e:
+                self.bot.logger.error(traceback.format_exc())
 
 
 def setup(bot):
