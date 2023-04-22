@@ -1,7 +1,7 @@
 from typing import Mapping, Optional, Union
 
-from nextcord import Embed, Message
-from nextcord.ext import commands
+from disnake import Embed, Message
+from disnake.ext import commands
 
 
 class EmbeddedHelpCommand(commands.HelpCommand):

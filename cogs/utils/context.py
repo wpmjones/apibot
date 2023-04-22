@@ -1,6 +1,6 @@
-from nextcord.ext import commands
+from disnake.ext import commands
 import asyncio
-import nextcord
+import disnake
 import io
 
 
@@ -122,7 +122,7 @@ class Context(commands.Context):
                   f'2\N{combining enclosing keycap} for option 2, etc.'
 
         author_id = author_id or self.author.id
-        msg = await self.send(embed=nextcord.Embed(color=self.bot.color, description=fmt))
+        msg = await self.send(embed=disnake.Embed(color=self.bot.color, description=fmt))
 
         confirm = None
 
@@ -238,11 +238,11 @@ class Context(commands.Context):
         2) If ``escape_mentions`` is ``True`` then it escapes mentions.
         """
         if escape_mentions:
-            content = nextcord.utils.escape_mentions(content)
+            content = disnake.utils.escape_mentions(content)
 
         if len(content) > 2000:
             fp = io.BytesIO(content.encode())
             kwargs.pop("file", None)
-            return await self.send(file=nextcord.File(fp, filename="message_too_long.txt"), **kwargs)
+            return await self.send(file=disnake.File(fp, filename="message_too_long.txt"), **kwargs)
         else:
             return await self.send(content)

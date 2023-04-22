@@ -2,7 +2,7 @@ import asyncio
 import copy
 
 import discord
-import nextcord
+import disnake
 import importlib
 import io
 import os
@@ -15,7 +15,7 @@ import time
 import traceback
 
 from contextlib import redirect_stdout
-from nextcord.ext import commands
+from disnake.ext import commands
 from random import choice, randint
 from typing import Optional, Dict
 
@@ -37,7 +37,7 @@ class PerformanceMocker:
         # This makes it so pagination sessions just abruptly end on __init__
         # Most checks based on permission have a bypass for the owner anyway
         # So this lie will not affect the actual command invocation.
-        perms = nextcord.Permissions.all()
+        perms = disnake.Permissions.all()
         perms.administrator = False
         perms.embed_links = False
         perms.add_reactions = False
@@ -138,7 +138,7 @@ class Admin(commands.Cog):
         transcript = await chat_exporter.export(ctx.channel, limit=limit, bot=self.bot)
         if transcript is None:
             return await ctx.send("Nothing to export")
-        transcript_file = nextcord.File(io.BytesIO(transcript.encode()),
+        transcript_file = disnake.File(io.BytesIO(transcript.encode()),
                                         filename=f"transcript-{ctx.channel.name}.html"
                                         )
         await ctx.send(file=transcript_file)
@@ -351,7 +351,7 @@ class Admin(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
-    async def sudo(self, ctx, channel: Optional[GlobalChannel], who: nextcord.User, *, command: str):
+    async def sudo(self, ctx, channel: Optional[GlobalChannel], who: disnake.User, *, command: str):
         """Run a command as another user optionally in another channel. (owner only)"""
         msg = copy.copy(ctx.message)
         channel = channel or ctx.channel
@@ -401,7 +401,7 @@ class Admin(commands.Cog):
             success = False
             try:
                 await ctx.send(f"```py\n{traceback.format_exc()}\n```")
-            except nextcord.HTTPException:
+            except disnake.HTTPException:
                 pass
         else:
             end = time.perf_counter()
@@ -443,7 +443,7 @@ class Admin(commands.Cog):
         fmt = f'```{query}\n\n{render}\n```\n*Returned {plural(rows):row} in {dt:.2f}ms*'
         if len(fmt) > 2000:
             fp = io.BytesIO(fmt.encode('utf-8'))
-            await ctx.send('Too many results...', file=nextcord.File(fp, 'results.txt'))
+            await ctx.send('Too many results...', file=disnake.File(fp, 'results.txt'))
         else:
             await ctx.send(fmt)
 

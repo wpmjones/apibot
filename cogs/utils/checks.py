@@ -1,4 +1,4 @@
-from nextcord.ext import commands
+from disnake.ext import commands
 
 
 async def check_guild_permissions(ctx, perms, check=all):

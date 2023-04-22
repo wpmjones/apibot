@@ -1,6 +1,6 @@
 import asyncio
 import coc
-import nextcord
+import disnake
 import io
 import nest_asyncio
 import sys
@@ -12,15 +12,8 @@ from cogs.utils import embedded_help
 from coc.ext import discordlinks
 from config import settings
 from datetime import datetime
-from nextcord.ext import commands
+from disnake.ext import commands
 from loguru import logger
-
-from fancy_logging import setup_logging
-
-# setup_logging("nextcord.state")
-# setup_logging("nextcord.gateway")
-# setup_logging("nextcord.http")
-setup_logging("nextcord.application_command")
 
 # Shared development tips
 # PEP8 whenever possible
@@ -42,7 +35,7 @@ initial_extensions = [
                         "cogs.admin",
                       ]
 
-intents = nextcord.Intents.default()
+intents = disnake.Intents.default()
 intents.guilds = True
 intents.members = True
 intents.presences = True
@@ -97,7 +90,7 @@ class ApiBot(commands.Bot):
                          )
         self.coc = coc_client
         self.links = links_client
-        self.color = nextcord.Color.greyple()
+        self.color = disnake.Color.greyple()
         self.logger = logger
         self.stats_board_id = None
         self.pending_members = {}
@@ -118,7 +111,7 @@ class ApiBot(commands.Bot):
     async def send_message(self, message):
         if len(message) > 2000:
             fp = io.BytesIO(message.encode())
-            return await self.log_channel.send(file=nextcord.File(fp, filename='log_message.txt'))
+            return await self.log_channel.send(file=disnake.File(fp, filename='log_message.txt'))
         else:
             return await self.log_channel.send(message)
 
@@ -143,7 +136,7 @@ class ApiBot(commands.Bot):
             await ctx.author.send("Oops. This command is disabled and cannot be used.")
         elif isinstance(error, commands.CommandInvokeError):
             original = error.original
-            if not isinstance(original, nextcord.HTTPException):
+            if not isinstance(original, disnake.HTTPException):
                 self.logger.error(f"In {ctx.command.qualified_name}:", file=sys.stderr)
                 traceback.print_tb(original.__traceback__)
                 self.logger.error(f"{original.__class__.__name__}: {original}", file=sys.stderr)
@@ -151,7 +144,7 @@ class ApiBot(commands.Bot):
             await ctx.send(error)
 
     async def on_error(self, event_method, *args, **kwargs):
-        e = nextcord.Embed(title="Discord Event Error", color=0xa32952)
+        e = disnake.Embed(title="Discord Event Error", color=0xa32952)
         e.add_field(name="Event", value=event_method)
         e.description = f"```py\n{traceback.format_exc()}\n```"
         e.timestamp = datetime.utcnow()
@@ -193,7 +186,7 @@ class ApiBot(commands.Bot):
             self.logger.exception("Could not initialize LanguageBoard")
 
     async def on_ready(self):
-        activity = nextcord.Activity(type=nextcord.ActivityType.watching, name="you write code")
+        activity = disnake.Activity(type=disnake.ActivityType.watching, name="you write code")
         await bot.change_presence(activity=activity)
 
     async def after_ready(self):

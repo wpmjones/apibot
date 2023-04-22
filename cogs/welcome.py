@@ -1,9 +1,9 @@
 import traceback
 
-import nextcord
+import disnake
 
-from nextcord.ext import commands, tasks
-from nextcord import ui, Interaction, Thread, ChannelType
+from disnake.ext import commands, tasks
+from disnake import ui, Interaction, Thread, ChannelType
 from datetime import datetime, timezone, timedelta
 from typing import List
 from config import settings
@@ -29,8 +29,8 @@ WELCOME_MESSAGE = ("**Welcome to the Clash API Developers server!**\nWe're glad 
                    "bit about yourself and gain access to the rest of the server.")
 
 
-class RoleDropdown(nextcord.ui.Select):
-    def __init__(self, member: nextcord.Member, options):
+class RoleDropdown(disnake.ui.Select):
+    def __init__(self, member: disnake.Member, options):
         super().__init__(
             placeholder="Select roles for this user...",
             min_values=1,
@@ -49,24 +49,24 @@ class RoleDropdown(nextcord.ui.Select):
             await self.member.add_roles(role)
             try:
                 await self.member.edit(nick=f"{self.member.display_name} | {role.name}")
-            except nextcord.HTTPException:
+            except disnake.HTTPException:
                 # this might happen if the nickname gets too long
                 pass
             self.view.stop()
 
 
-class RoleView(nextcord.ui.View):
-    def __init__(self, member: nextcord.Member, roles):
+class RoleView(disnake.ui.View):
+    def __init__(self, member: disnake.Member, roles):
         super().__init__(timeout=20.0)
         self.role_list = []
         options = []
         for role in roles:
-            options.append(nextcord.SelectOption(label=role[0], value=role[1]))
+            options.append(disnake.SelectOption(label=role[0], value=role[1]))
         self.add_item(RoleDropdown(member, options))
 
 
 class ConfirmButton(ui.Button["ConfirmView"]):
-    def __init__(self, label: str, style: nextcord.ButtonStyle, *, custom_id: str):
+    def __init__(self, label: str, style: disnake.ButtonStyle, *, custom_id: str):
         super().__init__(label=label, style=style, custom_id=custom_id)
 
     async def callback(self, interaction: Interaction):
@@ -78,8 +78,8 @@ class ConfirmView(ui.View):
     def __init__(self):
         super().__init__(timeout=20.0)
         self.value = None
-        self.add_item(ConfirmButton("Yes", nextcord.ButtonStyle.green, custom_id="confirm_button"))
-        self.add_item(ConfirmButton("No", nextcord.ButtonStyle.red, custom_id="decline_button"))
+        self.add_item(ConfirmButton("Yes", disnake.ButtonStyle.green, custom_id="confirm_button"))
+        self.add_item(ConfirmButton("No", disnake.ButtonStyle.red, custom_id="decline_button"))
 
 
 class IntroduceModal(ui.Modal):
@@ -93,7 +93,7 @@ class IntroduceModal(ui.Modal):
                                      placeholder="Programming language")
         self.information = ui.TextInput(
             label="Tell us a little about your project.",
-            style=nextcord.TextInputStyle.paragraph,
+            style=disnake.TextInputStyle.paragraph,
             required=True,
             placeholder="What are you doing or what would you like to be doing with the API?",
             min_length=12,
@@ -104,9 +104,9 @@ class IntroduceModal(ui.Modal):
     async def create_welcome_thread(self, interaction: Interaction, lang, info) -> Thread:
         thread = await interaction.channel.create_thread(name=f"Welcome {interaction.user.name}",
                                                          type=ChannelType.private_thread)
-        embed = nextcord.Embed(title=f"Introducing {interaction.user.name}",
+        embed = disnake.Embed(title=f"Introducing {interaction.user.name}",
                                description=f"Created by: {interaction.user} ({interaction.user.id})",
-                               color=nextcord.Color.green())
+                               color=disnake.Color.green())
         embed.add_field(name="Language(s):", value=lang, inline=False)
         embed.add_field(name="Message:", value=info, inline=False)
         embed.set_footer(text="Admins can approve or invite the member to request more information.")
@@ -139,10 +139,10 @@ class IntroduceModal(ui.Modal):
         await interaction.user.send(welcome_msg)
 
 
-class SendButton(nextcord.ui.Button):
+class SendButton(disnake.ui.Button):
     def __init__(self, count, content, author):
         super().__init__(label=count,
-                         style=nextcord.ButtonStyle.primary)
+                         style=disnake.ButtonStyle.primary)
         self.content = content
         self.author = author
 
@@ -154,7 +154,7 @@ class SendButton(nextcord.ui.Button):
 
 
 class SendMessage(ui.View):
-    def __init__(self, messages: List[nextcord.Message]):
+    def __init__(self, messages: List[disnake.Message]):
         super().__init__(timeout=20.0)
         self.msg = ""
         for count, message in enumerate(messages):
@@ -171,12 +171,12 @@ class WelcomeButtonView(ui.View):
         self.more = False
 
     @ui.button(label="Approve",
-               style=nextcord.ButtonStyle.green,
+               style=disnake.ButtonStyle.green,
                custom_id="thread_approve")
-    async def thread_approve_button(self, button: nextcord.ui.Button, interaction: Interaction):
+    async def thread_approve_button(self, button: disnake.ui.Button, interaction: Interaction):
         dev_role = interaction.guild.get_role(settings['roles']['developer'])
         log_channel = interaction.guild.get_channel(settings['channels']['mod-log'])
-        embed = nextcord.Embed(title=f"{self.member.name} Approved",
+        embed = disnake.Embed(title=f"{self.member.name} Approved",
                                description=f"{interaction.user.name}#{interaction.user.discriminator} has approved new "
                                            f"member, {self.member.name}#{self.member.discriminator}",
                                color=0x00FFFF)
@@ -239,7 +239,7 @@ class WelcomeButtonView(ui.View):
                     disable_all_buttons()
                     await interaction.edit(view=self)
                     messages = []
-                    msg_embed = nextcord.Embed(title="Please select the message to copy to #general.")
+                    msg_embed = disnake.Embed(title="Please select the message to copy to #general.")
                     description = ""
                     counter = 0
                     async for message in interaction.channel.history(oldest_first=True):
@@ -260,9 +260,9 @@ class WelcomeButtonView(ui.View):
         await interaction.channel.delete()
 
     @ui.button(label="More Info",
-               style=nextcord.ButtonStyle.blurple,
+               style=disnake.ButtonStyle.blurple,
                custom_id="thread_more")
-    async def thread_info_button(self, button: nextcord.ui.Button, interaction: Interaction):
+    async def thread_info_button(self, button: disnake.ui.Button, interaction: Interaction):
         self.bot.logger.info(f"{interaction.user.display_name} pressed the More Info button in "
                              f"{interaction.channel.name}")
         self.more = True
@@ -305,7 +305,7 @@ class IntroduceButton(ui.Button['WelcomeView']):
     def __init__(self, pass_bot):
         super().__init__(
             label="Introduce",
-            style=nextcord.ButtonStyle.green,
+            style=disnake.ButtonStyle.green,
             custom_id="persistent_view:intro"
         )
         self.bot = pass_bot
@@ -315,7 +315,7 @@ class IntroduceButton(ui.Button['WelcomeView']):
         # fetch = await self.view.bot.pool.fetch(sql)
         # roles = []
         # for row in fetch:
-        #     roles.append(nextcord.SelectOption(label=row[1], value=row[0], emoji=row[2]))
+        #     roles.append(disnake.SelectOption(label=row[1], value=row[0], emoji=row[2]))
         # created_thread = await self.create_intro_thread(interaction)
         # dropdown = Dropdown(roles)
         # await created_thread.send(view=dropdown)
@@ -361,7 +361,7 @@ class WelcomeCog(commands.Cog):
         """Command to re-add the welcome message and intro button"""
         welcome_channel = self.bot.get_channel(WELCOME_CHANNEL_ID)
         await welcome_channel.purge()
-        await welcome_channel.send(embed=nextcord.Embed(description=WELCOME_MESSAGE, color=nextcord.Color.green()))
+        await welcome_channel.send(embed=disnake.Embed(description=WELCOME_MESSAGE, color=disnake.Color.green()))
         await welcome_channel.send(view=IntroduceView(self.bot))
 
 

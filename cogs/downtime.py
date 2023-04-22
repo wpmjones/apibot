@@ -1,10 +1,10 @@
 import coc
-import nextcord
+import disnake
 import asyncio
 
 from cogs.utils.send_email import SendMail
 from datetime import datetime, timedelta
-from nextcord.ext import commands, tasks
+from disnake.ext import commands, tasks
 from config import settings
 
 enviro = settings['enviro']
@@ -84,14 +84,14 @@ class Downtime(commands.Cog):
             self.bots.append(Bot(row['name'], row['bot_id'], row['channel_id'], row['owner_id'],
                                  row['monitor'], row['email']))
 
-    @nextcord.slash_command(name="bot", description="Command group to manage demo bots", guild_ids=GUILD_IDS)
+    @disnake.slash_command(name="bot", description="Command group to manage demo bots", guild_ids=GUILD_IDS)
     @commands.has_role("Admin")
-    async def my_bot(self, interaction: nextcord.Interaction):
+    async def my_bot(self, interaction: disnake.Interaction):
         """ This is just for the slash command group and will never get called on its own, so we can pass. """
         pass
 
     @my_bot.subcommand(name="test", description="Tests the downtime notification")
-    async def my_bot_test(self, interaction: nextcord.Interaction, member: nextcord.Member):
+    async def my_bot_test(self, interaction: disnake.Interaction, member: disnake.Member):
         """ Tests the downtime notifier for a given bot. """
         self.bot.logger.debug("Starting...")
         sql = "SELECT bot_id, name, owner_id, channel_id, monitor, email FROM bot_owners WHERE bot_id = $1"
@@ -105,10 +105,10 @@ class Downtime(commands.Cog):
         await interaction.response.send_message("Test done.", ephemeral=True)
 
     @my_bot.subcommand(name="add", description="Add a bot to be monitored")
-    async def my_bot_add(self, interaction: nextcord.Interaction,
-                         bot: nextcord.User,
-                         owner: nextcord.User,
-                         channel: nextcord.TextChannel):
+    async def my_bot_add(self, interaction: disnake.Interaction,
+                         bot: disnake.User,
+                         owner: disnake.User,
+                         channel: disnake.TextChannel):
         """ Ads a given bot with a given owner and its demo channel to the database for future monitoring. """
         if not bot.bot:
             return await interaction.response.send_message(f"It would appear that {bot.name} ({bot.id}) is not a "
@@ -126,7 +126,7 @@ class Downtime(commands.Cog):
                                                 f"toggle monitoring, please use `/bot monitor <bot tag>.")
 
     @my_bot.subcommand(name="list")
-    async def my_bot_list(self, interaction: nextcord.Interaction):
+    async def my_bot_list(self, interaction: disnake.Interaction):
         """List the bots that are being monitored.
 
         **Example:**
@@ -136,7 +136,7 @@ class Downtime(commands.Cog):
         embeds = []
         for i, bot in enumerate(self.bots):
             if i % 24 == 0:
-                embeds.append(nextcord.Embed(title="Bots that are configured for monitoring"))
+                embeds.append(disnake.Embed(title="Bots that are configured for monitoring"))
             owner = self.bot.get_user(bot.owner)
             channel = self.bot.get_channel(bot.channel_id)
             embeds[-1].add_field(name=f"{bot.name}",
@@ -151,7 +151,7 @@ class Downtime(commands.Cog):
         await interaction.followup.send(embeds=embeds)
 
     @my_bot.subcommand(name="monitor")
-    async def my_bot_monitor(self, interaction: nextcord.Interaction, bot: nextcord.Member):
+    async def my_bot_monitor(self, interaction: disnake.Interaction, bot: disnake.Member):
         """Toggle monitoring for the specified bot
 
         **Example:**
@@ -210,31 +210,31 @@ class Downtime(commands.Cog):
         offline_start = await conn.fetchval(offline_sql, member.id)
         if offline_start:
             # simply tells us that the bot is marked offline in the database
-            if member.status == nextcord.Status.online:
+            if member.status == disnake.Status.online:
                 # bot is back online
                 downtime = to_time((now - offline_start).total_seconds())
                 try:
                     await bot.notify_up(self.bot, downtime)
                     self.bot.logger.info(f"{bot.name} is back online and notification sent. "
                                          f"Downtime: {downtime}")
-                except nextcord.errors.Forbidden:
+                except disnake.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
                 await conn.execute(reported_sql, now, bot.bot_id)
         else:
-            if member.status != nextcord.Status.online:
+            if member.status != disnake.Status.online:
                 # bot is offline for the first time
                 # pause 60 seconds to make sure it's a real outage
                 await asyncio.sleep(65)
                 check = member.guild.get_member(member.id)
-                if check.status == nextcord.Status.online:
+                if check.status == disnake.Status.online:
                     # bot is back online, no need to report anything
                     return
                 await conn.execute(insert_sql, bot.bot_id, now, now)
                 try:
                     await bot.notify_down(self.bot)
                     self.bot.logger.info(f"{bot.name} is down and notification has been sent.")
-                except nextcord.errors.Forbidden:
+                except disnake.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
 
@@ -261,7 +261,7 @@ class Downtime(commands.Cog):
                 downtime = to_time((now - offline_start).total_seconds())
                 try:
                     await bot.notify_follow_up(self.bot, downtime)
-                except nextcord.errors.Forbidden:
+                except disnake.errors.Forbidden:
                     channel = self.bot.get_channel(settings['channels']['mod-log'])
                     await channel.send(f"API Bot does not have access to <#{bot.channel_id}> ({bot.channel_id})")
                 await conn.execute(update_sql, now, bot.bot_id)

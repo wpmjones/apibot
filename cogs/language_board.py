@@ -1,9 +1,9 @@
 from typing import Optional, Union
 from pathlib import Path
 
-import nextcord
-from nextcord.ext import commands
-from nextcord import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
+import disnake
+from disnake.ext import commands
+from disnake import RawReactionActionEvent, Emoji, Role, Embed, Message, Member, Guild
 
 from config import settings
 
@@ -104,7 +104,7 @@ class LanguageBoard(commands.Cog):
             "spacing": 0,
         }
         for member in guild.members:
-            member: nextcord.Member
+            member: disnake.Member
 
             # If user only has @everyone role, consider them as having no roles
             if len(member.roles) == 1:
@@ -266,7 +266,7 @@ class LanguageBoard(commands.Cog):
                     new_roles.append(role)
             try:
                 await member.edit(roles=new_roles)
-            except nextcord.Forbidden:
+            except disnake.Forbidden:
                 self.bot.logger.error(f"Could not add {reaction['role_name']} to {member.display_name}", exc_info=True)
 
         # Otherwise add the role
@@ -274,7 +274,7 @@ class LanguageBoard(commands.Cog):
             role = await self._get_role_obj(payload.guild_id, reaction['role_id'])
             try:
                 await member.add_roles(role)
-            except nextcord.Forbidden:
+            except disnake.Forbidden:
                 self.bot.logger.error(f"Could not add {reaction['role_name']} to {member.display_name}", exc_info=True)
 
     @commands.command(
@@ -293,7 +293,7 @@ class LanguageBoard(commands.Cog):
 
         # Save the board image to memory
         with IMAGE_PATH.open("rb") as f_handle:
-            board_image = nextcord.File(f_handle)
+            board_image = disnake.File(f_handle)
 
         board = await ctx.send(file=board_image)
 
@@ -389,15 +389,15 @@ class LanguageBoard(commands.Cog):
             panel += f"`{row['role_name']:<15}` {row['emoji_repr']}\n"
         await ctx.send(panel)
 
-    @nextcord.slash_command(name="role_stats", description="Show role stats", guild_ids=GUILD_IDS)
-    async def role_stats(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="role_stats", description="Show role stats", guild_ids=GUILD_IDS)
+    async def role_stats(self, interaction: disnake.Interaction):
         """Responds with a formatted code block containing the number of members with each role excluding those in
         the exclude list"""
         role_stats = await self._get_role_stats(interaction.guild)
         panel = self._get_roles_panel(role_stats, with_emojis=False)
-        await interaction.response.send_message(embed=nextcord.Embed(title="Role stats",
+        await interaction.response.send_message(embed=disnake.Embed(title="Role stats",
                                                                      description=panel,
-                                                                     color=nextcord.Color.green()))
+                                                                     color=disnake.Color.green()))
 
 
 def setup(bot):

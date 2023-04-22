@@ -1,7 +1,7 @@
 import asyncio
-import nextcord
+import disnake
 
-from nextcord.ext.commands import Paginator as CommandPaginator
+from disnake.ext.commands import Paginator as CommandPaginator
 
 
 class CannotPaginate(Exception):
@@ -30,11 +30,11 @@ class Pages:
 
     Attributes
     -----------
-    embed: nextcord.Embed
+    embed: disnake.Embed
         The embed object that is being used to send pagination info.
         Feel free to modify this externally. Only the description,
         footer fields, and colour are internally modified.
-    permissions: nextcord.Permissions
+    permissions: disnake.Permissions
         Our permissions for the channel.
     """
     def __init__(self, ctx, *, entries, per_page=12, show_entry_count=True):
@@ -48,7 +48,7 @@ class Pages:
         if left_over:
             pages += 1
         self.maximum_pages = pages
-        self.embed = nextcord.Embed(colour=nextcord.Colour.blurple())
+        self.embed = disnake.Embed(colour=disnake.Colour.blurple())
         self.paginating = len(entries) > per_page
         self.show_entry_count = show_entry_count
         self.reaction_emojis = [
@@ -248,7 +248,7 @@ class Pages:
                     break
 
             try:
-                await self.message.remove_reaction(payload.emoji, nextcord.Object(id=payload.user_id))
+                await self.message.remove_reaction(payload.emoji, disnake.Object(id=payload.user_id))
             except:
                 pass # can't remove it so don't bother doing so
 
@@ -262,7 +262,7 @@ class FieldPages(Pages):
 
     def prepare_embed(self, entries, page, *, first=False):
         self.embed.clear_fields()
-        self.embed.description = nextcord.Embed.Empty
+        self.embed.description = disnake.Embed.Empty
 
         for key, value in entries:
             self.embed.add_field(name=key, value=value, inline=False)

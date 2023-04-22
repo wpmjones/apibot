@@ -2,14 +2,14 @@ import os
 import traceback
 
 import coc.utils
-import nextcord
+import disnake
 import re
 import youtube_dl
 
 from cogs.utils import checks
 from config import settings
-from nextcord import Interaction, ui
-from nextcord.ext import commands, application_checks
+from disnake import Interaction, ui
+from disnake.ext import commands, application_checks
 
 enviro = settings['enviro']
 
@@ -38,7 +38,7 @@ URL_EXTRACTOR = re.compile(r"\[(?P<title>.*?)\]\((?P<url>[^)]+)\)")
 
 
 class ConfirmButton(ui.Button["ConfirmView"]):
-    def __init__(self, label: str, style: nextcord.ButtonStyle, *, custom_id: str):
+    def __init__(self, label: str, style: disnake.ButtonStyle, *, custom_id: str):
         super().__init__(label=label, style=style, custom_id=custom_id)
 
     async def callback(self, interaction: Interaction):
@@ -50,8 +50,8 @@ class ConfirmView(ui.View):
     def __init__(self):
         super().__init__(timeout=10.0)
         self.value = None
-        self.add_item(ConfirmButton("Yes", nextcord.ButtonStyle.green, custom_id="confirm_button"))
-        self.add_item(ConfirmButton("No", nextcord.ButtonStyle.red, custom_id="decline_button"))
+        self.add_item(ConfirmButton("Yes", disnake.ButtonStyle.green, custom_id="confirm_button"))
+        self.add_item(ConfirmButton("No", disnake.ButtonStyle.red, custom_id="decline_button"))
 
 
 class General(commands.Cog):
@@ -60,67 +60,67 @@ class General(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.channel.id == WELCOME_CHANNEL_ID and message.type is nextcord.MessageType.thread_created:
+        if message.channel.id == WELCOME_CHANNEL_ID and message.type is disnake.MessageType.thread_created:
             await message.delete(delay=5)
 
-    @nextcord.slash_command(name="invite", guild_ids=GUILD_IDS)
-    async def invite(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="invite", guild_ids=GUILD_IDS)
+    async def invite(self, interaction: disnake.Interaction):
         """Responds with the invite link to this server"""
         await interaction.response.send_message("https://discord.gg/clashapi")
 
-    @nextcord.slash_command(name="regex", guild_ids=GUILD_IDS)
-    async def regex(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="regex", guild_ids=GUILD_IDS)
+    async def regex(self, interaction: disnake.Interaction):
         """Responds with the RegEx for player/clan tags"""
         await interaction.response.send_message("^#[PYLQGRJCUV0289]{3,9}$")
 
-    @nextcord.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
-    async def rate_limit(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="rate_limit", guild_ids=GUILD_IDS)
+    async def rate_limit(self, interaction: disnake.Interaction):
         """Responds with the rate limit information for the Clash API"""
         print("preparing to respond")
         await interaction.response.send_message("We have found that the approximate rate limit is 30-40 requests per "
                                                 "second. Staying below this should be safe.")
         print("done responding")
 
-    @nextcord.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
-    async def refresh_interval(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="cache_max_age", guild_ids=GUILD_IDS)
+    async def refresh_interval(self, interaction: disnake.Interaction):
         """Responds with the max age of the information for each endpoint in the ClashAPI"""
-        embed = nextcord.Embed(title="Max age of information due to caching")
+        embed = disnake.Embed(title="Max age of information due to caching")
         embed.add_field(name="Clans", value="2 Minutes", inline=False)
         embed.add_field(name="current war", value="2 Minutes", inline=False)
         embed.add_field(name="All other war related", value="10 Minutes", inline=False)
         embed.add_field(name="Player", value="1 Minute", inline=False)
         await interaction.response.send_message(embed=embed)
 
-    @nextcord.slash_command(name="vps", guild_ids=GUILD_IDS)
-    async def vps(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="vps", guild_ids=GUILD_IDS)
+    async def vps(self, interaction: disnake.Interaction):
         """Responds with a link to a GitHub MD on VPS options"""
         await interaction.response.send_message(
             "<https://github.com/wpmjones/apibot/blob/master/Rules/vps_services.md>")
 
-    @nextcord.slash_command(name="rules", guild_ids=GUILD_IDS)
-    async def rules(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="rules", guild_ids=GUILD_IDS)
+    async def rules(self, interaction: disnake.Interaction):
         """Respond with a link to the rules markdown file."""
         await interaction.response.send_message("<https://github.com/wpmjones/apibot/blob/master/"
                                                 "Rules/code_of_conduct.md>")
 
-    @nextcord.slash_command(name="links", guild_ids=GUILD_IDS)
-    async def link_api(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="links", guild_ids=GUILD_IDS)
+    async def link_api(self, interaction: disnake.Interaction):
         """Responds with a link to a Discord message on the Discord Link API (by TubaKid)"""
         await interaction.response.send_message("https://discord.com/channels/566451504332931073/681617252814159904/"
                                                 "936126372873650237")
 
-    @nextcord.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
-    async def link_coc_wrappers(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="coc_wrappers", guild_ids=GUILD_IDS)
+    async def link_coc_wrappers(self, interaction: disnake.Interaction):
         """Respond with a link to the page created by @Doluk"""
         await interaction.response.send_message("<https://coc-libs.vercel.app/>")
 
-    @nextcord.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
-    async def link_discord_wrappers(self, interaction: nextcord.Interaction):
+    @disnake.slash_command(name="discord_wrappers", guild_ids=GUILD_IDS)
+    async def link_discord_wrappers(self, interaction: disnake.Interaction):
         """Respond with a link to a list of known discord wrappers"""
         await interaction.response.send_message("<https://libs.advaith.io/>")
 
-    @nextcord.slash_command(name="player_url", guild_ids=GUILD_IDS)
-    async def format_player_url(self, interaction: nextcord.Interaction,
+    @disnake.slash_command(name="player_url", guild_ids=GUILD_IDS)
+    async def format_player_url(self, interaction: disnake.Interaction,
                                 player_tag: str = ""):
         """Gives info on how to construct a player profile url and optionally the url for a specific player"""
         if player_tag:
@@ -136,18 +136,18 @@ class General(commands.Cog):
                      "```https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=```")
         await interaction.response.send_message(response)
 
-    @nextcord.slash_command(name="help", description="Help command for slash commands", guild_ids=GUILD_IDS)
-    async def slash_help(self, interaction: nextcord.Interaction):
-        embed = nextcord.Embed(title="Overview of Slash Commands",
+    @disnake.slash_command(name="help", description="Help command for slash commands", guild_ids=GUILD_IDS)
+    async def slash_help(self, interaction: disnake.Interaction):
+        embed = disnake.Embed(title="Overview of Slash Commands",
                                color=0xFFFFFF)
-        commands: list[nextcord.BaseApplicationCommand] = self.bot.get_all_application_commands()
+        commands: list[disnake.BaseApplicationCommand] = self.bot.get_all_application_commands()
         global_outside_group = []
         guild_outside_group = []
         global_groups = []
         guild_groups = []
         for cmd in commands:
             # skip all non slash commands
-            if cmd.type != nextcord.ApplicationCommandType(1):
+            if cmd.type != disnake.ApplicationCommandType(1):
                 continue
             # skip admin specific slash commands
             if cmd.qualified_name in ["doobie", "help"]:
@@ -174,23 +174,23 @@ class General(commands.Cog):
                                        f"{option['description']}" for option in options if option['type'] <= 2],
                                       key=lambda x: x)
                 if cmd.guild_ids:
-                    embed = nextcord.Embed(
+                    embed = disnake.Embed(
                         title=f'Guild Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
                         description="\n".join(sub_commands),
                         color=0xDDDDDD
                     )
                     guild_groups.append(embed)
                 else:
-                    embed = nextcord.Embed(
+                    embed = disnake.Embed(
                         title=f'Global Commands of the {cmd.qualified_name} group [{len(sub_commands)}]',
                         description="\n".join(sub_commands),
                         color=0xDDDDDD
                     )
                     global_groups.append(embed)
-        ungrouped_global = nextcord.Embed(title=f'Global Commands [{len(global_outside_group)}]',
+        ungrouped_global = disnake.Embed(title=f'Global Commands [{len(global_outside_group)}]',
                                           description="\n".join(sorted(global_outside_group, key=lambda x: x)),
                                           color=0xFFFFFF)
-        ungrouped_guild = nextcord.Embed(title=f'Guild Commands [{len(guild_outside_group)}]',
+        ungrouped_guild = disnake.Embed(title=f'Guild Commands [{len(guild_outside_group)}]',
                                          description="\n".join(sorted(guild_outside_group, key=lambda x: x)),
                                          color=0xFFFFFF)
         embeds = ([ungrouped_global] + list(sorted(global_groups, key=lambda x: x.title)) + [ungrouped_guild] +
@@ -199,7 +199,7 @@ class General(commands.Cog):
 
     @commands.command(name="setup", aliases=["set_up", ], hidden=True)
     @commands.has_role("Admin")
-    async def setup_bot(self, ctx, bot: nextcord.Member = None, owner: nextcord.Member = None):
+    async def setup_bot(self, ctx, bot: disnake.Member = None, owner: disnake.Member = None):
         """Admin use only: For adding bot demo channels
         Creates channel (based on bot name)
         Alphabetizes channel within the Bot-Demos category
@@ -240,7 +240,7 @@ class General(commands.Cog):
 
         # No match found, just keep swimming
         overwrites = {
-            bot: nextcord.PermissionOverwrite(read_messages=True,
+            bot: disnake.PermissionOverwrite(read_messages=True,
                                               send_messages=True,
                                               read_message_history=True,
                                               manage_messages=True,
@@ -248,7 +248,7 @@ class General(commands.Cog):
                                               attach_files=True,
                                               external_emojis=True,
                                               add_reactions=True),
-            admin_role: nextcord.PermissionOverwrite(read_messages=True,
+            admin_role: disnake.PermissionOverwrite(read_messages=True,
                                                      send_messages=True,
                                                      read_message_history=True,
                                                      manage_messages=True,
@@ -259,7 +259,7 @@ class General(commands.Cog):
                                                      manage_channels=True,
                                                      manage_permissions=True,
                                                      manage_webhooks=True),
-            hog_rider_role: nextcord.PermissionOverwrite(read_messages=True,
+            hog_rider_role: disnake.PermissionOverwrite(read_messages=True,
                                                          send_messages=True,
                                                          read_message_history=True,
                                                          manage_messages=True,
@@ -267,7 +267,7 @@ class General(commands.Cog):
                                                          attach_files=True,
                                                          external_emojis=True,
                                                          add_reactions=True),
-            developer_role: nextcord.PermissionOverwrite(read_messages=True,
+            developer_role: disnake.PermissionOverwrite(read_messages=True,
                                                          send_messages=True,
                                                          read_message_history=True,
                                                          manage_messages=False,
@@ -275,7 +275,7 @@ class General(commands.Cog):
                                                          attach_files=True,
                                                          external_emojis=True,
                                                          add_reactions=True),
-            guest_role: nextcord.PermissionOverwrite(read_messages=True,
+            guest_role: disnake.PermissionOverwrite(read_messages=True,
                                                      send_messages=True,
                                                      read_message_history=True,
                                                      manage_messages=False,
@@ -283,7 +283,7 @@ class General(commands.Cog):
                                                      attach_files=True,
                                                      external_emojis=False,
                                                      add_reactions=True),
-            guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
+            guild.default_role: disnake.PermissionOverwrite(read_messages=False),
         }
         try:
             position = category.channels[0].position + sorted(
@@ -324,7 +324,7 @@ class General(commands.Cog):
 
     @commands.command(name="developer", aiases=["dev", "devrole", "dev_role"], hidden=True)
     @commands.has_role("Admin")
-    async def dev_role(self, ctx, member: nextcord.Member = None):
+    async def dev_role(self, ctx, member: disnake.Member = None):
         """Add appropriate role to new users.  It will:
 
         Prompt you to add primary language role (optional)
@@ -422,7 +422,7 @@ class General(commands.Cog):
                 content = f"{msg.author.display_name} says:\n>>> {msg.content}"
                 channel = self.bot.get_channel(settings['channels']['general'])
                 await channel.send(content)
-            except (nextcord.NotFound, nextcord.HTTPException) as e:
+            except (disnake.NotFound, disnake.HTTPException) as e:
                 self.bot.logger.exception(f"Failure trying to send message to #General\n{e}")
                 return await ctx.send(f"Copying of the message failed.  Please confirm you copied the correct "
                                       f"message ID and try `//to_gen`.\n"
@@ -431,11 +431,11 @@ class General(commands.Cog):
                                       f"This message will self-destruct in 120 seconds.",
                                       delete_after=120.0)
 
-    @nextcord.slash_command(name="doobie", guild_ids=GUILD_IDS)
+    @disnake.slash_command(name="doobie", guild_ids=GUILD_IDS)
     @application_checks.has_role("Admin")
     async def clear(self,
-                    interaction: nextcord.Interaction,
-                    msg_count: str = nextcord.SlashOption(description="Message count OR Message ID",
+                    interaction: disnake.Interaction,
+                    msg_count: str = disnake.SlashOption(description="Message count OR Message ID",
                                                           required=False)):
         """Clears the specified number of messages OR all messages from the specified ID. (Admin only)
 
@@ -465,7 +465,7 @@ class General(commands.Cog):
                     await interaction.send(f"{msg_count} messages deleted.",
                                            delete_after=5,
                                            ephemeral=True)
-                except nextcord.errors.NotFound:
+                except disnake.errors.NotFound:
                     return await interaction.send("It appears that you tried to enter a message ID, but I can't find "
                                                   "that message in this channel.")
         else:
@@ -486,11 +486,11 @@ class General(commands.Cog):
                 disable_all_buttons()
                 await interaction.channel.purge()
 
-    @nextcord.slash_command(name="youtube", guild_ids=GUILD_IDS)
+    @disnake.slash_command(name="youtube", guild_ids=GUILD_IDS)
     @application_checks.has_role("Admin")
     async def youtube(self,
-                      interaction: nextcord.Interaction,
-                      youtube_id: str = nextcord.SlashOption(description="Just the ID of the video",
+                      interaction: disnake.Interaction,
+                      youtube_id: str = disnake.SlashOption(description="Just the ID of the video",
                                                              required=True)):
         ydl_options = {
             "default-search": "ytsearch",
@@ -535,9 +535,9 @@ class General(commands.Cog):
             if "." in match.group("number"):
                 colour = 0xBDDDF4  # lighter blue for sub-headings/groups
             else:
-                colour = nextcord.Colour.blue()
+                colour = disnake.Colour.blue()
 
-            embeds.append(nextcord.Embed(title=title, description=description.strip(), colour=colour))
+            embeds.append(disnake.Embed(title=title, description=description.strip(), colour=colour))
             titles.append(title)
 
         messages = [await channel.send(embed=embed) for embed in embeds]
@@ -582,9 +582,9 @@ class General(commands.Cog):
                 title = raw_title.replace("#", "").strip()
                 url = ""
 
-            colour = nextcord.Colour.blue()
+            colour = disnake.Colour.blue()
 
-            embeds.append(nextcord.Embed(title=title, url=url, description=description.strip(), colour=colour))
+            embeds.append(disnake.Embed(title=title, url=url, description=description.strip(), colour=colour))
             titles.append(title)
 
         messages = [await channel.send(embed=embed) for embed in embeds]
@@ -602,19 +602,18 @@ class General(commands.Cog):
         """Clone the admin faqs to public ones or update them"""
         # generate permission overwrite
         guild = ctx.guild
-        reader_perms = nextcord.PermissionOverwrite(view_channel=True, read_messages=True, read_message_history=True,
-                                                    create_private_threads=False, create_public_threads=False,
-                                                    send_messages_in_threads=False)
-        everyone_perms = nextcord.PermissionOverwrite(view_channel=False, read_messages=False)
-        perm_over = {nextcord.utils.get(guild.roles, name="Developer"): reader_perms,
-                     nextcord.utils.get(guild.roles, name="Guest"): reader_perms,
+        reader_perms = disnake.PermissionOverwrite(view_channel=True, read_messages=True, read_message_history=True,
+                                                   create_forum_threads=False, send_messages_in_threads=False)
+        everyone_perms = disnake.PermissionOverwrite(view_channel=False, read_messages=False)
+        perm_over = {disnake.utils.get(guild.roles, name="Developer"): reader_perms,
+                     disnake.utils.get(guild.roles, name="Guest"): reader_perms,
                      guild.default_role: everyone_perms}
         # get admin faq channel
-        template: nextcord.ForumChannel = await guild.fetch_channel(FAQS_CHANNEL_ID)
+        template: disnake.ForumChannel = await guild.fetch_channel(FAQS_CHANNEL_ID)
         # get the resources category
-        cat = nextcord.utils.get(guild.categories, id=RESOURCES_CATEGORY_ID)
+        cat = disnake.utils.get(guild.categories, id=RESOURCES_CATEGORY_ID)
         # check if faq channel exists
-        faq_channel = nextcord.utils.get(cat.channels, name="FAQs")
+        faq_channel = disnake.utils.get(cat.channels, name="FAQs")
         # create faq channel if not existing
         if not faq_channel:
             faq_channel = await cat.create_forum_channel(name="FAQs", topic=template.topic,
@@ -642,9 +641,9 @@ class General(commands.Cog):
                     if "." in match.group("number"):
                         color = 0xBDDDF4  # lighter blue for sub-headings/groups
                     else:
-                        color = nextcord.Color.blue()
+                        color = disnake.Color.blue()
 
-                    embeds.append(nextcord.Embed(title=title, description=description.strip(), color=color))
+                    embeds.append(disnake.Embed(title=title, description=description.strip(), color=color))
                     titles.append(title)
 
                 n_thread = None

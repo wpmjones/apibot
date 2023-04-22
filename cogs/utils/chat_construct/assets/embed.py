@@ -21,7 +21,7 @@ from cogs.utils.chat_ext.html_generator import (
 
 
 def _gather_checker():
-    if hasattr(discord.Embed, "Empty") and discord.module != "nextcord":
+    if hasattr(discord.Embed, "Empty") and discord.module != "disnake":
         return discord.Embed.Empty
     return None
 

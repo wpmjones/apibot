@@ -1,4 +1,4 @@
-import nextcord
+import disnake
 import pandas as pd
 import math
 import matplotlib.pyplot as plt
@@ -6,8 +6,8 @@ import requests
 import time
 
 from datetime import datetime
-from nextcord import Interaction
-from nextcord.ext import commands, tasks
+from disnake import Interaction
+from disnake.ext import commands, tasks
 from PIL import Image, ImageDraw, ImageFont
 from config import settings
 
@@ -51,7 +51,7 @@ class Response(commands.Cog):
         war_elapsed_time = (time.perf_counter() - start) * 1000
         return clan_elapsed_time, player_elapsed_time, war_elapsed_time
 
-    @nextcord.slash_command(name="response", guild_ids=[settings['guild']['junkies'], settings['guild']['bot_logs']])
+    @disnake.slash_command(name="response", guild_ids=[settings['guild']['junkies'], settings['guild']['bot_logs']])
     async def response_info(self, interaction: Interaction):
         """Report information on api response times (last 24 hours)"""
 
@@ -159,7 +159,7 @@ class Response(commands.Cog):
               (960, 175))
         align("right", f"War Endpoint: {round_half_up(war, decimals=2)}ms", small_font, (15, 15, 15), (1860, 175))
         img.save("status.png")
-        await interaction.send(file=nextcord.File('status.png'), ephemeral=True)
+        await interaction.send(file=disnake.File('status.png'), ephemeral=True)
 
     @tasks.loop(minutes=15.0)
     async def response_check(self):

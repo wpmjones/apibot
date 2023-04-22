@@ -1,9 +1,9 @@
 import asyncio
-import nextcord
+import disnake
 
 from config import settings
 from datetime import datetime, timezone, timedelta
-from nextcord.ext import commands, tasks
+from disnake.ext import commands, tasks
 from typing import List
 
 WELCOME_MESSAGE = ("Welcome to the Clash API Developers server, {}! We're glad to have you!\n"
@@ -18,7 +18,7 @@ PRUNE_WARNING = ("You have been a member of the Clash API Developers Discord ser
                  "days will result in your removal from the server.")
 
 
-class Confirm(nextcord.ui.View):
+class Confirm(disnake.ui.View):
     def __init__(self):
         super().__init__()
         self.value = None
@@ -26,37 +26,37 @@ class Confirm(nextcord.ui.View):
     # When the confirm button is pressed, set the inner value to `True` and
     # stop the View from listening to more input.
     # We also send the user an ephemeral message that we're confirming their choice.
-    @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
-    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    @disnake.ui.button(label="Yes", style=disnake.ButtonStyle.green)
+    async def confirm(self, button: disnake.ui.Button, interaction: disnake.Interaction):
         await interaction.response.send_message("Confirming", ephemeral=True)
         self.value = True
         self.stop()
 
     # This one is similar to the confirmation button except sets the inner value to `False`
-    @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.grey)
-    async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    @disnake.ui.button(label="No", style=disnake.ButtonStyle.grey)
+    async def cancel(self, button: disnake.ui.Button, interaction: disnake.Interaction):
         await interaction.response.send_message("Cancelling", ephemeral=True)
         self.value = False
         self.stop()
 
 
-class RoleButton(nextcord.ui.Button):
-    def __init__(self, role: nextcord.Role, member: nextcord.Member):
+class RoleButton(disnake.ui.Button):
+    def __init__(self, role: disnake.Role, member: disnake.Member):
         super().__init__(
             label=role.name,
-            style=nextcord.ButtonStyle.blurple,
+            style=disnake.ButtonStyle.blurple,
             custom_id=f"RoleView:{role.id}",
         )
         self.role = role
         self.member = member
 
-    async def callback(self, interaction: nextcord.Interaction):
+    async def callback(self, interaction: disnake.Interaction):
         await self.member.add_roles(self.role, reason=f"{interaction.user.display_name} using a button.")
         await self.member.edit(nick=f"{self.member.display_name} | {self.role.name}")
 
 
-class RoleView(nextcord.ui.View):
-    def __init__(self, guild: nextcord.Guild, member: nextcord.Member, role_ids: List[int]):
+class RoleView(disnake.ui.View):
+    def __init__(self, guild: disnake.Guild, member: disnake.Member, role_ids: List[int]):
         super().__init__(timeout=None)
         for role_id in role_ids:
             role = guild.get_role(role_id)
@@ -93,7 +93,7 @@ class MembersCog(commands.Cog):
                     if now - timedelta(days=5) > member.joined_at:
                         try:
                             await member.send(content=PRUNE_WARNING)
-                        except nextcord.errors.Forbidden:
+                        except disnake.errors.Forbidden:
                             self.bot.logger.info(f"Prune warning failed. {member.display_name} does not allow DMs.")
             # for member in temps.members:
             #     if now - timedelta(days=7) > member.joined_at:
@@ -144,7 +144,7 @@ class MembersCog(commands.Cog):
             msg = f"New member, {member.display_name}#{member.discriminator}, is less than one month old."
             await channel.send(msg)
         mod_log = self.bot.get_channel(settings['channels']['mod-log'])
-        embed = nextcord.Embed(title="New member joined", color=0xBFFF00)
+        embed = disnake.Embed(title="New member joined", color=0xBFFF00)
         embed.add_field(name="Member name:", value=f"{member.display_name}#{member.discriminator}", inline=True)
         embed.add_field(name="Creation Date:", value=member.created_at.strftime('%d %b %Y'), inline=True)
         embed.add_field(name="Discord ID:", value=member.id, inline=True)
@@ -182,7 +182,7 @@ class MembersCog(commands.Cog):
                         member_languages += f"{language_role[1]}\n"
                         member_role_emoji.append(language_role[2])
             channel = new_member.guild.get_channel(settings['channels']['general'])
-            embed = nextcord.Embed(color=nextcord.Color.blue(),
+            embed = disnake.Embed(color=disnake.Color.blue(),
                                    description=f"Please welcome {new_member.display_name} to the Clash API Developers "
                                                f"server.")
             if new_member.avatar:
@@ -212,8 +212,8 @@ class MembersCog(commands.Cog):
         except KeyError:
             pass  # user wasn't in dict anyway
 
-    @nextcord.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
-    async def ctx_menu_developer(self, interaction: nextcord.Interaction, message: nextcord.Message):
+    @disnake.message_command(name="Developer", guild_ids=[settings['guild']['junkies']])
+    async def ctx_menu_developer(self, interaction: disnake.Interaction, message: disnake.Message):
         member = message.author
         dev_role = interaction.guild.get_role(settings['roles']['developer'])
         if dev_role in member.roles:
