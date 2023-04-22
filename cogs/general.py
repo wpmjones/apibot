@@ -9,7 +9,7 @@ import youtube_dl
 from cogs.utils import checks
 from config import settings
 from disnake import Interaction, ui
-from disnake.ext import commands, application_checks
+from disnake.ext import commands
 
 enviro = settings['enviro']
 
@@ -19,7 +19,7 @@ if enviro == "LIVE":
     WELCOME_CHANNEL_ID = settings['channels']['welcome']
 else:
     GUILD_IDS = [settings['guild']['bot_logs']]
-    WELCOME_CHANNEL_ID = 1011500429969993808
+    WELCOME_CHANNEL_ID = 1011500429969993808   # This is (was) the test welcome channel
 BOT_DEMO_CATEGORY_ID = settings['category']['bot_demo']
 RULES_CHANNEL_ID = settings['channels']['rules']
 PROJECTS_CHANNEL_ID = settings['channels']['projects']
@@ -432,7 +432,7 @@ class General(commands.Cog):
                                       delete_after=120.0)
 
     @disnake.slash_command(name="doobie", guild_ids=GUILD_IDS)
-    @application_checks.has_role("Admin")
+    @commands.has_role("Admin")
     async def clear(self,
                     interaction: disnake.Interaction,
                     msg_count: str = disnake.SlashOption(description="Message count OR Message ID",
@@ -487,7 +487,7 @@ class General(commands.Cog):
                 await interaction.channel.purge()
 
     @disnake.slash_command(name="youtube", guild_ids=GUILD_IDS)
-    @application_checks.has_role("Admin")
+    @commands.has_role("Admin")
     async def youtube(self,
                       interaction: disnake.Interaction,
                       youtube_id: str = disnake.SlashOption(description="Just the ID of the video",
